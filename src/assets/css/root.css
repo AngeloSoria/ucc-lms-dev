@@ -141,6 +141,7 @@ a {
     background-color: #f1f2f6;
 }
 
+
 /* CARDS */
 .c-card {
     min-width: 250px; 
@@ -150,7 +151,6 @@ a {
 .c-card .card-preview {
     min-height: 180px;
 }
-
 
 
 

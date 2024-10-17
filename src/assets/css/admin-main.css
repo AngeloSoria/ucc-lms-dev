@@ -105,7 +105,7 @@ body {
     table-layout: fixed;
     border-collapse: collapse;
 }
-#myCalendar table th, td {
+#myCalendar table th, #myCalendar table td {
     width: 100%; /* Fixed width for each cell */
     text-align: center; /* Center text horizontally */
     vertical-align: middle; /* Center text vertically */
