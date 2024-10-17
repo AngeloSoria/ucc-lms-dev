@@ -1,0 +1,26 @@
+Options +FollowSymLinks
+RewriteEngine On
+RewriteBase /School_LMS_4/
+
+# Exclude certain file types (CSS, JS, images) from being rewritten
+RewriteCond %{REQUEST_URI} !\.(css|js|png|jpg|jpeg|gif|ico|svg|webp|woff|woff2|ttf|php)$ [NC]
+
+# Exclude the controllers directory from being rewritten
+RewriteCond %{REQUEST_URI} !^/School_LMS_4/controllers/ [NC]
+
+# Rewrite rule for the home page
+RewriteRule ^$ src/views/home.php [L]
+RewriteRule ^faq$ src/views/faq.php [L]
+
+# Rewrite rules for other pages
+
+
+# Custom 404 ErrorDocument that triggers /error/404 URL
+
+
+# Redirect any non-existing page (404) to /error/404
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^error/404$ src/views/404.php [L]  # Ensure the error page exists
+
+

@@ -1,0 +1,65 @@
+/* Custom button styles */
+.btn-primary.custom_btn_login {
+    background-color: var(--c-secondary-dark);
+    border-color: var(--c-secondary-dark);
+}
+
+.btn-primary.custom_btn_login:active {
+    background-color: var(--c-secondary);
+    border-color: var(--c-secondary);
+}
+
+.carousel-item {
+    height: 80vh;
+    background-color: red;
+}
+
+.carousel-item img {
+    height: 100%;
+    object-fit: cover;
+}
+
+nav {
+    position: relative;
+    z-index: 1;
+}
+
+nav #btnOpenNavSideBarMobile {
+    display: none;
+}
+
+.nav-sidebar {
+    position: fixed;
+    z-index: 3;
+    top: 0;
+    left: 0;
+    width: 90%;
+    height: 100vh;
+    transition: 0.3s ease;
+    display: none;
+    transform: translateX(-100%);
+}
+
+.nav-sidebar.sidebar-active {
+    transform: translate(0);
+}
+
+@media only screen and (max-width: 768px) {
+    nav .nav-container {
+        width: 90% !important;
+    }
+    nav #btnOpenNavSideBarMobile {
+        display: block;
+    }
+    nav .nav-subcontent {
+        display: none !important;
+    }
+    .nav-sidebar {
+        display: block;
+    }
+}
+@media only screen and (max-width: 400px) {
+    nav .nav-container {
+        width: 100% !important;
+    }
+}

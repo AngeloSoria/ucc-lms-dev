@@ -1,0 +1,19 @@
+
+[TODO]
+
+    [PENDING]:
+        - File upload system
+            - Change the saving of image into file directory structure
+                instead of saving it as base64 to optimize performance.
+
+        - File upload percentage indicator.
+        
+        - Module Design
+            - School year
+            - Logs
+
+
+    [LIVE]:
+        - Toasts Notification
+            - Success or failure
+    
