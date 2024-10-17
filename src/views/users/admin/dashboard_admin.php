@@ -1,23 +1,25 @@
 <?php
-include_once "../../../../src/config/rootpath.php";
+// ABSOLUTE ROOT_PATH
+include_once $_SERVER['DOCUMENT_ROOT'] . "/ucc-lms-dev/src/config/rootpath.php";
+
 session_start();
-$role = $_SESSION['role'];
 
 // If session is not set, redirect to login
 if (!isset($_SESSION['user_id'])) {
-    header("Location: /School_LMS_2/");
+    header("Location: " . BASE_PATH);
     exit();
 }
+// $role = $_SESSION['role'];
 $CURRENT_PAGE = "dashboard";
 
 ?>
 
 <!DOCTYPE html>
 <html lang="en">
-<?php include_once "../../partials/head.php" ?>
+<?php include_once ROOT_PATH . "src/views/partials/head.php" ?>
 
 <body class="">
-    <?php include_once '../../users/navbar.php' ?>
+    <?php include_once ROOT_PATH . 'src/views/users/navbar.php' ?>
 
     <section class="d-flex justify-content-between gap-2 box-sizing-border-box m-0 p-0">
         <!-- SIDEBAR -->
@@ -51,6 +53,6 @@ $CURRENT_PAGE = "dashboard";
     <!-- FOOTER -->
     <?php include_once "../../partials/footer.php" ?>
 </body>
-<script src="../../../../src/assets/js/admin-main.js"></script>
+<script src="<?php echo BASE_PATH ?>src/assets/js/admin-main.js"></script>
 
 </html>

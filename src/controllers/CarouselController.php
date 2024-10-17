@@ -1,7 +1,10 @@
 <?php
+// ABSOLUTE ROOT_PATH
+include_once $_SERVER['DOCUMENT_ROOT'] . "/ucc-lms-dev/src/config/rootpath.php";
+
 // Adjust the path to the Carousel model based on your project structure
-include_once '../config/connection.php'; // Adjust the path accordingly
-include_once '../models/Carousel.php'; // Adjust the path accordingly
+include_once ROOT_PATH . 'src/config/connection.php'; // Adjust the path accordingly
+include_once ROOT_PATH . 'src/models/Carousel.php'; // Adjust the path accordingly
 
 class CarouselController
 {

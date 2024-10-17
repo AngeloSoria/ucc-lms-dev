@@ -1,7 +1,9 @@
 <?php
-require_once '../../../../src/config/connection.php'; // Include the database connection
-include_once "../../../../src/config/rootpath.php";
-require_once '../../../../src/controllers/CarouselController.php'; // Include the Carousel controller
+// ABSOLUTE ROOT_PATH
+include_once $_SERVER['DOCUMENT_ROOT'] . "/ucc-lms-dev/src/config/rootpath.php";
+
+require_once ROOT_PATH . 'src/config/connection.php'; // Include the database connection
+require_once ROOT_PATH . 'src/controllers/CarouselController.php'; // Include the Carousel controller
 
 $CURRENT_PAGE = "content";
 session_start(); // Start the session at the top of your file

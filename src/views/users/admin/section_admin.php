@@ -131,10 +131,10 @@ try {
                             // Check if the section_image exists and convert the BLOB to base64
                             $base64Image = !empty($section['section_image']) ? 'data:image/jpeg;base64,' . base64_encode($section['section_image']) : '';
                         ?>
-                            <div class="c-card card cbg-primary text-white border-0 shadow-sm" style="min-width: 200px; max-width:250px;">
-                                <div class="card-preview position-relative w-100 bg-success d-flex overflow-hidden justify-content-center align-items-center" style="min-height: 200px; max-height: 200px;">
+                            <div class="c-card card cbg-primary text-white border-0 shadow-sm rounded">
+                                <div class="card-preview rounded rounded-bottom-0 position-relative w-100 bg-success d-flex overflow-hidden justify-content-center align-items-center">
                                     <?php if ($base64Image): ?>
-                                        <img src="<?php echo $base64Image; ?>" class="rounded card-img-top img-section position-absolute top-50 start-50 translate-middle object-fit-fill" alt="<?php echo htmlspecialchars($section['section_name']); ?>">
+                                        <img src="<?php echo $base64Image; ?>" class="card-img-top img-section position-absolute top-50 start-50 translate-middle object-fit-fill" alt="<?php echo htmlspecialchars($section['section_name']); ?>">
                                     <?php else: ?>
                                         <div class="text-center text-muted">No image available</div>
                                     <?php endif; ?>

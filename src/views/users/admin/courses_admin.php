@@ -67,7 +67,7 @@ $CURRENT_PAGE = "courses";
                                     // Convert BLOB to Base64
                                     $base64Image = base64_encode($course['course_image']);
                                     ?>
-                                    <div class="card-preview position-relative w-100 bg-success d-flex overflow-hidden justify-content-center align-items-center" style="min-height: 200px; max-height: 200px;">
+                                    <div class="card-preview rounded position-relative w-100 bg-success d-flex overflow-hidden justify-content-center align-items-center" style="min-height: 200px; max-height: 200px;">
                                         <img src="data:image/jpeg;base64,<?php echo $base64Image; ?>" class="rounded card-img-top img-course position-absolute top-50 start-50 translate-middle object-fit-fill" alt="<?php echo htmlspecialchars($course['course_name']); ?>">
                                     </div>
                                     <div class="card-body p-2">

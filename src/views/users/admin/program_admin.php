@@ -1,7 +1,10 @@
 <?php
-require_once '../../../../src/config/connection.php'; // Include the controller
-include_once "../../../../src/config/rootpath.php";
-require_once '../../../../src/controllers/ProgramController.php'; // Database connection
+// ABSOLUTE ROOT_PATH
+include_once $_SERVER['DOCUMENT_ROOT'] . "/ucc-lms-dev/src/config/rootpath.php";
+
+// Include necessary classes and functions
+require_once ROOT_PATH . 'src/config/connection.php'; // Include the controller
+require_once ROOT_PATH . 'src/controllers/ProgramController.php'; // Database connection
 
 session_start(); // Start the session at the top of your file
 
@@ -97,7 +100,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                                 $base64Image = !empty($program['program_image']) ? base64_encode($program['program_image']) : '';
                         ?>
                                 <div class="c-card card cbg-primary text-white border-0 shadow-sm">
-                                    <div class="card-preview position-relative w-100 bg-success d-flex overflow-hidden justify-content-center align-items-center" style="min-height: 200px; max-height: 200px;">
+                                    <div class="card-preview rounded position-relative w-100 bg-success d-flex overflow-hidden justify-content-center align-items-center" style="min-height: 200px; max-height: 200px;">
                                         <?php if ($base64Image): ?>
                                             <img src="data:image/jpeg;base64,<?php echo $base64Image; ?>" class="rounded card-img-top img-programs position-absolute top-50 start-50 translate-middle object-fit-fill" alt="<?php echo htmlspecialchars($program['program_name']); ?>">
                                         <?php else: ?>
