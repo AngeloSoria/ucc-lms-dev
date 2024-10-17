@@ -14,7 +14,7 @@
 
             <!-- Logo on the left -->
             <a class="navbar-brand" href="<?php echo $_ROOT_PATH ?>">
-                <img src="../../../assets/images/icons/Secondary-Logo-2.png" alt="Logo" width="90" class="d-inline-block align-text-top" />
+                <img src="../../../assets/images/icons/ucc-logo.png" alt="Logo" width="90" class="d-inline-block align-text-top" />
             </a>
         </section>
 

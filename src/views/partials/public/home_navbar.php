@@ -2,7 +2,7 @@
     <div class="nav-container bg-transparent m-auto px-5 w-75 d-flex justify-content-between">
         <!-- Logo on the left -->
         <a class="navbar-brand" href="<?php echo $_ROOT_PATH ?>">
-            <img src="src/assets/images/icons/Secondary-Logo-2.png" alt="Logo" width="110" class="d-inline-block align-text-top" />
+            <img src="src/assets/images/icons/ucc-logo.png" alt="Logo" width="110" class="d-inline-block align-text-top" />
         </a>
 
         <!-- Small screen button -->
@@ -39,7 +39,7 @@
     </div>    
 
     <div class="bg-light w-100 px-3 d-flex flex-column align-items-center justify-content-center gap-2 mt-3">
-        <img width="200" src="src/assets/images/icons/Secondary-Logo-2.png" alt="ucc logo">
+        <img width="200" src="src/assets/images/icons/ucc-logo.png" alt="ucc logo">
         <p class="fs-5 text-center mt-3">Learning Management System</p>
     </div>
     <hr>
