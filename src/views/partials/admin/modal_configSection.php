@@ -58,7 +58,7 @@
                             <!-- search box -->
                             <div id="searchBox_student" class="d-none z-1 position-absolute bg-light border pt-1 px-0 m-0 w-100 shadow-lg overflow-y-auto" style="min-height: 150px; max-height: 150px;">
                                 <!-- queried item -->
-                                <div role="button" class="bg-success border p-2 text-truncate d-flex justify-content-start align-items-center gap-3" onclick="alert(1)">
+                                <div role="button" class="bg-success border p-2 text-truncate d-flex justify-content-start align-items-center gap-3" onclick="console.log(this)">
                                     <img class="w-10" src="../../../assets/images/icons/avatars/profile-avatar-1.png" alt="profile image">
                                     <p class="text-truncate flex-grow-1 m-0">Angelo Soria (2000166505)</p>
                                     <div>
@@ -72,7 +72,7 @@
                         </div>
                         <style>
                             #special_search:has(#searchStudent:focus) #searchBox_student,
-                            #speacial_search:has(#searchBox_student:hover, #searchBox_student > *:active) #searchBox_student {
+                            #special_search:has(#searchBox_student *:active) #searchBox_student {
                                 display: block !important;
                             }
                         </style>
