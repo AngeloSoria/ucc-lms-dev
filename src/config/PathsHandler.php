@@ -10,8 +10,8 @@ define('VENDOR_AUTO_LOAD', BASE_PATH . 'vendor/autoload.php');
 
 
 define('UPLOAD_PATH', [
-    'System' => __DIR__ . '../../../src/uploads/system',
-    'User' => __DIR__ . '../../../src/uploads/user',
+    'System' => BASE_PATH_LINK . 'src/uploads/system',
+    'User' => BASE_PATH_LINK . 'src/uploads/user',
 ]);
 
 define('FILE_PATHS', [
