@@ -1,29 +1,30 @@
 <?php
-// ABSOLUTE ROOT_PATH
-include_once $_SERVER['DOCUMENT_ROOT'] . "/ucc-lms-dev/src/config/rootpath.php";
+require_once(__DIR__ . '../../../../config/PathsHandler.php');
+require_once(FILE_PATHS['DATABASE']);
 
 session_start();
 
+$role = $_SESSION['role'];
+
 // If session is not set, redirect to login
 if (!isset($_SESSION['user_id'])) {
-    header("Location: " . BASE_PATH);
     exit();
 }
-// $role = $_SESSION['role'];
 $CURRENT_PAGE = "dashboard";
 
 ?>
 
 <!DOCTYPE html>
 <html lang="en">
-<?php include_once ROOT_PATH . "src/views/partials/head.php" ?>
+<?php require_once(FILE_PATHS['Partials']['User']['Head']) ?>
 
 <body class="">
-    <?php include_once ROOT_PATH . 'src/views/users/navbar.php' ?>
+    <?php require_once(FILE_PATHS['Partials']['User']['Navbar']) ?>
 
     <section class="d-flex justify-content-between gap-2 box-sizing-border-box m-0 p-0">
+        
         <!-- SIDEBAR -->
-        <?php include_once '../sidebar.php' ?>
+        <?php require_once(FILE_PATHS['Partials']['User']['Sidebar']) ?>
 
         <!-- content here -->
         <section class="row min-vh-100 w-100 m-0 p-2 d-flex justify-content-end align-items-start" id="contentSection">
@@ -31,28 +32,28 @@ $CURRENT_PAGE = "dashboard";
                 <!-- First row, first column -->
                 <div class="d-flex flex-column gap-2 flex-grow-1">
                     <!-- CAROUSEL -->
-                    <?php include_once "../../partials/special/usercarousel.php" ?>
+                    <?php require_once(FILE_PATHS['Partials']['User']['Carousel']) ?>
 
                     <!-- LIVE COUNT -->
-                    <?php include_once "../../partials/admin/livecount.php" ?>
+                    <?php require_once(FILE_PATHS['Partials']['HighLevel']['LiveCount']) ?>
                 </div>
             </div>
             <div class="col bg-transparent d-flex flex-column justify-content-start align-items-center gap-2 px-1 box-sizing-border-box" id="widgetPanel">
                 <!-- Second column spans both rows -->
 
                 <!-- CALENDAR -->
-                <?php include "../../partials/special/mycalendar.php" ?>
+                <?php require_once(FILE_PATHS['Partials']['User']['Calendar']) ?>
 
                 <!-- TASKS -->
-                <?php include "../../partials/special/mytasks.php" ?>
+                <?php require_once(FILE_PATHS['Partials']['User']['Tasks']) ?>
             </div>
         </section>
 
     </section>
 
     <!-- FOOTER -->
-    <?php include_once "../../partials/footer.php" ?>
+    <?php require_once(FILE_PATHS['Partials']['User']['Footer']) ?>
 </body>
-<script src="<?php echo BASE_PATH ?>src/assets/js/admin-main.js"></script>
+<script src="../../../../src/assets/js/admin-main.js"></script>
 
 </html>

@@ -141,56 +141,6 @@ a {
     background-color: #f1f2f6;
 }
 
-
-/* CARDS */
-.c-card {
-    min-width: 250px; 
-    max-width: 250px;
-}
-
-.c-card .card-preview {
-    min-height: 180px;
-}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 /* WIDTH */
 .w-5 {
     width: 5%;

@@ -1,5 +1,5 @@
 <?php
-require '../config/connection.php'; // Adjusted to the correct path
+require(__DIR__ . '/School_LMS_4/src/config/connection.php');
 
 header('Content-Type: application/json');
 

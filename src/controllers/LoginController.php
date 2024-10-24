@@ -1,7 +1,7 @@
 <?php
 // controllers/LoginController.php
 
-require_once '../config/connection.php';  // Database connection
+require_once(__DIR__ . '../../config/connection.php');
 
 class LoginController
 {

@@ -6,10 +6,10 @@ $CURRENT_PAGE = "dashboard";
 
 <!DOCTYPE html>
 <html lang="en">
-<?php include_once "../../partials/head.php" ?>
+<?php require_once(FILE_PATHS['Partials']['User']['Head']) ?>
 
 <body class="">
-    <?php include_once '../../users/navbar.php' ?>
+    <?php require_once(FILE_PATHS['Partials']['User']['Navbar']) ?>
 
     <section class="d-flex justify-content-between gap-2 box-sizing-border-box m-0 p-0">
         <!-- SIDEBAR -->
@@ -29,17 +29,17 @@ $CURRENT_PAGE = "dashboard";
                 <!-- Second column spans both rows -->
 
                 <!-- CALENDAR -->
-                <?php include "../../partials/special/mycalendar.php" ?>
+                <?php require_once(FILE_PATHS['Partials']['User']['Calendar']) ?>
 
                 <!-- TASKS -->
-                <?php include "../../partials/special/mytasks.php" ?>
+                <?php require_once(FILE_PATHS['Partials']['User']['Tasks']) ?>
             </div>
         </section>
 
     </section>
 
     <!-- FOOTER -->
-    <?php include_once "../../partials/footer.php" ?>
+    <?php require_once(FILE_PATHS['Partials']['User']['Footer']) ?>
 </body>
 <script src="../../../../src/assets/js/admin-main.js"></script>
 

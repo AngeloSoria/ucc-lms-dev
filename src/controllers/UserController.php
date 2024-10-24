@@ -1,7 +1,8 @@
 <?php
-// Adjust the path to the User model based on your project structure
-include_once '../../../config/connection.php'; // Adjust the path accordingly
-include_once '../../../models/User.php'; // Adjust the path accordingly
+require_once(__DIR__ . '../../../src/config/PathsHandler.php');
+
+require_once(FILE_PATHS['DATABASE']);
+require_once(FILE_PATHS['Models']['User']);
 
 class UserController
 {
@@ -60,7 +61,6 @@ class UserController
         }
     }
 
-
     public function editUser()
     {
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -88,6 +88,14 @@ class UserController
                 // Error handling
                 echo "Failed to update user.";
             }
+        }
+    }
+
+    private function initUploadFolder($userid) {
+        $directory_name = 'u_' . $userid;
+        // Check if existing user folder exists.
+        if (!file_exists(UPLOAD_PATH . $directory_name)) {
+            mkdir(UPLOAD_PATH. $directory_name, 0777, true);
         }
     }
 }

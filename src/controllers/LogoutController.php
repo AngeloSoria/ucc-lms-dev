@@ -1,7 +1,4 @@
 <?php
-// ABSOLUTE ROOT_PATH
-include_once $_SERVER['DOCUMENT_ROOT'] . "/ucc-lms-dev/src/config/rootpath.php";
-
 session_start();
 
 class LogoutController
@@ -13,7 +10,7 @@ class LogoutController
         session_destroy();
 
         // Redirect to login page
-        header("Location: " . BASE_PATH);
+        header("Location: /School_LMS_4/");
         exit();
     }
 }

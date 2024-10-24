@@ -1,9 +1,10 @@
 <?php
-require_once '../../../../src/config/connection.php'; // Include the database connection
-include_once "../../../../src/config/rootpath.php";
-require_once '../../../../src/controllers/SectionController.php';
-
 session_start(); // Start the session at the top of your file
+
+require_once(__DIR__ . '../../../../config/PathsHandler.php');
+require_once(FILE_PATHS['DATABASE']);
+require_once(FILE_PATHS['Controllers']['Section']);
+
 
 // Generate a CSRF token if one doesn't exist
 if (empty($_SESSION['csrf_token'])) {
@@ -58,7 +59,8 @@ $sql = "
         s.section_image, 
         u.first_name, 
         u.last_name, 
-        p.program_name 
+        p.program_code, 
+        p.educational_level
     FROM 
         sections s
     LEFT JOIN users u ON s.adviser_id = u.user_id
@@ -81,14 +83,14 @@ try {
 
 <!DOCTYPE html>
 <html lang="en">
-<?php include_once "../../partials/head.php" ?>
+<?php require_once(FILE_PATHS['Partials']['User']['Head']) ?>
 
 <body>
-    <?php include_once '../../users/navbar.php' ?>
+    <?php require_once(FILE_PATHS['Partials']['User']['Navbar']) ?>
 
     <section class="d-flex justify-content-between gap-2 box-sizing-border-box m-0 p-0">
         <!-- SIDEBAR -->
-        <?php include_once '../../users/sidebar.php' ?>
+        <?php require_once(FILE_PATHS['Partials']['User']['Sidebar']) ?>
         <!-- content here -->
         <section class="row min-vh-100 w-100 m-0 p-1 d-flex justify-content-end align-items-start" id="contentSection">
             <div class="col box-sizing-border-box flex-grow-1">
@@ -97,7 +99,7 @@ try {
                     <!-- Headers -->
                     <div class="mb-3 row align-items-start">
                         <div class="col-4 d-flex gap-3">
-                            <h5 class="ctxt-primary">Section</h5>
+                            <h5 class="ctxt-primary">Sections</h5>
                         </div>
                         <div class="col-8 d-flex justify-content-end gap-2">
                             <!-- Tools -->
@@ -131,10 +133,10 @@ try {
                             // Check if the section_image exists and convert the BLOB to base64
                             $base64Image = !empty($section['section_image']) ? 'data:image/jpeg;base64,' . base64_encode($section['section_image']) : '';
                         ?>
-                            <div class="c-card card cbg-primary text-white border-0 shadow-sm rounded">
-                                <div class="card-preview rounded rounded-bottom-0 position-relative w-100 bg-success d-flex overflow-hidden justify-content-center align-items-center">
+                            <div class="c-card card cbg-primary text-white border-0 shadow-sm" style="min-width: 200px; max-width:250px;">
+                                <div class="card-preview position-relative w-100 bg-success d-flex overflow-hidden justify-content-center align-items-center" style="min-height: 200px; max-height: 200px;">
                                     <?php if ($base64Image): ?>
-                                        <img src="<?php echo $base64Image; ?>" class="card-img-top img-section position-absolute top-50 start-50 translate-middle object-fit-fill" alt="<?php echo htmlspecialchars($section['section_name']); ?>">
+                                        <img src="<?php echo $base64Image; ?>" class="rounded card-img-top img-section position-absolute top-50 start-50 translate-middle object-fit-fill" alt="<?php echo htmlspecialchars($section['section_name']); ?>">
                                     <?php else: ?>
                                         <div class="text-center text-muted">No image available</div>
                                     <?php endif; ?>
@@ -143,7 +145,18 @@ try {
                                     <div class="row">
                                         <div class="col-md-10">
                                             <h6 class="card-title w-100 fw-bold bg-transparent" style="height: 4rem;"><?php echo htmlspecialchars($section['section_name']); ?></h6>
-                                            <p class="card-text fs-6"><?php echo htmlspecialchars($section['year_level'] . ' ' . $section['semester']); ?> Semester</p>
+                                            <p class="card-text fs-6">
+                                                <?php
+                                                // Display the educational level (TER or SHS) with the year level
+                                                echo htmlspecialchars($section['educational_level']) . ' - ' . htmlspecialchars($section['year_level']);
+                                                ?>
+                                            </p>
+                                            <p class="card-text fs-6">
+                                                <strong>Class Adviser:</strong> <?php echo htmlspecialchars($section['first_name'] . ' ' . $section['last_name']); ?>
+                                            </p>
+                                            <p class="card-text fs-6">
+                                                <strong>Program:</strong> <?php echo htmlspecialchars($section['program_code']); ?>
+                                            </p>
                                         </div>
                                         <div class="col-md-2 d-flex justify-content-end align-items-start">
                                             <div class="dropdown">
@@ -198,15 +211,15 @@ try {
 
 
             </div>
-            
+
             <div class="col bg-transparent d-flex flex-column justify-content-start align-items-center gap-2 px-1 box-sizing-border-box" id="widgetPanel">
                 <!-- Second column spans both rows -->
 
                 <!-- CALENDAR -->
-                <?php include "../../partials/special/mycalendar.php" ?>
+                <?php require_once(FILE_PATHS['Partials']['User']['Calendar']) ?>
 
                 <!-- TASKS -->
-                <?php include "../../partials/special/mytasks.php" ?>
+                <?php require_once(FILE_PATHS['Partials']['User']['Tasks']) ?>
             </div>
         </section>
 
@@ -216,12 +229,12 @@ try {
 
     </section>
 
-    <?php include_once "../../partials/admin/modal_addSection.php" ?>
-    <?php include_once "../../partials/admin/modal_detailsSection.php" ?>
-    <?php include_once "../../partials/admin/modal_configSection.php" ?>
+    <?php require_once(FILE_PATHS['Partials']['HighLevel']['Modals']['Section']['Add']) ?>
+    <?php require_once(FILE_PATHS['Partials']['HighLevel']['Modals']['Section']['Details']) ?>
+    <?php require_once(FILE_PATHS['Partials']['HighLevel']['Modals']['Section']['Config']) ?>
 
     <!-- FOOTER -->
-    <?php include_once "../../partials/footer.php" ?>
+    <?php require_once(FILE_PATHS['Partials']['User']['Footer']) ?>
 </body>
 <script src="../../../../src/assets/js/admin-main.js"></script>
 

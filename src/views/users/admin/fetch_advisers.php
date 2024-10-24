@@ -1,5 +1,5 @@
 <?php
-require '../../../../src/config/connection.php';
+require_once(__DIR__ . '/School_LMS_4/src/config/connection.php');
 
 $database = new Database();
 $pdo = $database->getConnection();

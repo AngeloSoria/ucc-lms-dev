@@ -25,7 +25,7 @@
                         <input
                             type="text"
                             class="form-control px-3 py-2"
-                            id="userid"
+                            id="username"
                             name="username"
                             placeholder="Enter your username"
                             required />

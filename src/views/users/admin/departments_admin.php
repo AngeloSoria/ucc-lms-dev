@@ -1,19 +1,20 @@
 <?php
-include_once "../../../../src/config/rootpath.php";
+require_once(__DIR__ . '../../../../config/PathsHandler.php');
+require_once(FILE_PATHS['DATABASE']);
 
 $CURRENT_PAGE = "departments";
 ?>
 
 <!DOCTYPE html>
 <html lang="en">
-<?php include_once "../partials/admin/head.php" ?>
+<?php require_once(FILE_PATHS['Partials']['User']['Head']) ?>
 
-<body>
-    <?php include_once '../partials/admin/navbar.php' ?>
+<body class="">
+    <?php require_once(FILE_PATHS['Partials']['User']['Navbar']) ?>
 
     <section class="d-flex justify-content-between gap-2 box-sizing-border-box m-0 p-0">
         <!-- SIDEBAR -->
-        <?php include_once '../partials/admin/sidebar.php' ?>
+        <?php require_once(FILE_PATHS['Partials']['User']['Sidebar']) ?>
 
         <!-- content here -->
         <section class="row min-vh-100 w-100 m-0 p-1 d-flex justify-content-end align-items-start" id="contentSection">
@@ -235,20 +236,21 @@ $CURRENT_PAGE = "departments";
                 </div>
             </div>
             <div class="col bg-transparent d-flex flex-column justify-content-start align-items-center gap-2 px-1 box-sizing-border-box" id="widgetPanel">
+
                 <!-- CALENDAR -->
-                <?php include "../partials/special/mycalendar.php" ?>
+                <?php require_once(FILE_PATHS['Partials']['User']['Calendar']) ?>
 
                 <!-- TASKS -->
-                <?php include "../partials/special/mytasks.php" ?>
+                <?php require_once(FILE_PATHS['Partials']['User']['Tasks']) ?>
             </div>
         </section>
     </section>
 
     <!-- ADD USER FORM POPUP -->
-    <?php include_once "../partials/admin/modal_addUser.php" ?>
+    <?php require_once(FILE_PATHS['Partials']['HighLevel']['Modals']['User']['Add']) ?>
 
     <!-- FOOTER -->
-    <?php include_once "../partials/admin/footer.php" ?>
+    <?php require_once(FILE_PATHS['Partials']['User']['Footer']) ?>
 </body>
 <script src="../../../src/assets/js/admin-main.js"></script>
 

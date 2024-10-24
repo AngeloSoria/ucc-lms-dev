@@ -1,7 +1,8 @@
 <?php
 // Adjust the path to the Course model based on your project structure
-include_once '../../../config/connection.php'; // Adjust the path accordingly
-include_once '../../../models/Course.php'; // Adjust the path accordingly
+
+require_once(__DIR__ . '/School_LMS_4/src/config/connection.php');
+require_once(__DIR__ . '/School_LMS_4/src/models/Course.php');
 
 class CourseController
 {

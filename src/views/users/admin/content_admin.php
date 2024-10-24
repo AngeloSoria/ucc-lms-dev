@@ -1,9 +1,7 @@
 <?php
-// ABSOLUTE ROOT_PATH
-include_once $_SERVER['DOCUMENT_ROOT'] . "/ucc-lms-dev/src/config/rootpath.php";
-
-require_once ROOT_PATH . 'src/config/connection.php'; // Include the database connection
-require_once ROOT_PATH . 'src/controllers/CarouselController.php'; // Include the Carousel controller
+require_once(__DIR__ . '../../../../config/PathsHandler.php');
+require_once(FILE_PATHS['DATABASE']);
+require_once(FILE_PATHS['Controllers']['Carousel']);
 
 $CURRENT_PAGE = "content";
 session_start(); // Start the session at the top of your file
@@ -27,6 +25,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         'file' => $_FILES['file'] // Handle the image upload
     ];
 
+
     // You can create a method in your CarouselController to handle the insert
     $addCarouselResult = $carouselController->addCarouselItem($carouselData);
 
@@ -44,6 +43,15 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     exit();
 }
 
+try {
+    // Fetch images from the database where view_type is 'home'
+    $stmt = $db->query("SELECT carousel_id, title, image, view_type FROM carousel WHERE view_type = 'home'");
+    $images = $stmt->fetchAll(PDO::FETCH_ASSOC); // Fetch all results
+} catch (PDOException $e) {
+    echo '<div class="alert alert-danger">Database query failed: ' . htmlspecialchars($e->getMessage()) . '</div>';
+    $images = []; // Set to empty if query fails
+}
+
 // Optional: Fetch all carousel items to display them
 $carouselItems = $carouselController->getAllCarouselItems(); // Fetch all carousel items
 
@@ -51,14 +59,14 @@ $carouselItems = $carouselController->getAllCarouselItems(); // Fetch all carous
 
 <!DOCTYPE html>
 <html lang="en">
-<?php include_once "../../partials/head.php" ?>
+<?php require_once(FILE_PATHS['Partials']['User']['Head']) ?>
 
 <body class="">
-    <?php include_once '../navbar.php' ?>
+    <?php require_once(FILE_PATHS['Partials']['User']['Navbar']) ?>
 
     <section class="d-flex justify-content-between gap-2 box-sizing-border-box m-0 p-0">
         <!-- SIDEBAR -->
-        <?php include_once '../sidebar.php' ?>
+        <?php require_once(FILE_PATHS['Partials']['User']['Sidebar']) ?>
 
         <!-- content here -->
         <section class="row min-vh-100 w-100 m-0 p-2 d-flex justify-content-end align-items-start" id="contentSection">
@@ -78,36 +86,31 @@ $carouselItems = $carouselController->getAllCarouselItems(); // Fetch all carous
                         <!-- Home Tab Section -->
                         <div class="tab-pane fade show active" id="home" role="tabpanel" aria-labelledby="home-tab">
                             <h4 class="mb-3">Homepage Carousel <i class="text-danger" style="font-size: 0.85rem; font-weight: normal;">(Max item: 4)</i></h4>
-                            <?php include_once "../../../../src/views/partials/admin/sortable_homeCarousel.php" ?>
+                            <?php require_once(FILE_PATHS['Partials']['HighLevel']['Sortable']['Carousel']['Home']) ?>
                         </div>
 
                         <!-- User Content Tab Section -->
                         <div class="tab-pane fade" id="user-content" role="tabpanel" aria-labelledby="user-content-tab">
                             <h4 class="mb-3">User Content Section</h4>
-                            <!-- Add your user content here -->
                             <p>This is the User Content section. You can display relevant content for users here.</p>
                         </div>
                     </section>
                 </div>
 
-
             </div>
             <div class="col bg-transparent d-flex flex-column justify-content-start align-items-center gap-2 px-1 box-sizing-border-box" id="widgetPanel">
-                <!-- Second column spans both rows -->
-
                 <!-- CALENDAR -->
-                <?php include "../../partials/special/mycalendar.php" ?>
+                <?php require_once(FILE_PATHS['Partials']['User']['Calendar']) ?>
 
                 <!-- TASKS -->
-                <?php include "../../partials/special/mytasks.php" ?>
+                <?php require_once(FILE_PATHS['Partials']['User']['Tasks']) ?>
             </div>
         </section>
-
 
     </section>
 
     <!-- FOOTER -->
-    <?php include_once "../../partials/footer.php" ?>
+    <?php require_once(FILE_PATHS['Partials']['User']['Footer']) ?>
 </body>
 <script src="../../../../src/assets/js/admin-main.js"></script>
 

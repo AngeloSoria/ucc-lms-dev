@@ -1,10 +1,7 @@
 <?php
-// src/views/admin/users_admin.php
-include_once "../../../config/rootpath.php";
-include_once "../../../config/connection.php";
-include_once "../../../models/User.php";
-include_once "../../../controllers/UserController.php";
-include_once "../../../views/partials/public/alert_Toast.php";
+require_once(__DIR__ . '../../../../config/PathsHandler.php');
+require_once(FILE_PATHS['DATABASE']);
+require_once(FILE_PATHS['Controllers']['User']);
 
 session_start();
 
@@ -57,14 +54,14 @@ if (isset($_SESSION['addUserResult'])) {
 
 <!DOCTYPE html>
 <html lang="en">
-<?php include_once "../../partials/head.php" ?>
+<?php require_once(FILE_PATHS['Partials']['User']['Head']) ?>
 
 <body>
-    <?php include_once '../../users/navbar.php' ?>
+    <?php require_once(FILE_PATHS['Partials']['User']['Navbar']) ?>
 
     <section class="d-flex justify-content-between gap-2 box-sizing-border-box m-0 p-0">
         <!-- SIDEBAR -->
-        <?php include_once '../../users/sidebar.php' ?>
+        <?php require_once(FILE_PATHS['Partials']['User']['Sidebar']) ?>
 
         <!-- content here -->
         <section class="row min-vh-100 w-100 m-0 p-1 d-flex justify-content-end align-items-start" id="contentSection">
@@ -214,19 +211,19 @@ if (isset($_SESSION['addUserResult'])) {
             </div>
             <div class="col bg-transparent d-flex flex-column justify-content-start align-items-center gap-2 px-1 box-sizing-border-box" id="widgetPanel">
                 <!-- CALENDAR -->
-                <?php include "../../partials/special/mycalendar.php" ?>
+                <?php require_once(FILE_PATHS['Partials']['User']['Calendar']) ?>
 
                 <!-- TASKS -->
-                <?php include "../../partials/special/mytasks.php" ?>
+                <?php require_once(FILE_PATHS['Partials']['User']['Tasks']) ?>
             </div>
         </section>
     </section>
 
     <!-- ADD USER FORM POPUP -->
-    <?php include_once "../../partials/admin/modal_addUser.php" ?>
+    <?php require_once(FILE_PATHS['Partials']['HighLevel']['Modals']['User']['Add']) ?>
 
     <!-- FOOTER -->
-    <?php include_once "../../partials/footer.php" ?>
+    <?php require_once(FILE_PATHS['Partials']['User']['Footer']) ?>
 </body>
 <script src="../../../../src/assets/js/admin-main.js"></script>
 

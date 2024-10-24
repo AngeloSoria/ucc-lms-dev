@@ -1,6 +1,4 @@
 <?php
-// src/config/connection.php
-
 class Database
 {
     private $pdo;
@@ -12,7 +10,7 @@ class Database
         $user = 'root';
         $pass = '';
         $port = 3306;
-        
+
         $dsn = "mysql:host=$host;port=$port;dbname=$db;charset=utf8mb4";
         try {
             $this->pdo = new PDO($dsn, $user, $pass);

@@ -1,8 +1,8 @@
 <nav class="bg-light shadow-sm z-1 p-2">
     <div class="nav-container bg-transparent m-auto px-5 w-75 d-flex justify-content-between">
         <!-- Logo on the left -->
-        <a class="navbar-brand" href="<?php echo $_ROOT_PATH ?>">
-            <img src="src/assets/images/icons/ucc-logo.png" alt="Logo" width="110" class="d-inline-block align-text-top" />
+        <a class="navbar-brand" href="<?php echo BASE_PATH; ?>"> <!-- This will take you to the base URL -->
+            <img src="src/assets/images/icons/Secondary-Logo-2.png" alt="Logo" width="110" class="d-inline-block align-text-top" />
         </a>
 
         <!-- Small screen button -->
@@ -36,18 +36,18 @@
         <button class="fs-3 border-0 bg-transparent text-dark" id="btnCloseNavSideBarMobile">
             <i class="bi bi-x-lg"></i>
         </button>
-    </div>    
+    </div>
 
     <div class="bg-light w-100 px-3 d-flex flex-column align-items-center justify-content-center gap-2 mt-3">
-        <img width="200" src="src/assets/images/icons/ucc-logo.png" alt="ucc logo">
+        <img width="200" src="src/assets/images/icons/Secondary-Logo-2.png" alt="ucc logo">
         <p class="fs-5 text-center mt-3">Learning Management System</p>
     </div>
     <hr>
     <br>
     <br>
     <div class="w-100 px-3 bg-transparent d-flex justify-content-center align-items-center flex-column py-2 gap-3 mb-3">
-        <button 
-            class="w-100 border-0 p-2 fs-2 btn btn-primary btn-lg custom_btn_login" 
+        <button
+            class="w-100 border-0 p-2 fs-2 btn btn-primary btn-lg custom_btn_login"
             type="button"
             data-bs-toggle="modal"
             data-bs-target="#modal_LoginForm">

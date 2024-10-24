@@ -1,8 +1,8 @@
 <?php
 session_start();
-require_once '../../../../src/config/connection.php'; // Include the controller
-include_once "../../../../src/config/rootpath.php";
-require_once '../../../../src/controllers/CourseController.php'; // Database connection
+include_once(__DIR__ . '/School_LMS_4/src/config/rootpath.php');
+require_once(__DIR__ . '/School_LMS_4/src/config/connection.php');
+require_once(__DIR__ . '/School_LMS_4/src/controllers/CourseController.php');
 
 $database = new Database();
 $db = $database->getConnection(); // Establish the database connection
@@ -15,14 +15,14 @@ $CURRENT_PAGE = "courses";
 
 <!DOCTYPE html>
 <html lang="en">
-<?php include_once "../../partials/head.php" ?>
+<?php require_once(FILE_PATHS['Partials']['User']['Head']) ?>
 
 <body>
-    <?php include_once '../../users/navbar.php' ?>
+    <?php require_once(FILE_PATHS['Partials']['User']['Navbar']) ?>
 
     <section class="d-flex justify-content-between gap-2 box-sizing-border-box m-0 p-0">
         <!-- SIDEBAR -->
-        <?php include_once '../../users/sidebar.php' ?>
+        <?php require_once(FILE_PATHS['Partials']['User']['Sidebar']) ?>
 
         <!-- content here -->
         <section class="row min-vh-100 w-100 m-0 p-1 d-flex justify-content-end align-items-start" id="contentSection">
@@ -67,7 +67,7 @@ $CURRENT_PAGE = "courses";
                                     // Convert BLOB to Base64
                                     $base64Image = base64_encode($course['course_image']);
                                     ?>
-                                    <div class="card-preview rounded position-relative w-100 bg-success d-flex overflow-hidden justify-content-center align-items-center" style="min-height: 200px; max-height: 200px;">
+                                    <div class="card-preview position-relative w-100 bg-success d-flex overflow-hidden justify-content-center align-items-center" style="min-height: 200px; max-height: 200px;">
                                         <img src="data:image/jpeg;base64,<?php echo $base64Image; ?>" class="rounded card-img-top img-course position-absolute top-50 start-50 translate-middle object-fit-fill" alt="<?php echo htmlspecialchars($course['course_name']); ?>">
                                     </div>
                                     <div class="card-body p-2">
@@ -179,9 +179,9 @@ $CURRENT_PAGE = "courses";
             </div>
             <div class="col bg-transparent d-flex flex-column justify-content-start align-items-center gap-2 px-1 box-sizing-border-box" id="widgetPanel">
                 <!-- CALENDAR -->
-                <?php include "../../partials/special/mycalendar.php" ?>
+                <?php require_once(FILE_PATHS['Partials']['User']['Calendar']) ?>
                 <!-- TASKS -->
-                <?php include "../../partials/special/mytasks.php" ?>
+                <?php require_once(FILE_PATHS['Partials']['User']['Tasks']) ?>
             </div>
         </section>
     </section>
@@ -189,7 +189,7 @@ $CURRENT_PAGE = "courses";
     <?php include_once "../../partials/admin/modal_addCourse.php" ?>
 
     <!-- FOOTER -->
-    <?php include_once "../../partials/footer.php" ?>
+    <?php require_once(FILE_PATHS['Partials']['User']['Footer']) ?>
 </body>
 <script src="../../../../src/assets/js/admin-main.js"></script>
 

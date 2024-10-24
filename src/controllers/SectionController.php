@@ -1,7 +1,7 @@
 <?php
-// Adjust the path to the Section model based on your project structure
-include_once '../../../config/connection.php'; // Adjust the path accordingly
-include_once '../../../models/Section.php'; // Adjust the path accordingly
+require_once(__DIR__ . '../../../src/config/PathsHandler.php');
+require_once(FILE_PATHS['DATABASE']);
+require_once(FILE_PATHS['Models']['Section']);
 
 class SectionController
 {
