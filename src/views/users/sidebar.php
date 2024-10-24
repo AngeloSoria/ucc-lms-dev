@@ -1,5 +1,5 @@
 <?php
-    include_once "../../partials/special/sidebar-data.php";
+    include_once "../../partials/special/sidebardata.php";
 ?>
 <div class="sidebar bg-light shadow-sm py-1 border z-2" id="sidebarMenu">
     <ul class="p-0 ul_no-design">
@@ -7,7 +7,7 @@
         // Role based sidebar
         if (isset($_SESSION['role'])) {
             $role = $_SESSION['role']; // Get the role from the session
-            echo '<script>console.log("'. $role .'")</script>';
+
             if (isset($sidebar_content[$role])) {
                 // Loop through the sidebar content for the current role
                 foreach ($sidebar_content[$role] as $key => $item) {

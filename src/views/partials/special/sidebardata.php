@@ -3,6 +3,8 @@
 // SIDEBAR CONTENTS
 /*
 
+    sidebar_id can be used to specify the current active page so that the sidebar-item is highlighted as the active page.    
+
     '<role>' => [
         '<sidebar_id>' => [
             'title' => '<visual_text>',
