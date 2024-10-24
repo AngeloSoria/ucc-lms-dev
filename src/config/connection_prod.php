@@ -1,10 +1,20 @@
 <?php
+require_once(__DIR__ . "PathsHandler.php");
+require_once(__DIR__. '../../../vendor/autoload.php');
+
+use Dotenv\Dotenv;
+
 class Database
 {
     private $pdo;
 
     public function __construct()
     {
+        $dotenv = Dotenv::createImmutable(__DIR__);
+        $dotenv->load();
+
+        echo '<script>console.log('. getenv('DB_NAME') .')</script>';
+
         $host = '127.0.0.1';
         $db   = 'u661545712_ucc_db';
         $user = 'u661545712_root';

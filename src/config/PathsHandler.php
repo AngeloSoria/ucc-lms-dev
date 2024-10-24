@@ -1,6 +1,11 @@
 <?php
 
-define('BASE_PATH', '/School_LMS_4/');
+
+define('BASE_PATH', __DIR__ . '../../../');
+
+// Load environment variables from .env file
+define('AUTO_LOAD', BASE_PATH . 'vendor/autoload.php');
+
 
 define('UPLOAD_PATH', [
     'System' => __DIR__ . '../../../src/uploads/system',
