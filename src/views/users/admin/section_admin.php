@@ -137,9 +137,9 @@ try {
                                 <div class="card-preview position-relative w-100 bg-success d-flex overflow-hidden justify-content-center align-items-center" style="min-height: 200px; max-height: 200px;">
                                     <?php if ($base64Image): ?>
                                         <img src="<?php echo $base64Image; ?>" class="rounded card-img-top img-section position-absolute top-50 start-50 translate-middle object-fit-fill" alt="<?php echo htmlspecialchars($section['section_name']); ?>">
-                                        <?php else: ?>
-                                            <img src="<?php echo UPLOAD_PATH['System'] . '/img/no-image-found.jpg'; ?>" class="rounded card-img-top img-section position-absolute top-50 start-50 translate-middle object-fit-fill" alt="No Image Available">
-                                            <!-- <div class="text-center text-muted">No image available</div> -->
+                                    <?php else: ?>
+                                        <img src="<?php echo UPLOAD_PATH['System'] . '/img/no-image-found.jpg'; ?>" class="rounded card-img-top img-section position-absolute top-50 start-50 translate-middle object-fit-fill" alt="No Image Available">
+                                        <!-- <div class="text-center text-muted">No image available</div> -->
                                     <?php endif; ?>
                                 </div>
                                 <div class="card-body p-2">

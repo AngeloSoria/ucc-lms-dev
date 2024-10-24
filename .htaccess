@@ -23,4 +23,8 @@ RewriteCond %{REQUEST_FILENAME} !-f
 RewriteCond %{REQUEST_FILENAME} !-d
 RewriteRule ^error/404$ src/views/404.php [L]  # Ensure the error page exists
 
-
+# Deny access to.env file to prevent sensitive data exposure.
+<Files .env>
+    Order allow,deny
+    Deny from all
+</Files>
