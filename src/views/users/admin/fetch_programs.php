@@ -1,5 +1,6 @@
 <?php
-require_once(__DIR__ . '/School_LMS_4/src/config/connection.php');
+require_once(__DIR__ . '../../config/PathsHandler.php');
+require_once(FILE_PATHS['DATABASE']);
 
 if (isset($_POST['educational_level'])) {
     $level = $_POST['educational_level'];

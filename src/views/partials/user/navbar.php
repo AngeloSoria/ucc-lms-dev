@@ -1,15 +1,3 @@
-<?php
-if (session_status() === PHP_SESSION_NONE) {
-    session_start();
-}
-
-// If session is not set, redirect to login
-if (!isset($_SESSION['user_id'])) {
-    header("Location: /School_LMS_4/");
-    exit();
-}
-?>
-
 <nav class="navbar navbar-expand-lg navbar-light bg-light shadow-sm border-5 border-bottom border-success">
     <div class="container-fluid px-5 d-flex align-items-center" style="width: 95%">
 
@@ -37,11 +25,11 @@ if (!isset($_SESSION['user_id'])) {
                                                         echo 'dashboard_student.php'; // Change to your student dashboard path
                                                         break;
                                                     default:
-                                                        echo ROOT_PATH; // Fallback to home if role is unknown
+                                                        header('Location: ' . BASE_PATH_LINK); // Fallback to home if role is unknown
                                                         break;
                                                 }
                                             } else {
-                                                echo ROOT_PATH; // Redirect to home if no role is set
+                                                header('Location: ' . BASE_PATH_LINK); // Redirect to home if no role is set
                                             }
                                             ?>">
                 <img src="../../../assets/images/icons/Secondary-Logo-2.png" alt="Logo" width="90" class="d-inline-block align-text-top" />

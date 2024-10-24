@@ -1,5 +1,6 @@
 <?php
-require(__DIR__ . '/School_LMS_4/src/config/connection.php');
+require_once(__DIR__ . '../../config/PathsHandler.php');
+require_once(FILE_PATHS['DATABASE']);
 
 header('Content-Type: application/json');
 

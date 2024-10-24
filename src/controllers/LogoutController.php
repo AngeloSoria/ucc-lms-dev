@@ -11,7 +11,7 @@ class LogoutController
         session_destroy();
 
         // Redirect to login page
-        header("Location: /School_LMS_4/");
+        header("Location: " . BASE_PATH_LINK);
         exit();
     }
 }
