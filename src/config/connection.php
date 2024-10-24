@@ -1,7 +1,7 @@
 <?php
 
 require_once(__DIR__ . "/PathsHandler.php");
-require_once(AUTO_LOAD);
+require_once(VENDOR_AUTO_LOAD);
 
 use Dotenv\Dotenv;
 
