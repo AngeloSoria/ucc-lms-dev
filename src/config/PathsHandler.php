@@ -40,6 +40,9 @@ define('FILE_PATHS', [
     'Partials' => [
         'System' => [
             'Toast' => __DIR__. '../../views/partials/public/alert_Toast.php',
+            'Catalog' => [
+                'Card' => __DIR__. '../../views/partials/public/catalog_view/card.php',
+            ],
         ],
         'User' => [
             'Head' => __DIR__. '../../views/partials/user/head.php',
