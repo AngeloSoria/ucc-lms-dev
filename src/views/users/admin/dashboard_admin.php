@@ -8,8 +8,10 @@ $role = $_SESSION['role'];
 
 // If session is not set, redirect to login
 if (!isset($_SESSION['user_id'])) {
+    header('Location: ' . BASE_PATH);
     exit();
 }
+
 $CURRENT_PAGE = "dashboard";
 
 ?>

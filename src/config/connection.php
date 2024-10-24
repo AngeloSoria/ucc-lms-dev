@@ -1,6 +1,6 @@
 <?php
 
-require __DIR__ . "/PathsHandler.php";
+require_once(__DIR__ . "/PathsHandler.php");
 require_once(AUTO_LOAD);
 
 use Dotenv\Dotenv;

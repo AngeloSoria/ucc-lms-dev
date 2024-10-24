@@ -2,6 +2,8 @@
 
 
 define('BASE_PATH', __DIR__ . '../../../');
+define('BASE_PATH_LINK','/ucc-lms-dev/');
+
 
 // Load environment variables from .env file
 define('AUTO_LOAD', BASE_PATH . 'vendor/autoload.php');

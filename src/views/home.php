@@ -1,8 +1,9 @@
 <?php
 session_start();
-include_once '../config/connection.php';
-include_once '../config/rootpath.php';
-include '../controllers/LoginController.php';
+
+require_once(__DIR__ . '../../config/PathsHandler.php');
+require_once(FILE_PATHS['DATABASE']);
+require_once(FILE_PATHS['Controllers']['Login']);
 
 $loginController = new LoginController();
 $_isInvalidCredentials = false; // Variable to check if login failed
@@ -29,7 +30,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <!DOCTYPE html>
 <html lang="en">
 
-<?php include "partials/home_header.php"; ?>
+<?php include "partials/public/home_header.php"; ?>
 
 <body data-bs-theme="light">
     <!-- Navbar -->
@@ -103,8 +104,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <!-- LOGIN FORM (Popup) -->
     <?php include "partials/public/modal_formLogin.php" ?>
 
-    <?php include "partials/home_footer.php"; ?>
-    <!-- <script src="src/assets/js/login.js"></script> -->
+    <?php include "partials/public/home_footer.php"; ?>
+
     <script src="src/assets/js/landingPage_Manager.js"></script>
 
     <?php if ($_isInvalidCredentials) { ?>

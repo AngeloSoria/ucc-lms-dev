@@ -1,7 +1,7 @@
 <nav class="bg-light shadow-sm z-1 p-2">
     <div class="nav-container bg-transparent m-auto px-5 w-75 d-flex justify-content-between">
         <!-- Logo on the left -->
-        <a class="navbar-brand" href="<?php echo BASE_PATH; ?>"> <!-- This will take you to the base URL -->
+        <a class="navbar-brand" href="<?php echo BASE_PATH_LINK; ?>"> <!-- This will take you to the base URL -->
             <img src="src/assets/images/icons/Secondary-Logo-2.png" alt="Logo" width="110" class="d-inline-block align-text-top" />
         </a>
 

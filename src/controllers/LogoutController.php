@@ -1,6 +1,7 @@
 <?php
-session_start();
+require_once(__DIR__ . '../../config/PathsHandler.php');
 
+session_start();
 class LogoutController
 {
     public function logout()

@@ -5,7 +5,7 @@ if (session_status() === PHP_SESSION_NONE) {
 
 // If session is not set, redirect to login
 if (!isset($_SESSION['user_id'])) {
-    header("Location: ");
+    header("Location: " . BASE_PATH);
     exit();
 }
 ?>
