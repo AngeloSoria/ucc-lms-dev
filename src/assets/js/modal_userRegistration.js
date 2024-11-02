@@ -7,6 +7,8 @@ document.addEventListener("DOMContentLoaded", function () {
   const usernameInput = document.getElementById("username");
   const passwordInput = document.getElementById("password");
   const userForm = document.getElementById("userForm");
+  const container_RoleType = document.getElementById("role_type_container");
+  const dropdown_RoleType = document.getElementById("role_type");
 
   // Function to generate username and password
   function generateCredentials() {
@@ -44,5 +46,48 @@ document.addEventListener("DOMContentLoaded", function () {
     userForm.reset();
     usernameInput.value = ""; // Clear generated username field
     passwordInput.value = ""; // Clear generated password field
+    container_RoleType.classList.add("d-none");
+  });
+
+
+  // Function to add role type options to dropdown.
+  function addRoleTypeOption(optionsArray) {
+    for (let index = 0; index < optionsArray.length; index++) {
+      const option = document.createElement("option");
+      option.value = optionsArray[index];
+      option.textContent = optionsArray[index];
+      dropdown_RoleType.appendChild(option);
+    }
+  }
+
+  // Clear role type options except the disabled option.
+  function clearRoleTypeOptions() {
+    Array.from(dropdown_RoleType.options).forEach(function(option) {
+      if(!option.hasAttribute("disabled")) {
+        dropdown_RoleType.removeChild(option);
+      }
+    });
+  }
+
+  // Event Listener for Role onselect dropdown.
+  const roleSelect = document.getElementById("role");
+  roleSelect.addEventListener("change", function() {
+    const selectedRole = roleSelect.value;
+    clearRoleTypeOptions();
+    switch (selectedRole) {
+      case "Teacher":
+        container_RoleType.classList.remove("d-none");
+        // Add options to role_type dropdown
+        addRoleTypeOption(["SHS", "College"]);
+        break;
+      case "Student":
+        container_RoleType.classList.remove("d-none");
+        // Add options to role_type dropdown
+        addRoleTypeOption(["SHS", "College"]);
+        break;
+      default:
+        container_RoleType.classList.add("d-none");
+        break;
+    }
   });
 });

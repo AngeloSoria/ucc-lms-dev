@@ -120,5 +120,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <?php } ?>
 </body>
 <script src="src/assets/js/home-main.js"></script>
+<script src="src/assets/js/root.js"></script>
 
 </html>

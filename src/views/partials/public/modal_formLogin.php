@@ -33,13 +33,10 @@
 
                     <div class="mb-3">
                         <label for="password" class="form-label">Password:</label>
-                        <input
-                            type="password"
-                            class="form-control px-3 py-2"
-                            id="password"
-                            name="password"
-                            placeholder="Enter your password"
-                            required />
+                        <div class="position-relative" id="inputPasswordContainer">
+                            <input type="password" class="form-control px-3 py-2" name="password" id="password" placeholder="Enter your password" required>
+                            <i class="bi bi-eye-slash-fill me-3 fs-5 position-absolute top-50 end-0 translate-middle-y" id="togglePassword" role="button" onclick="togglePasswordInputText(this);"></i>
+                        </div>
                     </div>
 
                     <div class="mb-3">

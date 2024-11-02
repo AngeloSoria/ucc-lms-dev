@@ -38,6 +38,15 @@
                                     <option value="Teacher">Teacher</option>
                                 </select>
                             </div>
+
+                            <div class="flex-grow-1 d-none" id="role_type_container">
+                                <label for="role_type" class="form-label">Role Type</label>
+                                <select class="form-select" id="role_type" name="role_type" required>
+                                    <option value="" disabled selected>Select Role Type</option>
+                                    <!-- <option value="SHS">SHS</option>
+                                    <option value="College">College</option> -->
+                                </select>
+                            </div>
                         </div>
 
                         <div class="mb-3 d-flex gap-2">

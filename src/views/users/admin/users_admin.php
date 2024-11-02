@@ -229,15 +229,15 @@ if (isset($_SESSION['addUserResult'])) {
 
 <script>
     //DOM Content loaded
-    document.addEventListener('DOMContentLoaded', function() {
-        <?php
-        if ($addUserResult === true) {
-            echo 'showToast("default", "User created", "User successfully added.");';
-        } else {
-            echo 'showToast("danger", "Something went wrong","' . $addUserResult . '");';
-        }
-        ?>
-    });
+    // document.addEventListener('DOMContentLoaded', function() {
+    //     <?php
+    //     if ($addUserResult === true) {
+    //         echo 'showToast("default", "User created", "User successfully added.");';
+    //     } else {
+    //         echo 'showToast("danger", "Something went wrong","' . $addUserResult . '");';
+    //     }s
+    //     ?>
+    // });
 </script>
 
 </html>
