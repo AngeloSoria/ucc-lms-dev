@@ -67,6 +67,7 @@ define('FILE_PATHS', [
             'Tasks' => __DIR__ . '../../views/partials/user/mytasks.php',
             'Announcements' => __DIR__ . '../../views/partials/user/announcements.php',
             'WidgetPanel' => __DIR__ . '../../views/partials/user/widgetpanel.php',
+            'Courses' => __DIR__ . '../../views/partials/user/mycourses.php',
         ],
         'HighLevel' => [
             'LiveCount' => __DIR__ . '../../views/partials/high-level/livecount.php',
@@ -146,4 +147,4 @@ function asset($path)
     return BASE_PATH_LINK . 'src/assets/' . ltrim($path, '/');
 }
 
-function asset_partials($path) {}
+function route($path) {}

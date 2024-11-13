@@ -35,6 +35,9 @@ $userController = new UserController($db);
                 <div class="d-flex flex-column gap-2 flex-grow-1">
                     <!-- CAROUSEL -->
                     <?php require_once(FILE_PATHS['Partials']['User']['Carousel']) ?>
+
+                    <!-- COURSES -->
+                    <?php require_once(FILE_PATHS['Partials']['User']['Courses']) ?>
                 </div>
             </div>
             <!-- Load Widget Panel -->

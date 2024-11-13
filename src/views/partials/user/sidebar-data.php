@@ -98,38 +98,28 @@ $sidebar_content = [
         'dashboard' => [
             'title' => 'Overview',
             'icon' => 'bi-columns-gap',
-            'link' => 'dashboard_admin.php',
+            'link' => 'dashboard_student.php',
         ],
         // 'enrolled-subjectss' => [
         //     'title' => 'Enrolled Subjects',
         //     'icon' => 'bi-file-earmark-text',
         //     'link' => 'enrolled_subjects.php',
         // ],
-        'courses' => [
-            'title' => 'Courses',
+        'subjects' => [
+            'title' => 'Subjects',
             'icon' => 'bi-journals',
             'isGroup' => true,
             'sublinks' => [
-                'subject1' => [
-                    'title' => 'Data Structures and Algorithms',
-                    'icon' => 'bi-journal-text',
-                    'link' => 'academic_calendar_admin.php',
-                ],
-                'content' => [
-                    'title' => 'Entrepreneural Mind III',
-                    'icon' => 'bi-journal-text',
-                    'link' => 'content_admin.php',
-                ],
-                'general-logs' => [
-                    'title' => 'The Longest Subject Name There is Nice LOL',
-                    'icon' => 'bi-journal-text',
-                    'link' => 'general_logs_admin.php',
+                'enrolled-subjects' => [
+                    'title' => 'Enrolled Subjects',
+                    'icon' => 'bi-bookshelf',
+                    'link' => 'enrolled_subjects.php',
                 ],
             ],
         ],
         'misc' => [
             'title' => 'Miscellaneous',
-            'icon' => 'bi-gear-fill',
+            'icon' => 'bi-bar-chart-steps',
             'isGroup' => true,
             'sublinks' => [
                 'content' => [

@@ -31,6 +31,5 @@ document.addEventListener("DOMContentLoaded", function () {
 
         // You can uncomment the following line to proceed with form submission
         // loginForm.submit();
-        alert("Form submitted!");  // Placeholder
     });
 });
