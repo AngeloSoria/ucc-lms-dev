@@ -52,8 +52,6 @@ $latestUserId = $userController->getLatestUserId();
                                 <label for="educational_level" class="form-label">Educational level</label>
                                 <select class="form-select" id="educational_level" name="educational_level">
                                     <option value="" disabled selected>Select educational level</option>
-                                    <!-- <option value="SHS">SHS</option>
-                                    <option value="College">College</option> -->
                                 </select>
                             </div>
                         </div>
@@ -142,12 +140,12 @@ $latestUserId = $userController->getLatestUserId();
 
 <script>
     // JavaScript for dynamic role type requirement
-    document.addEventListener('DOMContentLoaded', function () {
+    document.addEventListener('DOMContentLoaded', function() {
         const roleSelect = document.getElementById('role');
         const roleTypeContainer = document.getElementById('role_type_container');
         const teacherTypeSelect = document.getElementById('educational_level');
 
-        roleSelect.addEventListener('change', function () {
+        roleSelect.addEventListener('change', function() {
             if (roleSelect.value === 'Teacher') {
                 roleTypeContainer.classList.remove('d-none'); // Show the Role Type container
                 teacherTypeSelect.required = true; // Make Role Type required
