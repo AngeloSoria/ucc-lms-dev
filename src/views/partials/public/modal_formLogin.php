@@ -53,3 +53,4 @@
         </div>
     </div>
 </div>
+<script src="<?php echo asset('js/save_cookie_rememberme.js'); ?>"></script>

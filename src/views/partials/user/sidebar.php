@@ -1,6 +1,51 @@
 <?php
 include_once(FILE_PATHS['Partials']['User']['SideBarData']);
 $user_sidebar_data = $sidebar_content[$_SESSION['role']];
+
+// Get All Enrolled Subjects from User (Teacher, Student)
+$fakedata_enrolled_subjects = [
+    [
+        'subject_id' => 3001,
+        'subject_code' => 'ITMA1223',
+        'subject_name' => 'Data Structures & Algorithms',
+    ],
+    [
+        'subject_id' => 3002,
+        'subject_code' => 'PHYS4412',
+        'subject_name' => 'Physical Education 2',
+    ],
+    [
+        'subject_id' => 3003,
+        'subject_code' => 'LERP1337',
+        'subject_name' => 'Information Assurance and Security (Data Privacy)',
+    ],
+    [
+        'subject_id' => 3004,
+        'subject_code' => 'MATH1124',
+        'subject_name' => 'Calculus II',
+    ],
+    [
+        'subject_id' => 3005,
+        'subject_code' => 'CHEM2011',
+        'subject_name' => 'Organic Chemistry',
+    ],
+    [
+        'subject_id' => 3006,
+        'subject_code' => 'HIST3010',
+        'subject_name' => 'World History',
+    ],
+    [
+        'subject_id' => 3007,
+        'subject_code' => 'PSYC2210',
+        'subject_name' => 'Introduction to Psychology',
+    ],
+    [
+        'subject_id' => 3008,
+        'subject_code' => 'CSCI1101',
+        'subject_name' => 'Introduction to Computer Science',
+    ],
+];
+
 ?>
 
 <div class="sidebar bg-light shadow-sm py-1 border z-2" id="sidebarMenu">
@@ -21,11 +66,10 @@ $user_sidebar_data = $sidebar_content[$_SESSION['role']];
                             <?= htmlspecialchars($single_user['title']) ?>
                         </div>
                         <div class="dropdownIcon">
-                            <i class="icon bi bi-chevron-left fs-6 ms-auto fw-medium"></i>
+                            <i class="icon bi bi-chevron-left fs-6 ms-auto fw-medium <?= in_array($CURRENT_PAGE, array_keys($single_user['sublinks'])) ? 'rotate' : '' ?>"></i>
                         </div>
                     </a>
-                    <div
-                        class="submenu submenu-content transition-1 <?= in_array($CURRENT_PAGE, array_keys($single_user['sublinks'])) ? 'submenu-active' : '' ?>">
+                    <div class="submenu submenu-content transition-1 <?= in_array($CURRENT_PAGE, array_keys($single_user['sublinks'])) ? 'submenu-active' : '' ?>">
                         <ul class="ul_no-design">
                             <?php foreach ($single_user['sublinks'] as $sublinks => $sublink): ?>
                                 <li>
@@ -38,6 +82,26 @@ $user_sidebar_data = $sidebar_content[$_SESSION['role']];
                                     </a>
                                 </li>
                             <?php endforeach; ?>
+                            <hr class="p-0 m-0">
+                            <?php
+                            // load enrolled subjects.
+                            $RETRIEVED_ENROLLED_SUBJECTS = $fakedata_enrolled_subjects;
+                            if ($single_user['title'] === 'Subjects'):
+                                foreach ($RETRIEVED_ENROLLED_SUBJECTS as $subject):
+                            ?>
+                                    <li>
+                                        <a href="<?= "enrolled_subjects.php?subject_id=" . $subject['subject_id'] ?>"
+                                            class="d-flex gap-3 py-3 pe-2 submenu-item" style="padding-left: 2rem;">
+                                            <i class="bi bi-journal-text"></i>
+                                            <span class="submenu-item-text">
+                                                <?= htmlspecialchars($subject['subject_name']) ?>
+                                            </span>
+                                        </a>
+                                    </li>
+                            <?php endforeach;
+                            endif; ?>
+
+
                         </ul>
                     </div>
                 </li>
