@@ -37,11 +37,19 @@ class LoginController
                     $_SESSION['profile_pic'] = asset('img/avatars/default-profile.png'); // path to default image
                 }
 
+                msgLog(
+                    'INFO',
+                    sprintf(
+                        "[%s] [%s] [%s] [%s]",
+                        "LOGIN",
+                        $_SESSION['user_id'],
+                        $_SESSION['username'],
+                        $_SESSION['role']
+                    ),
+                );
+
                 // Redirect based on role
                 switch ($user['role']) {
-                    case 'superadmin':
-                        header('Location: src/views/users/superadmin/dashboard_superadmin.php');
-                        break;
                     case 'Admin':
                         header('Location: src/views/users/admin/dashboard_admin.php');
                         break;
@@ -49,14 +57,14 @@ class LoginController
                         header('Location: src/views/users/level_coordinator/dashboard_level_coordinator.php');
                         break;
                     case 'Teacher':
-                        header('Location: src/views/users/teachers/dashboard_teacher.php');
+                        header('Location: src/views/users/teacher/dashboard_teacher.php');
                         break;
                     case 'Student':
-                        header('Location: src/views/users/students/dashboard_student.php');
+                        header('Location: src/views/users/student/dashboard_student.php');
                         break;
                     default:
-                        header('Location: src/views/home.php');
-                        break;
+                        msgLog('ERROR', 'Something went wrong when trying to identify the user role.');
+                        return false;
                 }
             } else {
                 return false;

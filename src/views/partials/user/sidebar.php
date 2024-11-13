@@ -30,9 +30,11 @@ $user_sidebar_data = $sidebar_content[$_SESSION['role']];
                             <?php foreach ($single_user['sublinks'] as $sublinks => $sublink): ?>
                                 <li>
                                     <a href="<?= isset($sublink['link']) ? $sublink['link'] : '#' ?>"
-                                        class="d-flex gap-3 ps-5 py-3 submenu-item <?= $CURRENT_PAGE == $sublinks ? 'active' : '' ?>">
+                                        class="d-flex gap-3 py-3 pe-2 submenu-item <?= $CURRENT_PAGE == $sublinks ? 'active' : '' ?>" style="padding-left: 2rem;">
                                         <i class="bi <?= htmlspecialchars($sublink['icon']) ?>"></i>
-                                        <?= htmlspecialchars($sublink['title']) ?>
+                                        <span class="submenu-item-text">
+                                            <?= htmlspecialchars($sublink['title']) ?>
+                                        </span>
                                     </a>
                                 </li>
                             <?php endforeach; ?>

@@ -16,6 +16,7 @@ $carouselController = new CarouselController($pdo); // Create an instance of the
 $_loginResult = isset($_SESSION['_loginResult']) ? $_SESSION['_loginResult'] : null; // Variable to check if login failed
 
 
+// CAROUSEL
 $stmt = $pdo->query("SELECT carousel_id, title, image_path, view_type FROM carousel WHERE view_type = 'home' AND is_selected = 1 ORDER BY created_at DESC LIMIT 4");
 $images = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
@@ -26,6 +27,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     $_loginResult = $_SESSION['_loginResult'];
     unset($_SESSION['_loginResult']);
+}
+// =================================
+
+// Will check if theres a session, so that a logged in users cant view this guest page.
+if (isset($_SESSION['user_id']) && isset($_SESSION['role'])) {
+    // Redirect to the dashboard
+    header('Location: ' . 'src/views/users/' . strtolower($_SESSION['role']) . '/dashboard_' . strtolower($_SESSION['role']) . '.php');
 }
 ?>
 
@@ -76,11 +84,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     </section>
 
     <!-- LOGIN FORM (Popup) -->
-    <?php include "../partials/public/modal_formLogin.php"; ?>
+    <?php require_once "../partials/public/modal_formLogin.php"; ?>
 
-    <?php include "../partials/public/home_footer.php"; ?>
-    <script src="src/assets/js/landingPage_Manager.js"></script>
+    <?php require_once "../partials/public/home_footer.php"; ?>
 </body>
+
 <?php
 if ($_loginResult === false) { ?>
     <script>
@@ -115,7 +123,8 @@ if ($_loginResult === false) { ?>
         loginModalElement.addEventListener('hidden.bs.modal', hideInvalidFeedback);
     </script>
 <?php } ?>
-<script src="src/assets/js/home-main.js"></script>
-<script src="src/assets/js/root.js"></script>
+<script src="<?php echo asset('js/landingPage_Manager.js') ?>"></script>
+<script src="<?php echo asset('js/home-main.js') ?>"></script>
+<script src="<?php echo asset('js/root.js') ?>"></script>
 
 </html>
