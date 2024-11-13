@@ -18,15 +18,15 @@ class Database
         switch ($_ENV['APP_ENV']) {
             case "local":
                 $host = "localhost";
-                $db   = "dev_ucc_db";
+                $db = "ucc_db_dev";
                 $user = "root";
                 $pass = "";
                 $port = 3306;
                 break;
             case "prod":
                 $host = $_ENV['DB_HOST'] or die('Missing DB_HOST environment variable');
-                $db   = $_ENV['DB_NAME'] or die('Missing DB_NAME environment variable');
-                $user = $_ENV['DB_USER'] or die('Missing DB_USER environment variable') ;
+                $db = $_ENV['DB_NAME'] or die('Missing DB_NAME environment variable');
+                $user = $_ENV['DB_USER'] or die('Missing DB_USER environment variable');
                 $pass = $_ENV['DB_PASS'] or die('Missing DB_PASSWORD environment variable');
                 $port = $_ENV['DB_PORT'] or die('Missing DB_PORT environment variable');
                 break;

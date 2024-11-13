@@ -1,0 +1,87 @@
+#widgetPanel {
+    background-color: transparent;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: flex-start;
+    gap: 0.5rem;
+    box-sizing: border-box;
+    padding-right: .25rem;
+    padding-left: .25rem;
+    flex: 1 0 0%;
+    
+    min-width: 220px;
+    max-width: 220px;
+    padding-top: 10px;
+    /* overflow-y: auto; */
+}
+
+.widget-card {
+    background-color: var(--surface-primary-color);
+    color: var(--text-color);
+    width: 100%;
+
+}
+
+
+#myCalendar table {
+    text-align: center;
+    table-layout: fixed;
+    border-collapse: collapse;
+    font-size: small;
+    margin-bottom: 2px;
+}
+#myCalendar table th, 
+#myCalendar table td {
+    width: 100%; /* Fixed width for each cell */
+    text-align: center; /* Center text horizontally */
+    vertical-align: middle; /* Center text vertically */
+    padding: 1.5px; /* Ensure no extra padding affects cell size */
+}
+/* Active Day */
+#myCalendar .active-day {
+    color: var(--c-brand-primary-a0);
+    font-weight: bold;
+    position: relative;
+}
+#myCalendar .active-day::before {
+    content: "";
+    position: absolute;
+    width: 1.5rem;
+    height: 1.5rem;
+    top: 0;
+    left: 50%;
+    transform: translateX(-50%);
+
+    background-color: transparent;
+    border-radius: 100%;
+    border: 2px solid var(--c-brand-primary-a0);
+}
+
+@media only screen and (max-width: 768px) {
+    #widgetPanel {
+        min-width: 100%;
+        flex-direction: row;
+        justify-content: space-between;
+        flex-wrap: wrap;
+    }
+
+    .widget-card {
+        max-width: 49%;
+        min-height: 200px;
+    }
+}
+
+@media only screen and (max-width: 425px) {
+    #widgetPanel {
+        min-width: 100%;
+        flex-direction: column;
+        justify-content: space-between;
+        flex-wrap: wrap;
+    }
+
+    .widget-card {
+        max-width: 100%;
+        min-height: 200px;
+    }
+}

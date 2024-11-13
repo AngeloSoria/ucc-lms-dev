@@ -1,51 +1,40 @@
 <?php
+session_start();
+$CURRENT_PAGE = "programs";
+
 require_once(__DIR__ . '../../../../config/PathsHandler.php');
 require_once(FILE_PATHS['DATABASE']);
 require_once(FILE_PATHS['Controllers']['Program']);
+require_once(FILE_PATHS['Partials']['Widgets']['Card']);
+require_once(FILE_PATHS['Functions']['SessionChecker']);
+checkUserAccess(['Admin']);
 
-session_start(); // Start the session at the top of your file
+$widget_card = new Card();
 
-// Generate a CSRF token if one doesn't exist
-if (empty($_SESSION['csrf_token'])) {
-    $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
-}
-
+// Create a new instance of the Database class
 $database = new Database();
 $db = $database->getConnection(); // Establish the database connection
 
-$programControler = new ProgramController($db);
-$programList = $programControler->getAllPrograms(); // Fetch all programs
+$programController = new ProgramController($db); // Create UserController instance
+// Fetch the list of programs
+$programList = $programController->showPrograms();
 
-$CURRENT_PAGE = "programs";
 
-// At the beginning of your main file
-if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    // Collect and sanitize form inputs
+// Handle user addition request
+if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['action']) && $_POST['action'] == 'addProgram') {
+    // Collect user data from form inputs
     $programData = [
-        'program_code' => $_POST["program_code"],
+        'program_code' => $_POST['program_code'],
         'program_name' => $_POST['program_name'],
         'program_description' => $_POST['program_description'],
         'educational_level' => $_POST['educational_level'],
-        'program_image' => $_FILES['program_image'] // Handle the image upload
+        'program_image' => isset($_FILES['program_image']) ? $_FILES['program_image'] : NULL
     ];
 
-    // You can create a method in your ProgramController to handle the insert
-    $addProgramResult = $programControler->addProgram($programData);
+    $message = $programController->addProgram($programData);
+    $programList = $programController->showPrograms();  // This will return the programs to the view
 
-    // Optional: Store the result in a session variable or handle success/failure
-    if ($addProgramResult) {
-        // Success, maybe redirect or show a success message
-        $_SESSION['message'] = "Program added successfully.";
-    } else {
-        // Handle error
-        $_SESSION['message'] = "Failed to add program.";
-    }
-
-    // Redirect to the same page or handle as needed
-    header("Location: " . $_SERVER['PHP_SELF']);
-    exit();
 }
-
 ?>
 
 <!DOCTYPE html>
@@ -60,7 +49,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         <?php require_once(FILE_PATHS['Partials']['User']['Sidebar']) ?>
 
         <!-- content here -->
-        <section class="row min-vh-100 w-100 m-0 p-1 d-flex justify-content-end align-items-start" id="contentSection">
+        <section id="contentSection">
             <div class="col box-sizing-border-box flex-grow-1">
                 <!-- First row, first column -->
                 <div class="bg-white rounded p-3 shadow-sm border">
@@ -71,17 +60,22 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                         </div>
                         <div class="col-8 d-flex justify-content-end gap-2">
                             <!-- Tools -->
-                            <button class="btn btn-primary btn-sm rounded fs-6 px-3 c-primary d-flex gap-3 align-items-center" data-bs-toggle="modal" data-bs-target="#programFormModal">
+                            <button
+                                class="btn btn-primary btn-sm rounded fs-6 px-3 c-primary d-flex gap-3 align-items-center"
+                                data-bs-toggle="modal" data-bs-target="#programFormModal">
                                 <i class="bi bi-plus-circle"></i> Add Program
                             </button>
-                            <button class="btn btn-outline-primary btn-sm rounded fs-5 px-2 c-primary d-flex gap-2 align-items-center">
+                            <button
+                                class="btn btn-outline-primary btn-sm rounded fs-5 px-2 c-primary d-flex gap-2 align-items-center">
                                 <i class="bi bi-arrow-clockwise"></i>
                             </button>
                             <div class="btn-group" id="viewTypeContainer">
-                                <button id="btnViewTypeCatalog" type="button" class="btn btn-sm btn-primary c-primary px-2">
+                                <button id="btnViewTypeCatalog" type="button"
+                                    class="btn btn-sm btn-primary c-primary px-2">
                                     <i class="bi bi-card-heading fs-6"></i>
                                 </button>
-                                <button id="btnViewTypeTable" type="button" class="btn btn-sm btn-outline-primary c-primary px-2">
+                                <button id="btnViewTypeTable" type="button"
+                                    class="btn btn-sm btn-outline-primary c-primary px-2">
                                     <i class="bi bi-table fs-6"></i>
                                 </button>
                             </div>
@@ -93,39 +87,27 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                         <?php
                         if (!empty($programList)) {
                             foreach ($programList as $program) {
-                                // Ensure the image is available before converting
-                                $base64Image = !empty($program['program_image']) ? base64_encode($program['program_image']) : '';
-                        ?>
-                                <div class="c-card card cbg-primary text-white border-0 shadow-sm">
-                                    <div class="card-preview position-relative w-100 bg-success d-flex overflow-hidden justify-content-center align-items-center" style="min-height: 200px; max-height: 200px;">
-                                        <?php if ($base64Image): ?>
-                                            <img src="data:image/jpeg;base64,<?php echo $base64Image; ?>" class="rounded card-img-top img-programs position-absolute top-50 start-50 translate-middle object-fit-fill" alt="<?php echo htmlspecialchars($program['program_name']); ?>">
-                                        <?php else: ?>
-                                            <div class="text-center text-muted">No image available</div>
-                                        <?php endif; ?>
-                                    </div>
-                                    <div class="card-body p-2">
-                                        <div class="row">
-                                            <div class="col-md-10">
-                                                <h6 class="card-title w-100 fw-bold bg-transparent" style="height: 4rem;"><?php echo htmlspecialchars($program['program_name']); ?></h6>
-                                                <p class="card-text fs-6"><?php echo htmlspecialchars($program['program_description']); ?></p>
-                                                <p class="card-text fs-6">Level: <?php echo htmlspecialchars($program['educational_level']); ?></p>
-                                            </div>
-                                            <div class="col-md-2 d-flex justify-content-end align-items-start">
-                                                <div class="dropdown">
-                                                    <button class="btn btn-lg c-primary p-0 text-white dropdown-toggle dropdown-no-icon" type="button" id="dropdownMenuButton" data-bs-toggle="dropdown" aria-expanded="false">
-                                                        <i class="bi bi-three-dots-vertical"></i>
-                                                    </button>
-                                                    <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="dropdownMenuButton">
-                                                        <li><a class="dropdown-item" href="#" onclick="">Configure</a></li>
-                                                        <li><a class="dropdown-item" href="#" onclick="">Delete</a></li>
-                                                    </ul>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                        <?php
+                                echo $widget_card->Create(
+                                    'small',
+                                    "program_" . $program['program_id'],
+                                    !empty($program['program_image']) ? 'data:image/jpeg;base64,' . base64_encode($program['program_image']) : null,
+                                    [
+                                        "title" => $program['program_name'],
+                                        "others" => [
+                                            [
+                                                'hint' => 'Program Description',
+                                                'icon' => '',
+                                                'data' => htmlspecialchars($program['program_code']),
+                                            ],
+                                            [
+                                                'hint' => 'Educational Level',
+                                                'icon' => '',
+                                                'data' => 'Level: ' . htmlspecialchars($program['educational_level']),
+                                            ],
+
+                                        ],
+                                    ]
+                                );
                             }
                         } else {
                             echo '<p class="text-danger">No programs available.</p>';
@@ -139,7 +121,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                             <thead>
                                 <tr>
                                     <th>
-                                        <input type="checkbox" name="checkbox_data_selectAll" id="checkbox_data_selectAll" class="form-check-input">
+                                        <input type="checkbox" name="checkbox_data_selectAll"
+                                            id="checkbox_data_selectAll" class="form-check-input">
                                     </th>
                                     <th>Code</th>
                                     <th>Name</th>
@@ -155,7 +138,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                                 ?>
                                         <tr>
                                             <td>
-                                                <input type="checkbox" name="checkbox_data_<?php echo htmlspecialchars($program['program_code']); ?>" class="form-check-input">
+                                                <input type="checkbox"
+                                                    name="checkbox_data_<?php echo htmlspecialchars($program['program_code']); ?>"
+                                                    class="form-check-input">
                                             </td>
                                             <td><?php echo htmlspecialchars($program['program_code']); ?></td>
                                             <td><?php echo htmlspecialchars($program['program_name']); ?></td>
@@ -163,7 +148,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                                             <td><?php echo htmlspecialchars($program['educational_level']); ?></td>
                                             <td>
                                                 <div class="dropdown">
-                                                    <button class="btn btn-sm btn-primary dropdown-toggle" type="button" id="dropdownMenuButton" data-bs-toggle="dropdown" aria-expanded="false">
+                                                    <button class="btn btn-sm btn-primary dropdown-toggle" type="button"
+                                                        id="dropdownMenuButton" data-bs-toggle="dropdown" aria-expanded="false">
                                                         Actions
                                                     </button>
                                                     <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton">
@@ -184,7 +170,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                     </div>
                 </div>
             </div>
-            <div class="col bg-transparent d-flex flex-column justify-content-start align-items-center gap-2 px-1 box-sizing-border-box" id="widgetPanel">
+            <div id="widgetPanel">
                 <!-- CALENDAR -->
                 <?php require_once(FILE_PATHS['Partials']['User']['Calendar']) ?>
                 <!-- TASKS -->
@@ -193,12 +179,17 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         </section>
     </section>
 
-    <?php require_once(FILE_PATHS['Partials']['HighLevel']['Modals']['Program']['Add']) ?>
 
-    <!-- FOOTER -->
-    <?php require_once(FILE_PATHS['Partials']['User']['Footer']) ?>
 </body>
-<script src="../../../../src/assets/js/admin-main.js"></script>
+
+</html>
+
+<?php require_once(FILE_PATHS['Partials']['HighLevel']['Modals']['Program']['Add']) ?>
+
+<!-- FOOTER -->
+<?php require_once(FILE_PATHS['Partials']['User']['Footer']) ?>
+</body>
+<script src="<?php echo asset('js/admin-main.js') ?>"></script>
 
 </html>
 

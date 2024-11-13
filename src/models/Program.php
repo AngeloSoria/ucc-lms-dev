@@ -9,9 +9,29 @@ class Program
         $this->conn = $db;
     }
 
+    // Check if program exists by program code
+    public function checkProgramExists($program_code, $program_name)
+    {
+        $query = "SELECT * FROM {$this->table_name} WHERE program_code = :program_code OR program_name = :program_name";
+        $stmt = $this->conn->prepare($query);
+        $stmt->bindParam(':program_code', $program_code);
+        $stmt->bindParam(':program_name', $program_name);
+        $stmt->execute();
+
+        return $stmt->rowCount() > 0; // Return true if the program already exists
+    }
+
+
+    // Add program to the database
     public function addProgram($data)
     {
-        $query = "INSERT INTO " . $this->table_name . " (program_code, program_name, program_description, educational_level, program_image) VALUES (:program_code, :program_name, :program_description, :educational_level, :program_image)";
+        // Check if program exists
+        if ($this->checkProgramExists($data['program_code'], $data['program_name'])) {
+            return "Program already exists."; // Return message if program exists
+        }
+
+        $query = "INSERT INTO " . $this->table_name . " (program_code, program_name, program_description, educational_level, program_image) 
+                  VALUES (:program_code, :program_name, :program_description, :educational_level, :program_image)";
 
         $stmt = $this->conn->prepare($query);
 
@@ -25,6 +45,7 @@ class Program
         return $stmt->execute(); // Return true if successful, false otherwise
     }
 
+    // Get all programs
     public function getAllPrograms()
     {
         $query = "SELECT * FROM " . $this->table_name;
@@ -32,4 +53,7 @@ class Program
         $stmt->execute();
         return $stmt->fetchAll(PDO::FETCH_ASSOC); // Fetch all results as associative array
     }
+
+
 }
+?>

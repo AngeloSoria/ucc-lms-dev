@@ -8,30 +8,35 @@ document.addEventListener("DOMContentLoaded", function () {
   const passwordInput = document.getElementById("password");
   const userForm = document.getElementById("userForm");
   const container_RoleType = document.getElementById("role_type_container");
-  const dropdown_RoleType = document.getElementById("role_type");
+  const dropdown_RoleType = document.getElementById("educational_level");
 
   // Function to generate username and password
   function generateCredentials() {
-    const firstName = firstNameInput.value.trim().toLowerCase();
-    const lastName = lastNameInput.value
-      .trim()
-      .toLowerCase()
-      .replace(/\s+/g, "");
+    const firstName = firstNameInput.value.trim();
+    const lastName = lastNameInput.value.trim().replace(/\s+/g, "");
     const dob = dobInput.value;
 
-    // Generate Username: first initial + last name + user ID
+    // Generate Username: first initial + last name (formatted) + user ID
     const userId = document.getElementById("user_id").value;
-    const username = `${firstName.charAt(0)}${lastName}${userId}`;
+    const formattedFirstName = firstName.charAt(0).toUpperCase(); // First initial of first name
+    const formattedLastName =
+      lastName.charAt(0).toUpperCase() + lastName.slice(1).toLowerCase(); // Capitalize first letter of last name
+    const username = `${formattedFirstName}${formattedLastName}.${userId}`; // Concatenate with a period
     usernameInput.value = username;
 
-    // Generate Password: last name + dob (YYYYMMDD)
+    // Generate Password: last name + MMDDYYYY format
     if (dob) {
       const date = new Date(dob);
-      const formattedDob = date.toISOString().split("T")[0].replace(/-/g, ""); // YYYYMMDD format
-      const password = `${lastName}${formattedDob}`;
+      const formattedDob = `${(date.getMonth() + 1)
+        .toString()
+        .padStart(2, "0")}${date
+        .getDate()
+        .toString()
+        .padStart(2, "0")}${date.getFullYear()}`; // MMDDYYYY format
+      const password = `${formattedLastName}.${formattedDob}`; // Password is last name + formatted date
       passwordInput.value = password;
     } else {
-      passwordInput.value = "";
+      passwordInput.value = ""; // Clear the password if no DOB is provided
     }
   }
 
@@ -49,7 +54,6 @@ document.addEventListener("DOMContentLoaded", function () {
     container_RoleType.classList.add("d-none");
   });
 
-
   // Function to add role type options to dropdown.
   function addRoleTypeOption(optionsArray) {
     for (let index = 0; index < optionsArray.length; index++) {
@@ -62,8 +66,8 @@ document.addEventListener("DOMContentLoaded", function () {
 
   // Clear role type options except the disabled option.
   function clearRoleTypeOptions() {
-    Array.from(dropdown_RoleType.options).forEach(function(option) {
-      if(!option.hasAttribute("disabled")) {
+    Array.from(dropdown_RoleType.options).forEach(function (option) {
+      if (!option.hasAttribute("disabled")) {
         dropdown_RoleType.removeChild(option);
       }
     });
@@ -71,16 +75,11 @@ document.addEventListener("DOMContentLoaded", function () {
 
   // Event Listener for Role onselect dropdown.
   const roleSelect = document.getElementById("role");
-  roleSelect.addEventListener("change", function() {
+  roleSelect.addEventListener("change", function () {
     const selectedRole = roleSelect.value;
     clearRoleTypeOptions();
     switch (selectedRole) {
       case "Teacher":
-        container_RoleType.classList.remove("d-none");
-        // Add options to role_type dropdown
-        addRoleTypeOption(["SHS", "College"]);
-        break;
-      case "Student":
         container_RoleType.classList.remove("d-none");
         // Add options to role_type dropdown
         addRoleTypeOption(["SHS", "College"]);

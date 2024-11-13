@@ -1,30 +1,41 @@
-/* Custom button styles */
-.btn-primary.custom_btn_login {
-    background-color: var(--c-secondary-dark);
-    border-color: var(--c-secondary-dark);
+@import url(root.css);
+
+* {
+    color: var(--text-color);
 }
 
+
+/* Custom button styles */
+.btn-primary.custom_btn_login {
+    background-color: var(--c-brand-secondary-dark-a0);
+    border-color: var(--c-brand-secondary-dark-a0);
+}
+.btn-primary.custom_btn_login:hover {
+    background-color: var(--c-brand-secondary-dark-a20);
+    border-color: var(--c-brand-secondary-dark-a20);
+}
 .btn-primary.custom_btn_login:active {
-    background-color: var(--c-secondary);
-    border-color: var(--c-secondary);
+    background-color: var(--c-brand-secondary-dark-a20);
+    border-color: var(--c-brand-secondary-dark-a20);
 }
 
 .carousel-item {
-    height: 80vh;
-    background-color: red;
+    height: 80lvh;
+    background-color: var(--c-surface-dark-a40);
 }
 
 .carousel-item img {
     height: 100%;
-    object-fit: cover;
+    object-fit: fill;
 }
 
-nav {
+#topNav {
     position: relative;
-    z-index: 1;
+    
+    background-color: var(--background-color);
 }
 
-nav #btnOpenNavSideBarMobile {
+#topNav #btnOpenNavSideBarMobile {
     display: none;
 }
 
@@ -45,13 +56,13 @@ nav #btnOpenNavSideBarMobile {
 }
 
 @media only screen and (max-width: 768px) {
-    nav .nav-container {
+    #topNav .nav-container {
         width: 90% !important;
     }
-    nav #btnOpenNavSideBarMobile {
+    #topNav #btnOpenNavSideBarMobile {
         display: block;
     }
-    nav .nav-subcontent {
+    #topNav .nav-subcontent {
         display: none !important;
     }
     .nav-sidebar {
@@ -59,7 +70,7 @@ nav #btnOpenNavSideBarMobile {
     }
 }
 @media only screen and (max-width: 400px) {
-    nav .nav-container {
+    #topNav .nav-container {
         width: 100% !important;
     }
 }

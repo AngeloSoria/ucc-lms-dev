@@ -1,22 +1,12 @@
 <!-- Inserted via PHP -->
-<div class="bg-white p-3 shadow-sm rounded w-100 border" id="myCalendar">
+<div class="widget-card p-3 shadow-sm rounded border" id="myCalendar">
     <div class="d-flex justify-content-between align-items-center">
-        <p class="fs-5 fw-semibold text-success m-0">Calendar</p>
-        <a href="#" class="opacity-50" style="font-size: 0.8rem;">View All</a>
+        <p class="fs-5 fw-semibold text-success m-0">September</p>
+        <a href="#" class="opacity-50" style="font-size: 0.8rem; color: var(--text-color);">View All</a>
     </div>
     <hr class="opacity-90 mx-0 my-1">
-
     <!-- Calendar table -->
     <div class="p-0">
-        <div class="d-flex justify-content-between align-items-center">
-            <div id="calendar_prev_month" class="fs-6 text-muted">
-                <i class="bi bi-caret-left-fill" role="button"></i>
-            </div>
-            <p id="calendar_label_Month" class="p-0 my-2 text-center fs-6 fw-semibold">SEPTEMBER</p>
-            <div id="calendar_next_month" class="fs-6 text-muted">
-                <i class="bi bi-caret-right-fill" role="button"></i>
-            </div>
-        </div>
         <table class="w-100">
             <thead>
                 <tr>
@@ -43,7 +33,7 @@
                     <td>8</td>
                     <td>9</td>
                     <td>10</td>
-                    <td>11</td>
+                    <td class="active-day">11</td>
                     <td>12</td>
                     <td>13</td>
                     <td>14</td>

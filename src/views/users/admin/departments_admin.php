@@ -1,8 +1,21 @@
 <?php
+session_start();
+$CURRENT_PAGE = "departments";
+
 require_once(__DIR__ . '../../../../config/PathsHandler.php');
 require_once(FILE_PATHS['DATABASE']);
+require_once(FILE_PATHS["Partials"]["Widgets"]["SearchUser"]);
+require_once(FILE_PATHS['Functions']['SessionChecker']);
+checkUserAccess(['Admin']);
 
-$CURRENT_PAGE = "departments";
+$widget_searchUser = new SearchUser();
+
+// Create a new instance of the Database class
+$database = new Database();
+$db = $database->getConnection(); // Establish the database connection
+
+
+
 ?>
 
 <!DOCTYPE html>
@@ -17,7 +30,7 @@ $CURRENT_PAGE = "departments";
         <?php require_once(FILE_PATHS['Partials']['User']['Sidebar']) ?>
 
         <!-- content here -->
-        <section class="row min-vh-100 w-100 m-0 p-1 d-flex justify-content-end align-items-start" id="contentSection">
+        <section id="contentSection">
             <div class="col box-sizing-border-box flex-grow-1">
                 <!-- First row, first column -->
                 <div class="bg-white rounded p-3 shadow-sm border">
@@ -30,21 +43,26 @@ $CURRENT_PAGE = "departments";
                             <!-- Tools -->
 
                             <!-- Add New Button -->
-                            <button class="btn btn-primary btn-sm rounded fs-6 px-3 c-primary d-flex gap-3 align-items-center" data-bs-toggle="modal" data-bs-target="#userFormModal" onclick="apply_section_modal(this);">
+                            <button
+                                class="btn btn-primary btn-sm rounded fs-6 px-3 c-primary d-flex gap-3 align-items-center"
+                                data-bs-toggle="modal" data-bs-target="#addDepartmentFormModal">
                                 <i class="bi bi-plus-circle"></i> Add Department
                             </button>
 
                             <!-- Reload Button -->
-                            <button class="btn btn-outline-primary btn-sm rounded fs-5 px-2 c-primary d-flex gap-2 align-items-center">
+                            <button
+                                class="btn btn-outline-primary btn-sm rounded fs-5 px-2 c-primary d-flex gap-2 align-items-center">
                                 <i class="bi bi-arrow-clockwise"></i>
                             </button>
 
                             <!-- View Type -->
                             <div class="btn-group" id="viewTypeContainer">
-                                <button id="btnViewTypeCatalog" type="button" class="btn btn-sm btn-primary c-primary px-2">
+                                <button id="btnViewTypeCatalog" type="button"
+                                    class="btn btn-sm btn-primary c-primary px-2">
                                     <i class="bi bi-card-heading fs-6"></i>
                                 </button>
-                                <button id="btnViewTypeTable" type="button" class="btn btn-sm btn-outline-primary c-primary px-2">
+                                <button id="btnViewTypeTable" type="button"
+                                    class="btn btn-sm btn-outline-primary c-primary px-2">
                                     <i class="bi bi-table fs-6"></i>
                                 </button>
                             </div>
@@ -52,66 +70,14 @@ $CURRENT_PAGE = "departments";
                         </div>
                     </div>
 
-
-                    <!-- Catalog View -->
-                    <div id="data_view_catalog" class="d-flex d-none justify-content-start align-items-start gap-2 flex-wrap">
-
-                        <?php
-                        // These are placeholders.
-                        $fake_data = [
-                            ["All", 0], // We'll update this later with the total count
-                            ["Registrar", 10],
-                            ["Students", 5232],
-                            ["Teachers", 233],
-                            ["Super Admin", 2],
-                        ];
-
-                        // Calculate the total number of users for "All"
-                        $total_users = 0;
-                        for ($i = 1; $i < count($fake_data); $i++) {
-                            $total_users += $fake_data[$i][1];
-                        }
-
-                        // Update the "All" role with the total count
-                        $fake_data[0][1] = $total_users;
-
-                        // Loop through the $fake_data array
-                        for ($i = 0; $i < count($fake_data); $i++) {
-                        ?>
-                            <div class="c-card card cbg-primary text-white border-0 shadow-sm">
-                                <img src="https://via.placeholder.com/800x600" class="card-img-top" alt="...">
-                                <div class="card-body p-2">
-                                    <!-- Dynamically set card title and text -->
-                                    <div class="row">
-                                        <div class="col-md-10">
-                                            <h6 class="card-title w-100 fw-bold bg-transparent" style="height: 4rem;"><?php echo $fake_data[$i][0]; ?></h6>
-                                            <p class="card-text fs-6"><?php echo number_format($fake_data[$i][1]); ?> Users</p>
-                                        </div>
-                                        <div class="col-md-2 d-flex justify-content-end align-items-start">
-                                            <!-- Config dialog -->
-                                            <div class="dropdown">
-                                                <button class="btn btn-lg c-primary p-0 text-white dropdown-toggle dropdown-no-icon" type="button" id="dropdownMenuButton" data-bs-toggle="dropdown" aria-expanded="false">
-                                                    <i class="bi bi-three-dots-vertical"></i>
-                                                </button>
-                                                <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="dropdownMenuButton">
-                                                    <li><a class="dropdown-item" href="#" onclick="">Configure</a></li>
-                                                    <li><a class="dropdown-item" href="#" onclick="">Delete</a></li>
-                                                </ul>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        <?php } ?>
-                    </div>
-
                     <!-- Table View -->
                     <div id="data_view_table" class="d-none">
-                        <table class="c-table table">
+                        <table class="table table-striped">
                             <thead>
                                 <tr>
                                     <th>
-                                        <input type="checkbox" name="checkbox_data_selectAll" id="checkbox_data_selectAll" class="form-check-input">
+                                        <input type="checkbox" name="checkbox_data_selectAll"
+                                            id="checkbox_data_selectAll" class="form-check-input">
                                     </th>
                                     <th>Role</th>
                                     <th>Users</th>
@@ -121,7 +87,8 @@ $CURRENT_PAGE = "departments";
                             <tbody>
                                 <tr>
                                     <td>
-                                        <input type="checkbox" name="<data_context>" id="checkbox_data_select-<data_context>" class="form-check-input">
+                                        <input type="checkbox" name="<data_context>"
+                                            id="checkbox_data_select-<data_context>" class="form-check-input">
                                     </td>
                                     <td>qwe</td>
                                     <td>qwe</td>
@@ -159,87 +126,46 @@ $CURRENT_PAGE = "departments";
                         </div>
                     </div>
 
-                    <!-- TEST -->
-                    <h2>Data Table</h2>
-
-                    <!-- Search Form -->
-                    <form method="GET">
-                        <input type="text" name="search" placeholder="Search..." required>
-                        <select name="sort" onchange="this.form.submit()">
-                            <option value="">Sort by</option>
-                            <option value="low-high">Low to High</option>
-                            <option value="high-low">High to Low</option>
-                        </select>
-                        <button type="submit">Search</button>
-                    </form>
-
-                    <!-- Data Table -->
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>ID</th>
-                                <th>Name</th>
-                                <th>Email</th>
-                                <th>Money</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <?php
-                            // Sample data array with random money values
-                            $data = [
-                                ['id' => 1, 'name' => 'Alice', 'email' => 'alice@example.com', 'money' => rand(100, 1000)],
-                                ['id' => 2, 'name' => 'Bob', 'email' => 'bob@example.com', 'money' => rand(100, 1000)],
-                                ['id' => 3, 'name' => 'Charlie', 'email' => 'charlie@example.com', 'money' => rand(100, 1000)],
-                                ['id' => 4, 'name' => 'David', 'email' => 'david@example.com', 'money' => rand(100, 1000)],
-                                ['id' => 5, 'name' => 'Eva', 'email' => 'eva@example.com', 'money' => rand(100, 1000)],
-                            ];
-
-                            // Initialize search and sort variables
-                            $searchValue = isset($_GET['search']) ? $_GET['search'] : '';
-                            $sortOrder = isset($_GET['sort']) ? $_GET['sort'] : '';
-
-                            // Filter data based on search
-                            $filteredData = array_filter($data, function ($row) use ($searchValue) {
-                                return stripos($row['name'], $searchValue) !== false || stripos($row['email'], $searchValue) !== false;
-                            });
-
-                            // Sort the filtered data
-                            if ($sortOrder === 'low-high') {
-                                usort($filteredData, function ($a, $b) {
-                                    return $a['money'] <=> $b['money'];
-                                });
-                            } elseif ($sortOrder === 'high-low') {
-                                usort($filteredData, function ($a, $b) {
-                                    return $b['money'] <=> $a['money'];
-                                });
-                            }
-
-                            // Display filtered and sorted data
-                            foreach ($filteredData as $row) {
-                                echo "<tr>";
-                                echo "<td>{$row['id']}</td>";
-                                echo "<td>{$row['name']}</td>";
-                                echo "<td>{$row['email']}</td>";
-                                echo "<td>\${$row['money']}</td>";
-                                echo "</tr>";
-                            }
-
-                            // If no results found
-                            if ($searchValue && empty($filteredData)) {
-                                echo "<tr><td colspan='4'>No results found for '{$searchValue}'.</td></tr>";
-                            }
-                            ?>
-                        </tbody>
-                    </table>
-
-                    <!-- END OF TEST -->
+                    <section>
+                        <!-- <h4>Data Table</h4> -->
+                        <div class="border rounded table-responsive">
+                            <table class="table table-striped table-sm table-hover">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th>Department Name</th>
+                                        <th>Department Head</th>
+                                        <th># of Members</th>
+                                        <th>Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="table-group-divider">
+                                    <tr>
+                                        <td>IT Security</td>
+                                        <td>Juan Dela Cruz</td>
+                                        <td>44</td>
+                                        <td></td>
+                                    </tr>
+                                    <tr>
+                                        <td>IT Security</td>
+                                        <td>Juan Dela Cruz</td>
+                                        <td>44</td>
+                                        <td></td>
+                                    </tr>
+                                    <tr>
+                                        <td>IT Security</td>
+                                        <td>Juan Dela Cruz</td>
+                                        <td>44</td>
+                                        <td></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </section>
                 </div>
             </div>
-            <div class="col bg-transparent d-flex flex-column justify-content-start align-items-center gap-2 px-1 box-sizing-border-box" id="widgetPanel">
-
+            <div id="widgetPanel">
                 <!-- CALENDAR -->
                 <?php require_once(FILE_PATHS['Partials']['User']['Calendar']) ?>
-
                 <!-- TASKS -->
                 <?php require_once(FILE_PATHS['Partials']['User']['Tasks']) ?>
             </div>
@@ -247,11 +173,11 @@ $CURRENT_PAGE = "departments";
     </section>
 
     <!-- ADD USER FORM POPUP -->
-    <?php require_once(FILE_PATHS['Partials']['HighLevel']['Modals']['User']['Add']) ?>
+    <?php require_once(FILE_PATHS['Partials']['HighLevel']['Modals']['Department']['Add']) ?>
 
     <!-- FOOTER -->
     <?php require_once(FILE_PATHS['Partials']['User']['Footer']) ?>
 </body>
-<script src="../../../src/assets/js/admin-main.js"></script>
+<script src="<?php echo asset('js/admin-main.js') ?>"></script>
 
 </html>
