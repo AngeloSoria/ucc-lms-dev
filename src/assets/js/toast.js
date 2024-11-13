@@ -1,6 +1,4 @@
 function showToast(toastType = "default", message, delay = 5000) {
-  console.log("Toast Called!");
-
   // Create the toast container if it doesn't exist
   let toastContainer = document.querySelector(".toast-container");
   if (!toastContainer) {
