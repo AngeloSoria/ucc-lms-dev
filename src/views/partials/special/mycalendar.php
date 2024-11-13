@@ -1,8 +1,7 @@
-<!-- Inserted via PHP -->
-<div class="bg-white p-3 shadow-sm rounded w-100 border" id="myCalendar">
+<div class="p-3 shadow-sm rounded w-100 border" id="myCalendar">
     <div class="d-flex justify-content-between align-items-center">
-        <p class="fs-5 fw-semibold text-success m-0">Calendar</p>
-        <a href="#" class="opacity-50" style="font-size: 0.8rem;">View All</a>
+        <p class="fs-6 fw-semibold text-success m-0">Calendar</p>
+        <a href="#" class="opacity-50 sub-link" style="font-size: 0.8rem;">View All</a>
     </div>
     <hr class="opacity-90 mx-0 my-1">
 

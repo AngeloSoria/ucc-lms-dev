@@ -1,54 +1,43 @@
 <?php
+session_start();
+$CURRENT_PAGE = 'users';
+
 require_once(__DIR__ . '../../../../config/PathsHandler.php');
 require_once(FILE_PATHS['DATABASE']);
 require_once(FILE_PATHS['Controllers']['User']);
+require_once(FILE_PATHS['Partials']['Widgets']['Card']);
+require_once(FILE_PATHS['Functions']['SessionChecker']);
+require_once(FILE_PATHS['Functions']['ToastLogger']);
+checkUserAccess(['Admin']);
 
-session_start();
+$widget_card = new Card();
 
 // Create a new instance of the Database class
 $database = new Database();
 $db = $database->getConnection(); // Establish the database connection
 
-// Pass the connection to UserController
+// Create an instance of the UserController
 $userController = new UserController($db);
-$User = new User($db);
-// After the database connection
-$latestUserId = $User->getLatestUserId($db); // Call the method to get the latest user ID
-$CURRENT_PAGE = "users";
 
-// If form is submitted, process the form data
-if ($_SERVER["REQUEST_METHOD"] == "POST") {
+
+if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['action']) && $_POST['action'] == 'addUser') {
+    // Collect user data from form inputs
     $userData = [
         'user_id' => $_POST['user_id'],
         'role' => $_POST['role'],
         'first_name' => $_POST['first_name'],
-        'middle_name' => $_POST['middle_name'],
+        'middle_name' => $_POST['middle_name'] ? $_POST['middle_name'] : NULL,
         'last_name' => $_POST['last_name'],
         'gender' => $_POST['gender'],
         'dob' => $_POST['dob'],
         'username' => $_POST['username'],
-        'password' => $_POST['password'],
-        'email' => $_POST['email'],
-        'profile_pic' => $_FILES['profile_pic'] // Make sure the input name matches
+        'password' => password_hash($_POST['password'], PASSWORD_DEFAULT), // Hash the password
+        'profile_pic' => isset($_FILES['profile_pic']) ? $_FILES['profile_pic'] : NULL,
+        'educational_level' => $_POST['educational_level'] ?? null
     ];
 
-    // Call the method to add a user
-    $addUserResult = $userController->addUser($userData);
-
-    // Store the result in a session variable before redirecting
-    $_SESSION['addUserResult'] = $addUserResult;
-
-    // Redirect to the same page
-    header("Location: " . $_SERVER['PHP_SELF']);
-    exit();
-}
-
-// Retrieve and display the result after the redirection
-if (isset($_SESSION['addUserResult'])) {
-    $addUserResult = $_SESSION['addUserResult'];
-
-    // Clear the session variable after use
-    unset($_SESSION['addUserResult']);
+    // Call the controller to add the user
+    $message = $userController->addUser($userData);
 }
 ?>
 
@@ -64,7 +53,7 @@ if (isset($_SESSION['addUserResult'])) {
         <?php require_once(FILE_PATHS['Partials']['User']['Sidebar']) ?>
 
         <!-- content here -->
-        <section class="row min-vh-100 w-100 m-0 p-1 d-flex justify-content-end align-items-start" id="contentSection">
+        <section id="contentSection">
             <div class="col box-sizing-border-box flex-grow-1">
                 <!-- First row, first column -->
                 <div class="bg-white rounded p-3 shadow-sm border">
@@ -77,21 +66,27 @@ if (isset($_SESSION['addUserResult'])) {
                             <!-- Tools -->
 
                             <!-- Add New Button -->
-                            <button class="btn btn-primary btn-sm rounded fs-6 px-3 c-primary d-flex gap-3 align-items-center" data-bs-toggle="modal" data-bs-target="#userFormModal" onclick="apply_section_modal(this);">
+                            <button
+                                class="btn btn-primary btn-sm rounded fs-6 px-3 c-primary d-flex gap-3 align-items-center"
+                                data-bs-toggle="modal" data-bs-target="#userFormModal"
+                                onclick="apply_section_modal(this);">
                                 <i class="bi bi-plus-circle"></i> Add User
                             </button>
 
                             <!-- Reload Button -->
-                            <button class="btn btn-outline-primary btn-sm rounded fs-5 px-2 c-primary d-flex gap-2 align-items-center">
+                            <button
+                                class="btn btn-outline-primary btn-sm rounded fs-5 px-2 c-primary d-flex gap-2 align-items-center">
                                 <i class="bi bi-arrow-clockwise"></i>
                             </button>
 
                             <!-- View Type -->
                             <div class="btn-group" id="viewTypeContainer">
-                                <button id="btnViewTypeCatalog" type="button" class="btn btn-sm btn-primary c-primary px-2">
+                                <button id="btnViewTypeCatalog" type="button"
+                                    class="btn btn-sm btn-primary c-primary px-2">
                                     <i class="bi bi-card-heading fs-6"></i>
                                 </button>
-                                <button id="btnViewTypeTable" type="button" class="btn btn-sm btn-outline-primary c-primary px-2">
+                                <button id="btnViewTypeTable" type="button"
+                                    class="btn btn-sm btn-outline-primary c-primary px-2">
                                     <i class="bi bi-table fs-6"></i>
                                 </button>
                             </div>
@@ -104,52 +99,52 @@ if (isset($_SESSION['addUserResult'])) {
                     <div id="data_view_catalog" class="d-flex justify-content-start align-items-start gap-2 flex-wrap">
 
                         <?php
-                        // These are placeholders.
-                        $fake_data = [
-                            ["All", 0], // We'll update this later with the total count
-                            ["Registrar", 10],
-                            ["Students", 5232],
-                            ["Teachers", 233],
-                            ["Super Admin", 2],
-                        ];
+                        $RETRIEVED_USERS = $userController->getAllUsers(); // will return dictionary of users from database
+                        // [user_id, first_name, middle_name, last_name, role, gender, dob, status]
 
                         // Calculate the total number of users for "All"
-                        $total_users = 0;
-                        for ($i = 1; $i < count($fake_data); $i++) {
-                            $total_users += $fake_data[$i][1];
+                        $total_users = count($RETRIEVED_USERS);
+
+                        // Group the users based on their roles.
+                        // Initialize an empty array to hold groups
+                        $ROLE_GROUPS = [];
+
+                        foreach ($RETRIEVED_USERS as $single_user) {
+                            // Get the role of the current item
+                            $role = $single_user['role'];
+
+                            // Check if the role is already a key in groups
+                            if (!array_key_exists($role, $ROLE_GROUPS)) {
+                                // If not, initialize an empty array for this role
+                                $ROLE_GROUPS[$role] = [];
+                            }
+
+                            // Append the current item to the list for this role
+                            $ROLE_GROUPS[$role][] = $single_user;
                         }
 
-                        // Update the "All" role with the total count
-                        $fake_data[0][1] = $total_users;
+                        // Loop through each role in $ROLE_GROUPS and display the widget with user count
+                        foreach ($ROLE_GROUPS as $role => $role_data) {
+                            echo $widget_card->Create(
+                                'small',
+                                "rolegroup_" . $role,
+                                null,
+                                [
+                                    "title" => $role,
+                                    "others" => [
+                                        [
+                                            'hint' => 'Total ' . $role,
+                                            'icon' => '<i class="bi bi-person-fill"></i>',
+                                            'data' => 'Users: ' . number_format(count($role_data) ?? 0), // Display user count for this role
+                                        ],
+                                    ],
+                                ],
+                                true
+                            );
+                        }
 
-                        // Loop through the $fake_data array
-                        for ($i = 0; $i < count($fake_data); $i++) {
+
                         ?>
-                            <div class="c-card card cbg-primary text-white border-0 shadow-sm">
-                                <img src="https://via.placeholder.com/800x600" class="card-img-top" alt="...">
-                                <div class="card-body p-2">
-                                    <!-- Dynamically set card title and text -->
-                                    <div class="row">
-                                        <div class="col-md-10">
-                                            <h6 class="card-title w-100 fw-bold bg-transparent" style="height: 4rem;"><?php echo $fake_data[$i][0]; ?></h6>
-                                            <p class="card-text fs-6"><?php echo number_format($fake_data[$i][1]); ?> Users</p>
-                                        </div>
-                                        <div class="col-md-2 d-flex justify-content-end align-items-start">
-                                            <!-- Config dialog -->
-                                            <div class="dropdown">
-                                                <button class="btn btn-lg c-primary p-0 text-white dropdown-toggle dropdown-no-icon" type="button" id="dropdownMenuButton" data-bs-toggle="dropdown" aria-expanded="false">
-                                                    <i class="bi bi-three-dots-vertical"></i>
-                                                </button>
-                                                <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="dropdownMenuButton">
-                                                    <li><a class="dropdown-item" href="#" onclick="">Configure</a></li>
-                                                    <li><a class="dropdown-item" href="#" onclick="">Delete</a></li>
-                                                </ul>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        <?php } ?>
                     </div>
 
                     <!-- Table View -->
@@ -158,7 +153,8 @@ if (isset($_SESSION['addUserResult'])) {
                             <thead>
                                 <tr>
                                     <th>
-                                        <input type="checkbox" name="checkbox_data_selectAll" id="checkbox_data_selectAll" class="form-check-input">
+                                        <input type="checkbox" name="checkbox_data_selectAll"
+                                            id="checkbox_data_selectAll" class="form-check-input">
                                     </th>
                                     <th>Role</th>
                                     <th>Users</th>
@@ -168,7 +164,8 @@ if (isset($_SESSION['addUserResult'])) {
                             <tbody>
                                 <tr>
                                     <td>
-                                        <input type="checkbox" name="<data_context>" id="checkbox_data_select-<data_context>" class="form-check-input">
+                                        <input type="checkbox" name="<data_context>"
+                                            id="checkbox_data_select-<data_context>" class="form-check-input">
                                     </td>
                                     <td>qwe</td>
                                     <td>qwe</td>
@@ -209,10 +206,9 @@ if (isset($_SESSION['addUserResult'])) {
 
                 </div>
             </div>
-            <div class="col bg-transparent d-flex flex-column justify-content-start align-items-center gap-2 px-1 box-sizing-border-box" id="widgetPanel">
+            <div id="widgetPanel">
                 <!-- CALENDAR -->
                 <?php require_once(FILE_PATHS['Partials']['User']['Calendar']) ?>
-
                 <!-- TASKS -->
                 <?php require_once(FILE_PATHS['Partials']['User']['Tasks']) ?>
             </div>
@@ -225,19 +221,22 @@ if (isset($_SESSION['addUserResult'])) {
     <!-- FOOTER -->
     <?php require_once(FILE_PATHS['Partials']['User']['Footer']) ?>
 </body>
-<script src="../../../../src/assets/js/admin-main.js"></script>
+<script src="<?php echo asset('js/admin-main.js') ?>"></script>
+<script src="<?php echo asset('js/toast.js') ?>"></script>
 
-<script>
-    //DOM Content loaded
-    document.addEventListener('DOMContentLoaded', function() {
-        <?php
-        if ($addUserResult === true) {
-            echo 'showToast("default", "User created", "User successfully added.");';
-        } else {
-            echo 'showToast("danger", "Something went wrong","' . $addUserResult . '");';
-        }
-        ?>
-    });
-</script>
+<?php
+// Show Toast
+if (isset($message) && $message != null) {
+    $type = $message[0];
+    $text = $message[1];
+    makeToast([
+        'type' => $type,
+        'message' => $text,
+    ]);
+    outputToasts(); // Execute toast on screen.
+    $message = null; // Dispose
+}
+
+?>
 
 </html>

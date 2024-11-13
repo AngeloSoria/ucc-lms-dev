@@ -55,6 +55,7 @@
                         <div class="flex-grow-1">
                             <label for="adviser_id" class="form-label">Class Adviser</label>
                             <select class="form-select" id="adviser_id" name="adviser_id" required>
+                                <option value="" disabled selected>Select Adviser</option>
                                 <!-- Adviser options will be populated here -->
                             </select>
                         </div>
@@ -75,47 +76,71 @@
         </div>
     </div>
 </div>
-
 <script>
     $(document).ready(function() {
-        // When educational level changes, load relevant programs
+        // Update programs and year levels based on educational level selection
         $('#educational_level').change(function() {
-            var educationalLevel = $(this).val();
+            const educationalLevel = $(this).val();
+            $('#program_id').html('<option value="" disabled selected>Select Program</option>'); // Clear previous options
 
-            // Fetch programs based on educational level
+            // Fetch programs based on selected educational level
             $.ajax({
-                url: 'fetch_programs.php',
+                url: '../../partials/high-level/fetch_programs.php',
                 type: 'POST',
                 data: {
                     educational_level: educationalLevel
                 },
                 success: function(data) {
-                    $('#program_id').html(data); // Fixed to match the correct ID
-                    // Reset year levels when academic level changes
-                    if (educationalLevel === 'TER') {
-                        $('#year_level').html('<option value="1">1st Year</option><option value="2">2nd Year</option><option value="3">3rd Year</option><option value="4">4th Year</option>');
-                    } else if (educationalLevel === 'SHS') {
-                        $('#year_level').html('<option value="11">Grade 11</option><option value="12">Grade 12</option>');
-                    }
+                    $('#program_id').html(data);
+                    console.log(data);
+
+                    // Set year levels based on academic level
+                    const yearOptions = (educationalLevel === 'TER') ?
+                        '<option value="1">1st Year</option><option value="2">2nd Year</option><option value="3">3rd Year</option><option value="4">4th Year</option>' :
+                        '<option value="11">Grade 11</option><option value="12">Grade 12</option>';
+                    $('#year_level').html(yearOptions);
+
+                    // Fetch advisers based on the selected academic level
+                    fetchAdvisers(educationalLevel);
                 },
                 error: function(xhr, status, error) {
+                    alert('Failed to fetch programs. Please try again.');
                     console.error('AJAX Error:', status, error);
                 }
             });
         });
 
-        // Load advisers when the modal is shown
-        $('#sectionFormModal').on('show.bs.modal', function() {
+        // Function to fetch advisers based on educational level
+        function fetchAdvisers(educationalLevel) {
             $.ajax({
-                url: 'fetch_advisers.php', // Adjust this endpoint
-                type: 'GET',
+                url: '../../partials/high-level/fetch_advisers.php',
+                type: 'POST', // Use POST to send the educational level
+                data: {
+                    educational_level: educationalLevel
+                },
                 success: function(data) {
-                    $('#adviser_id').html(data); // Updated to match the correct ID
+                    $('#adviser_id').html(data);
                 },
                 error: function(xhr, status, error) {
+                    alert('Failed to fetch advisers. Please try again.');
                     console.error('AJAX Error:', status, error);
                 }
             });
+        }
+
+        // Load advisers when the modal is shown (if necessary)
+        $('#sectionFormModal').on('show.bs.modal', function() {
+            const educationalLevel = $('#educational_level').val(); // Get current value
+            if (educationalLevel) {
+                fetchAdvisers(educationalLevel); // Fetch advisers based on current selection
+            }
+        });
+
+        // Form submission handling
+        $('#sectionForm').submit(function(e) {
+            e.preventDefault();
+            // Add further custom form validation here if needed
+            this.submit(); // Remove this if submitting via AJAX
         });
     });
 </script>

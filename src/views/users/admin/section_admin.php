@@ -1,23 +1,27 @@
 <?php
 session_start(); // Start the session at the top of your file
+$CURRENT_PAGE = "sections";
 
 require_once(__DIR__ . '../../../../config/PathsHandler.php');
 require_once(FILE_PATHS['DATABASE']);
 require_once(FILE_PATHS['Controllers']['Section']);
+require_once(FILE_PATHS['Partials']['Widgets']['Card']);
+require_once(FILE_PATHS['Functions']['SessionChecker']);
+checkUserAccess(['Admin']);
 
+$widget_card = new Card();
 
-// Generate a CSRF token if one doesn't exist
-if (empty($_SESSION['csrf_token'])) {
-    $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
-}
+// Create a new instance of the Database class
+$database = new Database();
+$db = $database->getConnection(); // Establish the database connectio
 
 $database = new Database();
 $db = $database->getConnection(); // Establish the database connection
 
-$sectionController = new SectionController($db);
+$sectionController = new SectionController();
 $sectionList = $sectionController->getAllSections(); // Fetch all sections
 
-$CURRENT_PAGE = "sections";
+
 
 // At the beginning of your main file
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
@@ -36,15 +40,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     // Call the method in your SectionController to handle the insert
     $addSectionResult = $sectionController->addSection($sectionData);
 
-    // Optional: Store the result in a session variable or handle success/failure
-    if ($addSectionResult) {
-        // Success, maybe redirect or show a success message
-        $_SESSION['message'] = "Section added successfully.";
-    } else {
-        // Handle error
-        $_SESSION['message'] = "Failed to add section.";
-    }
-
     // Redirect to the same page or handle as needed
     header("Location: " . $_SERVER['PHP_SELF']);
     exit();
@@ -62,7 +57,7 @@ $sql = "
         p.program_code, 
         p.educational_level
     FROM 
-        sections s
+        section s
     LEFT JOIN users u ON s.adviser_id = u.user_id
     LEFT JOIN programs p ON s.program_id = p.program_id;
 ";
@@ -92,90 +87,84 @@ try {
         <!-- SIDEBAR -->
         <?php require_once(FILE_PATHS['Partials']['User']['Sidebar']) ?>
         <!-- content here -->
-        <section class="row min-vh-100 w-100 m-0 p-1 d-flex justify-content-end align-items-start" id="contentSection">
+        <section id="contentSection">
             <div class="col box-sizing-border-box flex-grow-1">
                 <!-- First row, first column -->
                 <div class="bg-white rounded p-3 shadow-sm border">
                     <!-- Headers -->
-                    <div class="mb-3 row align-items-start">
-                        <div class="col-4 d-flex gap-3">
-                            <h5 class="ctxt-primary">Sections</h5>
-                        </div>
-                        <div class="col-8 d-flex justify-content-end gap-2">
-                            <!-- Tools -->
-
-                            <!-- Add New Button -->
-                            <button class="btn btn-primary btn-sm rounded fs-6 px-3 c-primary d-flex gap-3 align-items-center" data-bs-toggle="modal" data-bs-target="#sectionFormModal">
-                                <i class="bi bi-plus-circle"></i> Add Section
-                            </button>
-
-                            <!-- Reload Button -->
-                            <button class="btn btn-outline-primary btn-sm rounded fs-5 px-2 c-primary d-flex gap-2 align-items-center">
-                                <i class="bi bi-arrow-clockwise"></i>
-                            </button>
-
-                            <!-- View Type -->
-                            <div class="btn-group" id="viewTypeContainer">
-                                <button id="btnViewTypeCatalog" type="button" class="btn btn-sm btn-primary c-primary px-2">
-                                    <i class="bi bi-card-heading fs-6"></i>
-                                </button>
-                                <button id="btnViewTypeTable" type="button" class="btn btn-sm btn-outline-primary c-primary px-2">
-                                    <i class="bi bi-table fs-6"></i>
-                                </button>
+                    <div>
+                        <div class="mb-3 row align-items-start">
+                            <div class="col-4 d-flex gap-3">
+                                <h5 class="ctxt-primary">Sections</h5>
                             </div>
+                            <div class="col-8 d-flex justify-content-end gap-2">
+                                <!-- Tools -->
 
+                                <!-- Add New Button -->
+                                <button
+                                    class="btn btn-primary btn-sm rounded fs-6 px-3 c-primary d-flex gap-3 align-items-center"
+                                    data-bs-toggle="modal" data-bs-target="#sectionFormModal">
+                                    <i class="bi bi-plus-circle"></i> Add Section
+                                </button>
+
+                                <!-- Reload Button -->
+                                <button
+                                    class="btn btn-outline-primary btn-sm rounded fs-5 px-2 c-primary d-flex gap-2 align-items-center">
+                                    <i class="bi bi-arrow-clockwise"></i>
+                                </button>
+
+                                <!-- View Type -->
+                                <div class="btn-group" id="viewTypeContainer">
+                                    <button id="btnViewTypeCatalog" type="button"
+                                        class="btn btn-sm btn-primary c-primary px-2">
+                                        <i class="bi bi-card-heading fs-6"></i>
+                                    </button>
+                                    <button id="btnViewTypeTable" type="button"
+                                        class="btn btn-sm btn-outline-primary c-primary px-2">
+                                        <i class="bi bi-table fs-6"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                        <div>
+                            <!-- Filter Tools -->
                         </div>
                     </div>
 
                     <!-- Catalog View -->
-                    <div id="data_view_catalog" class="d-flex justify-content-start align-items-start gap-2 flex-wrap">
-                        <?php foreach ($sectionList as $section) {
-                            // Check if the section_image exists and convert the BLOB to base64
-                            // $base64Image = !empty($section['section_image']) ? 'data:image/jpeg;base64,' . base64_encode($section['section_image']) : '';
+                    <div id="data_view_catalog"
+                        class="d-flex flex-row justify-content-between align-items-start gap-2 flex-wrap">
+                        <?php
+                        foreach ($sectionList as $section) {
+                            echo $widget_card->Create(
+                                'small',
+                                "section_" . $section['section_name'],
+                                !empty($section['section_image']) ? 'data:image/jpeg;base64,' . base64_encode($section['section_image']) : null,
+                                [
+                                    "title" => $section['section_name'],
+                                    "others" => [
+                                        [
+                                            'hint' => 'Section Adviser',
+                                            'icon' => '<i class="bi bi-person-fill"></i>',
+                                            'data' => $section['first_name'] . ' ' . $section['last_name'],
+                                        ],
+                                        [
+                                            'hint' => 'Section Program',
+                                            'icon' => '<i class="bi bi-archive-fill"></i>',
+                                            'data' => $section['educational_level'] . ' - ' . $section['year_level'],
+                                        ],
+                                        [
+                                            'hint' => 'Number of Students',
+                                            'icon' => '<i class="bi bi-people-fill"></i>',
+                                            'data' => 'Students: 4',
+                                        ],
+                                    ],
+                                ]
+                            );
+                        }
                         ?>
-                            <div class="c-card card cbg-primary text-white border-0 shadow-sm" style="min-width: 200px; max-width:250px;">
-                                <div class="card-preview position-relative w-100 bg-success d-flex overflow-hidden justify-content-center align-items-center" style="min-height: 200px; max-height: 200px;">
-                                    <?php if ($base64Image): ?>
-                                        <img src="<?php echo $base64Image; ?>" class="rounded card-img-top img-section position-absolute top-50 start-50 translate-middle object-fit-fill" alt="<?php echo htmlspecialchars($section['section_name']); ?>">
-                                    <?php else: ?>
-                                        <img src="<?php echo UPLOAD_PATH['System'] . '/img/no-image-found.jpg'; ?>" class="rounded card-img-top img-section position-absolute top-50 start-50 translate-middle object-fit-fill" alt="No Image Available">
-                                        <!-- <div class="text-center text-muted">No image available</div> -->
-                                    <?php endif; ?>
-                                </div>
-                                <div class="card-body p-2">
-                                    <div class="row">
-                                        <div class="col-md-10">
-                                            <h6 class="card-title w-100 fw-bold bg-transparent" style="height: 4rem;"><?php echo htmlspecialchars($section['section_name']); ?></h6>
-                                            <p class="card-text fs-6">
-                                                <?php
-                                                // Display the educational level (TER or SHS) with the year level
-                                                echo htmlspecialchars($section['educational_level']) . ' - ' . htmlspecialchars($section['year_level']);
-                                                ?>
-                                            </p>
-                                            <p class="card-text fs-6">
-                                                <strong>Class Adviser:</strong> <?php echo htmlspecialchars($section['first_name'] . ' ' . $section['last_name']); ?>
-                                            </p>
-                                            <p class="card-text fs-6">
-                                                <strong>Program:</strong> <?php echo htmlspecialchars($section['program_code']); ?>
-                                            </p>
-                                        </div>
-                                        <div class="col-md-2 d-flex justify-content-end align-items-start">
-                                            <div class="dropdown">
-                                                <button class="btn btn-lg c-primary p-0 text-white dropdown-toggle dropdown-no-icon" type="button" id="dropdownMenuButton" data-bs-toggle="dropdown" aria-expanded="false">
-                                                    <i class="bi bi-three-dots-vertical"></i>
-                                                </button>
-                                                <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="dropdownMenuButton">
-                                                    <li><a class="dropdown-item" href="javascript:void(0);" role="button" data-bs-toggle="modal" data-bs-target="#detailsSectionModal">Details</a></li>
-                                                    <li><a class="dropdown-item" href="javascript:void(0)" role="button" data-bs-toggle="modal" data-bs-target="#configSectionModal">Configure</a></li>
-                                                    <li><a class="dropdown-item" href="#">Delete</a></li>
-                                                </ul>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        <?php } ?>
                     </div>
+
 
                     <!-- Table View -->
                     <div id="data_view_table" class="d-none">
@@ -194,7 +183,8 @@ try {
                                 <?php foreach ($sectionList as $section) { ?>
                                     <tr>
                                         <td><?php echo htmlspecialchars($section['section_name']); ?></td>
-                                        <td><?php echo htmlspecialchars($section['first_name'] . ' ' . $section['last_name']); ?></td>
+                                        <td><?php echo htmlspecialchars($section['first_name'] . ' ' . $section['last_name']); ?>
+                                        </td>
                                         <td><?php echo htmlspecialchars($section['program_name']); ?></td>
                                         <td><?php echo htmlspecialchars($section['year_level']); ?></td>
                                         <td><?php echo htmlspecialchars($section['semester']); ?></td>
@@ -213,12 +203,9 @@ try {
 
             </div>
 
-            <div class="col bg-transparent d-flex flex-column justify-content-start align-items-center gap-2 px-1 box-sizing-border-box" id="widgetPanel">
-                <!-- Second column spans both rows -->
-
+            <div id="widgetPanel">
                 <!-- CALENDAR -->
                 <?php require_once(FILE_PATHS['Partials']['User']['Calendar']) ?>
-
                 <!-- TASKS -->
                 <?php require_once(FILE_PATHS['Partials']['User']['Tasks']) ?>
             </div>
@@ -237,7 +224,7 @@ try {
     <!-- FOOTER -->
     <?php require_once(FILE_PATHS['Partials']['User']['Footer']) ?>
 </body>
-<script src="../../../../src/assets/js/admin-main.js"></script>
+<script src="<?php echo asset('js/admin-main.js') ?>"></script>
 
 
 </html>

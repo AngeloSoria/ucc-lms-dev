@@ -2,7 +2,7 @@
 class Section
 {
     private $conn;
-    private $table_name = "sections"; // Adjust based on your table name
+    private $table_name = "section"; // Adjust based on your table name
 
     public function __construct($db)
     {

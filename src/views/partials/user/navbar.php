@@ -1,7 +1,6 @@
-<nav class="navbar navbar-expand-lg navbar-light bg-light shadow-sm border-5 border-bottom border-success">
-    <div class="container-fluid px-5 d-flex align-items-center" style="width: 95%">
-
-        <section class="d-flex align-items-center justify-content-center gap-4">
+<nav class="c-navbar shadow-sm">
+    <div class="nav-container">
+        <section class="container-left">
             <!-- Sidebar toggler -->
             <button class="border border-0 bg-transparent" id="btnSideBarMenu">
                 <i class="bi bi-list fs-4"></i>
@@ -19,7 +18,7 @@
                                                         echo 'dashboard_teacher.php'; // Change to your teacher dashboard path
                                                         break;
                                                     case 'Level Coordinator':
-                                                        echo 'dashboard_levelCoordinator.php'; // Change to your teacher dashboard path
+                                                        echo 'dashboard_level_coordinator.php'; // Change to your teacher dashboard path
                                                         break;
                                                     case 'Student':
                                                         echo 'dashboard_student.php'; // Change to your student dashboard path
@@ -32,58 +31,61 @@
                                                 header('Location: ' . BASE_PATH_LINK); // Redirect to home if no role is set
                                             }
                                             ?>">
-                <img src="../../../assets/images/icons/Secondary-Logo-2.png" alt="Logo" width="90" class="d-inline-block align-text-top" />
+                <img src="<?php echo asset('img/ucc-logo.png'); ?>" alt="UCC Logo" class="d-inline-block align-text-top" />
             </a>
         </section>
 
         <!-- Right view -->
-        <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
-            <ul class="navbar-nav d-flex gap-5 align-items-center">
+        <section class="container-right" id="navbarNav">
+            <div class="nav-items">
                 <!-- Notifications Icon -->
-                <li class="nav-item">
-                    <a class="nav-link position-relative" href="#">
-                        <i class="bi bi-bell fs-5"></i> <!-- Bell icon for notifications -->
-                        <span class="position-absolute top-20 start-100 translate-middle badge rounded-pill bg-danger">
-                            +99
-                            <span class="visually-hidden">unread notifications</span>
-                        </span>
+                <div class="nav-item">
+                    <a id="navNotification" href="#" title="Notifications" class="nav-link nav-link-icon" role="button">
+                        <i class="bi bi-bell"></i> <!-- Bell icon for notifications -->
+                        <span id="unreadIndicator" class="nav-item-unread-indicator"></span>
                     </a>
-                </li>
+                </div>
 
                 <!-- Mail Icon -->
-                <li class="nav-item">
-                    <a class="nav-link" href="#">
-                        <i class="bi bi-envelope fs-5"></i> <!-- Envelope icon for mail -->
+                <div class="nav-item">
+                    <a id="navEmail" href="#" title="Messages" class="nav-link nav-link-icon">
+                        <i class="bi bi-envelope"></i> <!-- Envelope icon for mail -->
+                        <span id="unreadIndicator" class="nav-item-unread-indicator"></span>
                     </a>
-                </li>
+                </div>
 
-                <span style="height: 40px; width: 1.5px; background-color: black; opacity: 0.35;"></span>
+                <span class="nav-mobile_line"
+                    style="height: 30px; width: 1.5px; background-color: black; opacity: 0.35;"></span>
 
                 <!-- User Info Dropdown -->
-                <li class="nav-item dropdown">
-                    <a class="nav-link dropdown-toggle d-flex gap-2 justify-content-center align-items-center" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                <div class="nav-item nav-mobile_userinfo dropdown">
+                    <a class="nav-link dropdown-toggle d-flex gap-2 justify-content-center align-items-center"
+                        href="javascript:void(0);" id="userDropdown" role="button" data-bs-toggle="dropdown"
+                        aria-expanded="false">
                         <!-- User Profile Picture -->
                         <?php if (isset($_SESSION['profile_pic'])): ?>
-                            <img src="<?php echo $_SESSION['profile_pic']; ?>" alt="Profile Picture" class="rounded-circle" width="30" height="30">
+                            <img src="<?php echo $_SESSION['profile_pic']; ?>" alt="Profile Picture" class="rounded-circle"
+                                width="30" height="30">
                         <?php else: ?>
                             <i class="bi bi-person-circle fs-5"></i>
                         <?php endif; ?>
+
                         <!-- Username and Role -->
                         <?php
                         echo htmlspecialchars($_SESSION['first_name']) . ' ' . htmlspecialchars($_SESSION['last_name']) . ' (' . htmlspecialchars($_SESSION['role']) . ')';
                         ?>
-
                     </a>
                     <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
                         <li><a class="dropdown-item" href="#">My Profile</a></li>
-                        <li><a class="dropdown-item" href="#">Settings</a></li>
                         <li>
                             <hr class="dropdown-divider">
                         </li>
                         <li><a class="dropdown-item" href="../../../controllers/LogoutController.php">Logout</a></li>
                     </ul>
-                </li>
-            </ul>
-        </div>
+                </div>
+            </div>
+        </section>
     </div>
 </nav>
+<script src="<?php echo asset('js/user-navbar.js'); ?>"></script>
+<link rel="stylesheet" href="<?php echo asset('css/user-main_responsive.css') ?>">

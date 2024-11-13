@@ -14,54 +14,70 @@
 $sidebar_content = [
     'Admin' => [
         'dashboard' => [
-            'title' => 'Dashboard',
+            'title' => 'Overview',
             'icon' => 'bi-columns-gap',
             'link' => 'dashboard_admin.php',
         ],
-        'programs' => [
-            'title' => 'Programs',
-            'icon' => 'bi-person-rolodex',
-            'link' => 'programs_admin.php',
+        'content_management' => [
+            'title' => 'Academic',
+            'icon' => 'bi-card-list',
+            'isGroup' => true,
+            'sublinks' => [
+                'programs' => [
+                    'title' => 'Programs',
+                    'icon' => 'bi-person-rolodex',
+                    'link' => 'programs_admin.php',
+                ],
+                'sections' => [
+                    'title' => 'Sections',
+                    'icon' => 'bi-file-earmark-text',
+                    'link' => 'section_admin.php',
+                ],
+                'subjects' => [
+                    'title' => 'Subjects',
+                    'icon' => 'bi-file-earmark-text',
+                    'link' => 'subjects_admin.php',
+                ],
+            ],
         ],
-        'sections' => [
-            'title' => 'Sections',
-            'icon' => 'bi-file-earmark-text',
-            'link' => 'section_admin.php',
-        ],
-        'subjects' => [
-            'title' => 'Subjects',
-            'icon' => 'bi-file-earmark-text',
-            'link' => 'subjects_admin.php',
-        ],
-        'users' => [
-            'title' => 'Users',
+        'users_roles_management' => [
+            'title' => 'People',
             'icon' => 'bi-people',
-            'link' => 'users_admin.php',
+            'isGroup' => true,
+            'sublinks' => [
+                'users' => [
+                    'title' => 'Users',
+                    'icon' => 'bi-person-check',
+                    'link' => 'users_admin.php',
+                ],
+                'departments' => [
+                    'title' => 'Departments',
+                    'icon' => 'bi-building',
+                    'link' => 'departments_admin.php',
+                ],
+            ],
         ],
-        'departments' => [
-            'title' => 'Departments',
-            'icon' => 'bi-building',
-            'link' => 'departments_admin.php',
-        ],
-        'content' => [
-            'title' => 'Contents',
-            'icon' => 'bi-card-heading',
-            'link' => 'content_admin.php',
-        ],
-        'events-calendar' => [
-            'title' => 'Events Calendar',
-            'icon' => 'bi-calendar-event',
-            'link' => '#',
-        ],
-        'school-year' => [
-            'title' => 'School Year',
-            'icon' => 'bi-calendar-event',
-            'link' => '#',
-        ],
-        'general-logs' => [
-            'title' => 'General Logs',
-            'icon' => 'bi-clipboard-data',
-            'link' => '#',
+        'settings' => [
+            'title' => 'Settings',
+            'icon' => 'bi-gear-fill',
+            'isGroup' => true,
+            'sublinks' => [
+                'academic-calendar' => [
+                    'title' => 'Academic Calendar',
+                    'icon' => 'bi-calendar-event',
+                    'link' => 'academic_calendar_admin.php',
+                ],
+                'content' => [
+                    'title' => 'Carousel',
+                    'icon' => 'bi-images',
+                    'link' => 'content_admin.php',
+                ],
+                'general-logs' => [
+                    'title' => 'General Logs',
+                    'icon' => 'bi-clipboard-data',
+                    'link' => 'general_logs_admin.php',
+                ],
+            ],
         ],
     ],
 

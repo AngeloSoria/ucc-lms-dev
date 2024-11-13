@@ -1,7 +1,7 @@
 <?php
 // controllers/LoginController.php
-
-require_once(__DIR__ . '../../config/connection.php');
+require_once(FILE_PATHS['DATABASE']);
+require_once(FILE_PATHS['Functions']['PHPLogger']);
 
 class LoginController
 {
@@ -20,6 +20,7 @@ class LoginController
             $stmt->execute(['username' => $username]);
             $user = $stmt->fetch(PDO::FETCH_ASSOC);
 
+
             if ($user && password_verify($password, $user['password'])) {
                 // Set session data
                 $_SESSION['user_id'] = $user['user_id'];
@@ -33,7 +34,7 @@ class LoginController
                     $_SESSION['profile_pic'] = 'data:image/jpeg;base64,' . base64_encode($user['profile_pic']);
                 } else {
                     // Set a default image if the profile picture is not set
-                    $_SESSION['profile_pic'] = '../../assets/images/default-profile.png'; // path to default image
+                    $_SESSION['profile_pic'] = asset('img/avatars/default-profile.png'); // path to default image
                 }
 
                 // Redirect based on role
@@ -45,20 +46,20 @@ class LoginController
                         header('Location: src/views/users/admin/dashboard_admin.php');
                         break;
                     case 'Level Coordinator':
-                        header('Location: src/views/users/registrar/dashboard_admin.php');
+                        header('Location: src/views/users/level_coordinator/dashboard_level_coordinator.php');
                         break;
                     case 'Teacher':
-                        header('Location: src/views/users/teacher/dashboard_teacher.php');
+                        header('Location: src/views/users/teachers/dashboard_teacher.php');
                         break;
                     case 'Student':
-                        header('Location: src/views/users/student/dashboard_student.php');
+                        header('Location: src/views/users/students/dashboard_student.php');
                         break;
                     default:
                         header('Location: src/views/home.php');
                         break;
                 }
             } else {
-                // echo "Invalid login credentials.";
+                return false;
             }
         }
     }

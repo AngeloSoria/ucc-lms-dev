@@ -2,58 +2,42 @@
 require_once(__DIR__ . '../../../src/config/PathsHandler.php');
 require_once(FILE_PATHS['DATABASE']);
 require_once(FILE_PATHS['Models']['Program']);
-
 class ProgramController
 {
     private $db;
     private $programModel;
 
-    public function __construct()
+    public function __construct($db)
     {
-        $database = new Database();
-        $this->db = $database->getConnection();
-        $this->programModel = new Program($this->db);
+        $this->programModel = new Program($db);
     }
 
-    public function addProgram()
+    // Simple validation before adding a program
+    public function addProgram($programData)
     {
-        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-            // Sanitize and assign program data
-            $programData = [
-                'program_code' => htmlspecialchars(strip_tags($_POST['program_code'])),
-                'program_name' => htmlspecialchars(strip_tags($_POST['program_name'])),
-                'program_description' => htmlspecialchars(strip_tags($_POST['program_description'])),
-                'educational_level' => htmlspecialchars(strip_tags($_POST['educational_level'])),
-                'program_image' => null // Initialize program_image to null
-            ];
-
-            // Handle program image upload
-            if (isset($_FILES['program_image']) && $_FILES['program_image']['error'] === UPLOAD_ERR_OK) {
-                $programImage = $_FILES['program_image'];
-                $allowedTypes = ['image/jpeg', 'image/png', 'image/gif']; // Allowed image types
-
-                // Check file type
-                if (in_array($programImage['type'], $allowedTypes)) {
-                    $programData['program_image'] = file_get_contents($programImage['tmp_name']); // Store the image data
-                } else {
-                    echo "Invalid program image type.";
-                    return; // Early exit
-                }
-            }
-
-            // Call the model to add the program
-            if ($this->programModel->addProgram($programData)) {
-                // Success handling, e.g., redirect or display success message
-                header('Location: ../program_admin.php?success=1');
-            } else {
-                // Error handling
-                echo "Failed to add program.";
-            }
+        // Check if the program already exists
+        if ($this->programModel->checkProgramExists($programData['program_code'], $programData['program_name'])) {
+            return "Program already exists.";
         }
-    }
 
-    public function getAllPrograms()
+        // Read the program image file directly from $_FILES
+        if (isset($_FILES['program_image']) && $_FILES['program_image']['error'] === UPLOAD_ERR_OK) {
+            // Open the file and read its contents
+            $programData['program_image'] = file_get_contents($_FILES['program_image']['tmp_name']);
+        } else {
+            $programData['program_image'] = null;  // Handle cases where there's no program image
+        }
+
+        // Add the program to the database
+        $result = $this->programModel->addProgram($programData);
+
+        return $result ? "Program added successfully!" : "Error adding program.";
+    }
+    public function showPrograms()
     {
-        return $this->programModel->getAllPrograms(); // Get programs from model
+        $programList = $this->programModel->getAllPrograms();  // Call the Model method to get programs
+        return $programList;
     }
 }
+
+?>
