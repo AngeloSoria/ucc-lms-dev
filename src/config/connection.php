@@ -18,7 +18,7 @@ class Database
         switch ($_ENV['APP_ENV']) {
             case "local":
                 $host = "localhost";
-                $db   = "ucc_db";
+                $db   = "dev_ucc_db";
                 $user = "root";
                 $pass = "";
                 $port = 3306;

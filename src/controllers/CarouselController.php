@@ -15,10 +15,6 @@ class CarouselController
         $this->carouselModel = new Carousel($this->db);
     }
 
-    public function test() {
-        echo 'Testing';
-    }
-
     public function addCarouselItem()
     {
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -26,7 +22,8 @@ class CarouselController
             $carouselData = [
                 'title' => htmlspecialchars(strip_tags($_POST['title'])),
                 'view_type' => htmlspecialchars(strip_tags($_POST['view_type'])),
-                'image' => null // Initialize image to null
+                'image' => null, // Initialize image to null
+                'is_selected' => 1 // New carousel items will be selected by default
             ];
 
             // Handle carousel image upload
@@ -46,7 +43,14 @@ class CarouselController
                 return; // Early exit
             }
 
-            // Call the model to add the carousel item
+            // Ensure only 4 images are selected at any given time
+            $selectedItems = $this->carouselModel->getSelectedItemsCount($carouselData['view_type']);
+            if ($selectedItems >= 4) {
+                // Update the oldest selected item to unselected if there are already 4 selected items
+                $this->carouselModel->deselectOldestItem($carouselData['view_type']);
+            }
+
+            // Call the model to add the new carousel item
             if ($this->carouselModel->addCarouselItem($carouselData)) {
                 // Success handling, e.g., redirect or display success message
                 header('Location: ../carousel_admin.php?success=1');

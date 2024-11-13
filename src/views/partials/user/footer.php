@@ -1,5 +1,5 @@
 <footer
-    class="text-white text-center py-4 bg-dark border-top border-5 border-success">
+    class="text-white text-center py-4 bg-dark border-top border-5 border-success mt-5">
     <div class="container">
         <p class="mb-0">© 2024 Unida Christian College - Cavite | Learning Management System</p>
     </div>

@@ -49,16 +49,31 @@ class UserController
                 }
 
                 // Call the model to add the user
-                if ($this->userModel->addUser($userData)) {
-                    return true;
+                if ($userData['role'] === 'teacher') {
+                    // Add user as a teacher
+                    if ($this->userModel->addTeacher($userData)) {
+                        echo "Teacher added successfully.";
+                    } else {
+                        throw new Exception("Failed to add teacher.");
+                    }
                 } else {
-                    throw new Exception("Failed to add user.");
+                    // Regular user addition
+                    if ($this->userModel->addUser($userData)) {
+                        echo "User added successfully.";
+                    } else {
+                        throw new Exception("Failed to add user.");
+                    }
                 }
             }
         } catch (Exception $e) {
             // Handle the exception by passing the error message
             return $e->getMessage();
         }
+    }
+
+    public function addTeacher($userData)
+    {
+        return $this->userModel->addTeacher($userData); // Assuming userModel is already set to an instance of the User model
     }
 
     public function editUser()
@@ -77,7 +92,6 @@ class UserController
                 'password' => !empty($_POST['password']) ? password_hash($_POST['password'], PASSWORD_DEFAULT) : $_POST['existing_password'],
                 'existing_profile_pic' => $_POST['existing_profile_pic'], // Existing profile picture data
                 'email' => htmlspecialchars(strip_tags($_POST['email'])),
-                'profile_pic' => $_FILES['profile_pic'] // Uploading new profile picture
             ];
 
             // Call the model to update the user
@@ -88,14 +102,6 @@ class UserController
                 // Error handling
                 echo "Failed to update user.";
             }
-        }
-    }
-
-    private function initUploadFolder($userid) {
-        $directory_name = 'u_' . $userid;
-        // Check if existing user folder exists.
-        if (!file_exists(UPLOAD_PATH . $directory_name)) {
-            mkdir(UPLOAD_PATH. $directory_name, 0777, true);
         }
     }
 }

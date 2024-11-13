@@ -28,17 +28,35 @@ class User
         $stmt->bindParam(':username', $userData['username']);
         $stmt->bindParam(':password', $userData['password']);
         $stmt->bindParam(':email', $userData['email']);
-
-        // Always bind the profile_pic parameter, even if it's null
-        $stmt->bindParam(':profile_pic', $userData['profile_pic'], PDO::PARAM_LOB);
+        $stmt->bindParam(':profile_pic', $userData['profile_pic'], PDO::PARAM_LOB); // Always bind profile_pic
 
         try {
-            return $stmt->execute(); // Execute the query
+            $stmt->execute(); // Execute the query
+            return true; // Return true on success
         } catch (PDOException $e) {
             // Log the error message for debugging
             error_log("Database error: " . $e->getMessage());
             return false; // Return false on error
         }
+    }
+
+    public function addTeacher($userData)
+    {
+        // Call addUser to add the user first
+        if ($this->addUser($userData)) {
+            $teacherQuery = "INSERT INTO teacher_user (user_id, teacher_type) VALUES (:user_id, :teacher_type)";
+            $stmt = $this->db->prepare($teacherQuery);
+            $stmt->bindParam(':user_id', $userData['user_id']);
+            $stmt->bindParam(':teacher_type', $userData['teacher_type']); // Added teacher_type
+
+            try {
+                return $stmt->execute(); // Execute the query for teacher_user
+            } catch (PDOException $e) {
+                error_log("Database error when adding teacher: " . $e->getMessage());
+                return false; // Return false on error
+            }
+        }
+        return false; // Return false if user addition failed
     }
 
     public function editUser($userData)
@@ -67,8 +85,6 @@ class User
         $stmt->bindParam(':gender', $userData['gender']);
         $stmt->bindParam(':dob', $userData['dob']);
         $stmt->bindParam(':username', $userData['username']);
-
-        // Hash the password if provided
         $stmt->bindParam(':password', $userData['password']);
 
         // Handle file upload for profile_pic
@@ -91,42 +107,25 @@ class User
         return $stmt->execute();
     }
 
-    public function getUserById($user_id)
-    {
-        $query = "SELECT * FROM " . $this->table_name . " WHERE user_id = :user_id LIMIT 1";
-        $stmt = $this->db->prepare($query);
-        $stmt->bindParam(':user_id', $user_id);
-
-        if ($stmt->execute()) {
-            return $stmt->fetch(PDO::FETCH_ASSOC);
-        } else {
-            error_log("Error finding user by user_id: " . implode(", ", $stmt->errorInfo()));
-            return false;
-        }
-    }
-
-    public function findByUsername($username)
-    {
-        $query = "SELECT * FROM " . $this->table_name . " WHERE username = :username LIMIT 1";
-        $stmt = $this->db->prepare($query);
-        $stmt->bindParam(':username', $username);
-
-        if ($stmt->execute()) {
-            return $stmt->fetch(PDO::FETCH_ASSOC);
-        } else {
-            error_log("Error finding user by username: " . implode(", ", $stmt->errorInfo()));
-            return false;
-        }
-    }
-
     // In UserController.php
     public function getLatestUserId()
     {
-        $query = "SELECT MAX(user_id) as latest_id FROM users"; // Adjust table name if different
+        // Adjust table name if different
+        $query = "SELECT user_id FROM users ORDER BY user_id DESC LIMIT 1";
         $stmt = $this->db->prepare($query);
         $stmt->execute();
         $row = $stmt->fetch(PDO::FETCH_ASSOC);
-        return $row['latest_id'] + 1; // Increment to get the next ID
+        return isset($row['user_id']) ? $row['user_id'] + 1 : 1; // Return 1 if no users exist
+    }
+
+    public function addTeacherUser($userId, $teacherType)
+    {
+        $query = "INSERT INTO teacher_user (user_id, teacher_type) VALUES (:user_id, :teacher_type)";
+        $stmt = $this->db->prepare($query);
+        $stmt->bindParam(':user_id', $userId);
+        $stmt->bindParam(':teacher_type', $teacherType);
+
+        return $stmt->execute();
     }
 
 
