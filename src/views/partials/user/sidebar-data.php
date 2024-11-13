@@ -100,15 +100,44 @@ $sidebar_content = [
             'icon' => 'bi-columns-gap',
             'link' => 'dashboard_admin.php',
         ],
+        // 'enrolled-subjectss' => [
+        //     'title' => 'Enrolled Subjects',
+        //     'icon' => 'bi-file-earmark-text',
+        //     'link' => 'enrolled_subjects.php',
+        // ],
         'enrolled-subjects' => [
             'title' => 'Enrolled Subjects',
-            'icon' => 'bi-file-earmark-text',
-            'link' => 'enrolled_subjects_admin.php',
+            'icon' => 'bi-journals',
+            'isGroup' => true,
+            'sublinks' => [
+                'academic-calendar' => [
+                    'title' => 'Data Structures and Algorithms',
+                    'icon' => 'bi-journal-text',
+                    'link' => 'academic_calendar_admin.php',
+                ],
+                'content' => [
+                    'title' => 'Entrepreneural Mind III',
+                    'icon' => 'bi-journal-text',
+                    'link' => 'content_admin.php',
+                ],
+                'general-logs' => [
+                    'title' => 'The Longest Subject Name There is Nice LOL',
+                    'icon' => 'bi-journal-text',
+                    'link' => 'general_logs_admin.php',
+                ],
+            ],
         ],
-        'subjects' => [
-            'title' => 'Subjects',
-            'icon' => 'bi-file-earmark-text',
-            'link' => 'subjects_admin.php',
+        'misc' => [
+            'title' => 'Miscellaneous',
+            'icon' => 'bi-gear-fill',
+            'isGroup' => true,
+            'sublinks' => [
+                'content' => [
+                    'title' => 'My Uploads',
+                    'icon' => 'bi-images',
+                    'link' => 'content_admin.php',
+                ],
+            ],
         ],
     ],
 ];

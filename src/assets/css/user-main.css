@@ -182,6 +182,10 @@ p {
 .submenu .submenu-item {
     font-size: 0.75rem;
 }
+.submenu .submenu-item .submenu-item-text {
+    flex-grow: 1;
+    word-wrap: break-word;
+}
 
 
 /* Show submenu when active */
