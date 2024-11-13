@@ -37,12 +37,8 @@ $userController = new UserController($db);
                     <?php require_once(FILE_PATHS['Partials']['User']['Carousel']) ?>
                 </div>
             </div>
-            <div id="widgetPanel">
-                <!-- CALENDAR -->
-                <?php require_once(FILE_PATHS['Partials']['User']['Calendar']) ?>
-                <!-- TASKS -->
-                <?php require_once(FILE_PATHS['Partials']['User']['Tasks']) ?>
-            </div>
+            <!-- Load Widget Panel -->
+            <?php require_once FILE_PATHS['Partials']['User']['WidgetPanel'] ?>
         </section>
 
     </section>

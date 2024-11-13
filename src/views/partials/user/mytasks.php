@@ -1,9 +1,6 @@
 <div class="widget-card p-3 shadow-sm rounded border" id="myTasks">
     <div class="d-flex justify-content-between align-items-center">
-        <p class="fs-5 fw-semibold text-success m-0">Tasks</p>
-        <a href="#" class="fs-6 opacity-50 d-flex justify-content-center align-items-center">
-            <i class="bi bi-plus-circle fs-5"></i>
-        </a>
+        <p class="fs-5 fw-semibold text-success m-0">My Tasks</p>
     </div>
     <hr class="opacity-90 mx-0 my-2">
     <div>
