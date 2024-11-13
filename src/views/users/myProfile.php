@@ -6,7 +6,7 @@ require_once(__DIR__ . '../../../../config/PathsHandler.php');
 require_once(FILE_PATHS['DATABASE']);
 require_once(FILE_PATHS['Controllers']['User']);
 require_once(FILE_PATHS['Functions']['SessionChecker']);
-checkUserAccess(['Student']);
+checkUserAccess(['Admin', 'Student', 'Teacher', 'Level Coordinator']);
 
 // Create a new instance of the Database class
 $database = new Database();
@@ -35,10 +35,17 @@ $userController = new UserController($db);
                 <div class="d-flex flex-column gap-2 flex-grow-1">
                     <!-- CAROUSEL -->
                     <?php require_once(FILE_PATHS['Partials']['User']['Carousel']) ?>
+
+                    <!-- LIVE COUNT -->
+                    <?php require_once(FILE_PATHS['Partials']['HighLevel']['LiveCount']) ?>
                 </div>
             </div>
-            <!-- Load Widget Panel -->
-            <?php require_once FILE_PATHS['Partials']['User']['WidgetPanel'] ?>
+            <div id="widgetPanel">
+                <!-- CALENDAR -->
+                <?php require_once(FILE_PATHS['Partials']['User']['Calendar']) ?>
+                <!-- TASKS -->
+                <?php require_once(FILE_PATHS['Partials']['User']['Tasks']) ?>
+            </div>
         </section>
 
     </section>

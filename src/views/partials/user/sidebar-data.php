@@ -105,12 +105,12 @@ $sidebar_content = [
         //     'icon' => 'bi-file-earmark-text',
         //     'link' => 'enrolled_subjects.php',
         // ],
-        'enrolled-subjects' => [
-            'title' => 'Enrolled Subjects',
+        'courses' => [
+            'title' => 'Courses',
             'icon' => 'bi-journals',
             'isGroup' => true,
             'sublinks' => [
-                'academic-calendar' => [
+                'subject1' => [
                     'title' => 'Data Structures and Algorithms',
                     'icon' => 'bi-journal-text',
                     'link' => 'academic_calendar_admin.php',

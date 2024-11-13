@@ -1,2 +1,0 @@
-[INFO] [2024-11-13 13:20:22] [LOGIN] [1001] [admin1] [Admin]
-[INFO] [2024-11-13 13:23:21] [LOGIN] [1002] [ASoria.1002] [Student]
