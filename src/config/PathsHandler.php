@@ -3,6 +3,7 @@
 
 define('BASE_PATH', __DIR__ . '../../../');
 define('BASE_PATH_LINK', '/ucc-lms-dev/');
+define('BASE_URL', $_SERVER['DOCUMENT_ROOT'] . BASE_PATH_LINK);
 
 
 // Load environment variables from .env file

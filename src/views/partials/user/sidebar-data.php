@@ -93,4 +93,22 @@ $sidebar_content = [
             'link' => 'subjects_admin.php',
         ],
     ],
+
+    'Student' => [
+        'dashboard' => [
+            'title' => 'Overview',
+            'icon' => 'bi-columns-gap',
+            'link' => 'dashboard_admin.php',
+        ],
+        'enrolled-subjects' => [
+            'title' => 'Enrolled Subjects',
+            'icon' => 'bi-file-earmark-text',
+            'link' => 'enrolled_subjects_admin.php',
+        ],
+        'subjects' => [
+            'title' => 'Subjects',
+            'icon' => 'bi-file-earmark-text',
+            'link' => 'subjects_admin.php',
+        ],
+    ],
 ];
