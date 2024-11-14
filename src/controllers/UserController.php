@@ -33,8 +33,7 @@ class UserController
         $MODEL_RESULT = $this->userModel->addUser($userData);
 
         // If user creation was successful
-        if ($MODEL_RESULT == true) {
-            msgLog('TEST LOG', $MODEL_RESULT);
+        if ($MODEL_RESULT['isSuccess'] == true) {
             // If the user is a teacher, add them to the teacher_level table
             if ($userData['role'] == 'Teacher') {
                 $addTeacherResult = $this->userModel->addTeacher($userData['user_id'], $userData['educational_level']);
@@ -45,9 +44,19 @@ class UserController
 
             msgLog("CRUD", "[ADD] [USER] [USERNAME: " . $userData["username"] . "] | [" . $_SESSION["username"] . "] [" . $_SESSION["role"] . "]");
 
-            return ["success", "User added successfully!"];
+            return [
+                "type" => "success",
+                "showAsToast" => true,
+                "message" => "User added successfully.",
+                // "data" => <data_here> (situational)
+            ];
         } else {
-            return $MODEL_RESULT;
+            return [
+                "type" => "error",
+                "showAsToast" => true,
+                "message" => "Something went wrong adding user. (" . $MODEL_RESULT['message'] . ")",
+                // "data" => "",
+            ];
         }
     }
 
