@@ -1,18 +1,19 @@
 <?php
+session_start();
+$CURRENT_PAGE = "dashboard";
+
 require_once(__DIR__ . '../../../../config/PathsHandler.php');
 require_once(FILE_PATHS['DATABASE']);
+require_once(FILE_PATHS['Controllers']['User']);
+require_once(FILE_PATHS['Functions']['SessionChecker']);
+checkUserAccess(['Admin']);
 
-session_start();
+// Create a new instance of the Database class
+$database = new Database();
+$db = $database->getConnection(); // Establish the database connection
 
-$role = $_SESSION['role'];
-
-// If session is not set, redirect to login
-if (!isset($_SESSION['user_id'])) {
-    header('Location: ' . BASE_PATH);
-    exit();
-}
-
-$CURRENT_PAGE = "dashboard";
+// Create an instance of the UserController
+$userController = new UserController($db);
 
 ?>
 
@@ -20,17 +21,16 @@ $CURRENT_PAGE = "dashboard";
 <html lang="en">
 <?php require_once(FILE_PATHS['Partials']['User']['Head']) ?>
 
-<body class="">
+<body data-theme="light">
     <?php require_once(FILE_PATHS['Partials']['User']['Navbar']) ?>
 
     <section class="d-flex justify-content-between gap-2 box-sizing-border-box m-0 p-0">
-        
         <!-- SIDEBAR -->
         <?php require_once(FILE_PATHS['Partials']['User']['Sidebar']) ?>
 
         <!-- content here -->
-        <section class="row min-vh-100 w-100 m-0 p-2 d-flex justify-content-end align-items-start" id="contentSection">
-            <div class="col box-sizing-border-box flex-grow-1">
+        <section id="contentSection">
+            <div class="col p-0 box-sizing-border-box flex-grow-1">
                 <!-- First row, first column -->
                 <div class="d-flex flex-column gap-2 flex-grow-1">
                     <!-- CAROUSEL -->
@@ -40,12 +40,9 @@ $CURRENT_PAGE = "dashboard";
                     <?php require_once(FILE_PATHS['Partials']['HighLevel']['LiveCount']) ?>
                 </div>
             </div>
-            <div class="col bg-transparent d-flex flex-column justify-content-start align-items-center gap-2 px-1 box-sizing-border-box" id="widgetPanel">
-                <!-- Second column spans both rows -->
-
+            <div id="widgetPanel">
                 <!-- CALENDAR -->
                 <?php require_once(FILE_PATHS['Partials']['User']['Calendar']) ?>
-
                 <!-- TASKS -->
                 <?php require_once(FILE_PATHS['Partials']['User']['Tasks']) ?>
             </div>
@@ -56,6 +53,6 @@ $CURRENT_PAGE = "dashboard";
     <!-- FOOTER -->
     <?php require_once(FILE_PATHS['Partials']['User']['Footer']) ?>
 </body>
-<script src="../../../../src/assets/js/admin-main.js"></script>
+<script src="<?php asset('js/admin-main.js') ?>"></script>
 
 </html>

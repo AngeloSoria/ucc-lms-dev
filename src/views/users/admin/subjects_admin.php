@@ -4,7 +4,9 @@ session_start(); // Start the session at the top of your file
 require_once(__DIR__ . '../../../../config/PathsHandler.php');
 require_once(FILE_PATHS['DATABASE']);
 require_once(FILE_PATHS['Controllers']['Subject']);
+require_once(FILE_PATHS['Partials']['Widgets']['Card']);
 
+$widget_card = new Card();
 
 $CURRENT_PAGE = "subjects";
 ?>
@@ -21,7 +23,7 @@ $CURRENT_PAGE = "subjects";
         <?php require_once(FILE_PATHS['Partials']['User']['Sidebar']) ?>
 
         <!-- content here -->
-        <section class="row min-vh-100 w-100 m-0 p-1 d-flex justify-content-end align-items-start" id="contentSection">
+        <section id="contentSection">
             <div class="col box-sizing-border-box flex-grow-1">
                 <!-- First row, first column -->
                 <div class="bg-white rounded p-3 shadow-sm border">
@@ -34,21 +36,26 @@ $CURRENT_PAGE = "subjects";
                             <!-- Tools -->
 
                             <!-- Add New Button -->
-                            <button class="btn btn-primary btn-sm rounded fs-6 px-3 c-primary d-flex gap-3 align-items-center" data-bs-toggle="modal" data-bs-target="#createSubjectModal">
+                            <button
+                                class="btn btn-primary btn-sm rounded fs-6 px-3 c-primary d-flex gap-3 align-items-center"
+                                data-bs-toggle="modal" data-bs-target="#createSubjectModal">
                                 <i class="bi bi-plus-circle"></i> Add Subject
                             </button>
 
                             <!-- Reload Button -->
-                            <button class="btn btn-outline-primary btn-sm rounded fs-5 px-2 c-primary d-flex gap-2 align-items-center">
+                            <button
+                                class="btn btn-outline-primary btn-sm rounded fs-5 px-2 c-primary d-flex gap-2 align-items-center">
                                 <i class="bi bi-arrow-clockwise"></i>
                             </button>
 
                             <!-- View Type -->
                             <div class="btn-group" id="viewTypeContainer">
-                                <button id="btnViewTypeCatalog" type="button" class="btn btn-sm btn-primary c-primary px-2">
+                                <button id="btnViewTypeCatalog" type="button"
+                                    class="btn btn-sm btn-primary c-primary px-2">
                                     <i class="bi bi-card-heading fs-6"></i>
                                 </button>
-                                <button id="btnViewTypeTable" type="button" class="btn btn-sm btn-outline-primary c-primary px-2">
+                                <button id="btnViewTypeTable" type="button"
+                                    class="btn btn-sm btn-outline-primary c-primary px-2">
                                     <i class="bi bi-table fs-6"></i>
                                 </button>
                             </div>
@@ -59,7 +66,6 @@ $CURRENT_PAGE = "subjects";
 
                     <!-- Catalog View -->
                     <div id="data_view_catalog" class="d-flex justify-content-start align-items-start gap-2 flex-wrap">
-
                         <?php
                         // These are placeholders.
                         $fake_data = [
@@ -81,32 +87,23 @@ $CURRENT_PAGE = "subjects";
 
                         // Loop through the $fake_data array
                         for ($i = 0; $i < count($fake_data); $i++) {
+                            echo $widget_card->Create(
+                                'small',
+                                "subject_" . $fake_data[$i][0],
+                                !empty($section['section_image']) ? 'data:image/jpeg;base64,' . base64_encode($section['section_image']) : null,
+                                [
+                                    "title" => $fake_data[$i][0],
+                                    "others" => [
+                                        [
+                                            'hint' => 'Total Students enroled in a subject',
+                                            'icon' => '<i class="bi bi-person-fill"></i>',
+                                            'data' => 'Students: ' . number_format($fake_data[$i][1]),
+                                        ],
+                                    ],
+                                ]
+                            );
+                        }
                         ?>
-                            <div class="c-card card cbg-primary text-white border-0 shadow-sm">
-                                <img src="https://via.placeholder.com/800x600" class="card-img-top" alt="...">
-                                <div class="card-body p-2">
-                                    <!-- Dynamically set card title and text -->
-                                    <div class="row">
-                                        <div class="col-md-10">
-                                            <h6 class="card-title w-100 fw-bold bg-transparent" style="height: 4rem;"><?php echo $fake_data[$i][0]; ?></h6>
-                                            <p class="card-text fs-6"><?php echo number_format($fake_data[$i][1]); ?> Students</p>
-                                        </div>
-                                        <div class="col-md-2 d-flex justify-content-end align-items-start">
-                                            <!-- Config dialog -->
-                                            <div class="dropdown">
-                                                <button class="btn btn-lg c-primary p-0 text-white dropdown-toggle dropdown-no-icon" type="button" id="dropdownMenuButton" data-bs-toggle="dropdown" aria-expanded="false">
-                                                    <i class="bi bi-three-dots-vertical"></i>
-                                                </button>
-                                                <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="dropdownMenuButton">
-                                                    <li><a class="dropdown-item" href="#" onclick="">Configure</a></li>
-                                                    <li><a class="dropdown-item" href="#" onclick="">Delete</a></li>
-                                                </ul>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        <?php } ?>
                     </div>
 
                     <!-- Table View -->
@@ -115,7 +112,8 @@ $CURRENT_PAGE = "subjects";
                             <thead>
                                 <tr>
                                     <th>
-                                        <input type="checkbox" name="checkbox_data_selectAll" id="checkbox_data_selectAll" class="form-check-input">
+                                        <input type="checkbox" name="checkbox_data_selectAll"
+                                            id="checkbox_data_selectAll" class="form-check-input">
                                     </th>
                                     <th>Role</th>
                                     <th>Users</th>
@@ -125,7 +123,8 @@ $CURRENT_PAGE = "subjects";
                             <tbody>
                                 <tr>
                                     <td>
-                                        <input type="checkbox" name="<data_context>" id="checkbox_data_select-<data_context>" class="form-check-input">
+                                        <input type="checkbox" name="<data_context>"
+                                            id="checkbox_data_select-<data_context>" class="form-check-input">
                                     </td>
                                     <td>qwe</td>
                                     <td>qwe</td>
@@ -166,12 +165,9 @@ $CURRENT_PAGE = "subjects";
 
                 </div>
             </div>
-            <div class="col bg-transparent d-flex flex-column justify-content-start align-items-center gap-2 px-1 box-sizing-border-box" id="widgetPanel">
-                <!-- Second column spans both rows -->
-
+            <div id="widgetPanel">
                 <!-- CALENDAR -->
                 <?php require_once(FILE_PATHS['Partials']['User']['Calendar']) ?>
-
                 <!-- TASKS -->
                 <?php require_once(FILE_PATHS['Partials']['User']['Tasks']) ?>
             </div>
@@ -184,6 +180,6 @@ $CURRENT_PAGE = "subjects";
     <!-- FOOTER -->
     <?php require_once(FILE_PATHS['Partials']['User']['Footer']) ?>
 </body>
-<script src="../../../../src/assets/js/admin-main.js"></script>
+<script src="<?php asset('js/admin-main.js') ?>"></script>
 
 </html>

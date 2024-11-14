@@ -1,101 +1,73 @@
 <?php
 require_once(__DIR__ . '../../../src/config/PathsHandler.php');
-
 require_once(FILE_PATHS['DATABASE']);
 require_once(FILE_PATHS['Models']['User']);
 
 class UserController
 {
-    private $db;
     private $userModel;
 
-    public function __construct()
+    public function __construct($db)
     {
-        $database = new Database();
-        $this->db = $database->getConnection();
-        $this->userModel = new User($this->db);
+        $this->userModel = new User($db);
     }
 
-    public function addUser()
+    // Add user to database with checks
+    public function addUser($userData)
+    {
+        // Check if the user already exists
+        if ($this->userModel->checkUserExists($userData['username'])) {
+            return ["error", "User with this username already exists."];
+        }
+
+        // Read the profile picture file directly from $_FILES
+        if (isset($_FILES['profile_pic']) && $_FILES['profile_pic']['error'] === UPLOAD_ERR_OK) {
+            // Open the file and read its contents
+            $userData['profile_pic'] = file_get_contents($_FILES['profile_pic']['tmp_name']);
+        } else {
+            $userData['profile_pic'] = null;  // Handle cases where there's no profile picture
+        }
+
+        // Add the user and get the user_id (auto-incremented by MySQL)
+        $userId = $this->userModel->addUser($userData);
+
+        // If user creation was successful
+        if ($userId) {
+            // If the user is a teacher, add them to the teacher_level table
+            if ($userData['role'] == 'Teacher') {
+                $addTeacherResult = $this->userModel->addTeacher($userId, $userData['educational_level']);
+                if ($addTeacherResult !== true) {
+                    return ["error", "Error adding teacher to teacher_level table."];
+                }
+            }
+
+            return ["success", "User added successfully!"];
+        } else {
+            return ["error", "Error adding user."];
+        }
+    }
+
+
+    public function getAllUsers($limit = 100)
     {
         try {
-            if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-                // Sanitize and assign user data
-                $userData = [
-                    'user_id' => htmlspecialchars(strip_tags($_POST['user_id'])),
-                    'role' => htmlspecialchars(strip_tags($_POST['role'])),
-                    'first_name' => htmlspecialchars(strip_tags($_POST['first_name'])),
-                    'middle_name' => htmlspecialchars(strip_tags($_POST['middle_name'])),
-                    'last_name' => htmlspecialchars(strip_tags($_POST['last_name'])),
-                    'gender' => htmlspecialchars(strip_tags($_POST['gender'])),
-                    'dob' => htmlspecialchars(strip_tags($_POST['dob'])),
-                    'username' => htmlspecialchars(strip_tags($_POST['username'])),
-                    'password' => password_hash($_POST['password'], PASSWORD_DEFAULT), // Hash the password
-                    'email' => htmlspecialchars(strip_tags($_POST['email'])),
-                    'profile_pic' => null // Initialize profile_pic to null
-                ];
-
-                // Handle profile picture upload
-                if (isset($_FILES['profile_pic']) && $_FILES['profile_pic']['error'] === UPLOAD_ERR_OK) {
-                    $profilePic = $_FILES['profile_pic'];
-                    $allowedTypes = ['image/jpeg', 'image/png', 'image/gif']; // Allowed image types
-
-                    // Check file type
-                    if (in_array($profilePic['type'], $allowedTypes)) {
-                        $userData['profile_pic'] = file_get_contents($profilePic['tmp_name']); // Store the image data
-                    } else {
-                        throw new Exception("Invalid profile picture type.");
-                    }
-                }
-
-                // Call the model to add the user
-                if ($this->userModel->addUser($userData)) {
-                    return true;
-                } else {
-                    throw new Exception("Failed to add user.");
-                }
-            }
+            return $this->userModel->getAllUsers($limit);
         } catch (Exception $e) {
-            // Handle the exception by passing the error message
-            return $e->getMessage();
+            return ['error', $e->getMessage()];
         }
     }
-
-    public function editUser()
+    public function getRoleCounts()
     {
-        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-            // Get user data from the form, including the existing password and profile pic
-            $userData = [
-                'user_id' => htmlspecialchars(strip_tags($_POST['user_id'])),
-                'role' => htmlspecialchars(strip_tags($_POST['role'])),
-                'first_name' => htmlspecialchars(strip_tags($_POST['first_name'])),
-                'middle_name' => htmlspecialchars(strip_tags($_POST['middle_name'])),
-                'last_name' => htmlspecialchars(strip_tags($_POST['last_name'])),
-                'gender' => htmlspecialchars(strip_tags($_POST['gender'])),
-                'dob' => htmlspecialchars(strip_tags($_POST['dob'])),
-                'username' => htmlspecialchars(strip_tags($_POST['username'])),
-                'password' => !empty($_POST['password']) ? password_hash($_POST['password'], PASSWORD_DEFAULT) : $_POST['existing_password'],
-                'existing_profile_pic' => $_POST['existing_profile_pic'], // Existing profile picture data
-                'email' => htmlspecialchars(strip_tags($_POST['email'])),
-                'profile_pic' => $_FILES['profile_pic'] // Uploading new profile picture
-            ];
-
-            // Call the model to update the user
-            if ($this->userModel->editUser($userData)) {
-                // Success handling, e.g., redirect or display success message
-                echo "User updated successfully.";
-            } else {
-                // Error handling
-                echo "Failed to update user.";
-            }
+        try {
+            $roleCounts = $this->userModel->getRoleCounts();  // Call the model method to get counts
+            return $roleCounts;
+        } catch (Exception $e) {
+            return ['error' => 'Failed to get role counts: ' . $e->getMessage()];
         }
     }
 
-    private function initUploadFolder($userid) {
-        $directory_name = 'u_' . $userid;
-        // Check if existing user folder exists.
-        if (!file_exists(UPLOAD_PATH . $directory_name)) {
-            mkdir(UPLOAD_PATH. $directory_name, 0777, true);
-        }
+    public function getLatestUserId()
+    {
+        return $this->userModel->getLatestUserId(); // Call the model's getLatestUserId method
     }
 }

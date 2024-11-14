@@ -1,12 +1,13 @@
 <?php
 // controllers/LoginController.php
-
-require_once(__DIR__ . '../../config/connection.php');
+require_once(FILE_PATHS['DATABASE']);
+require_once(FILE_PATHS['Functions']['PHPLogger']);
 
 class LoginController
 {
     public function login()
     {
+        msgLog('INFO', 'Login Controller Called!');
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $username = $_POST['username'];
             $password = $_POST['password'];
@@ -19,6 +20,7 @@ class LoginController
             $stmt = $pdo->prepare("SELECT * FROM users WHERE username = :username AND status = 'active'");
             $stmt->execute(['username' => $username]);
             $user = $stmt->fetch(PDO::FETCH_ASSOC);
+
 
             if ($user && password_verify($password, $user['password'])) {
                 // Set session data
@@ -45,21 +47,23 @@ class LoginController
                         header('Location: src/views/users/admin/dashboard_admin.php');
                         break;
                     case 'Level Coordinator':
-                        header('Location: src/views/users/registrar/dashboard_admin.php');
+                        header('Location: src/views/users/level_coordinator/dashboard_level_coordinator.php');
                         break;
                     case 'Teacher':
-                        header('Location: src/views/users/teacher/dashboard_teacher.php');
+                        header('Location: src/views/users/teachers/dashboard_teacher.php');
                         break;
                     case 'Student':
-                        header('Location: src/views/users/student/dashboard_student.php');
+                        header('Location: src/views/users/students/dashboard_student.php');
                         break;
                     default:
                         header('Location: src/views/home.php');
                         break;
                 }
             } else {
-                // echo "Invalid login credentials.";
+                msgLog('INFO', 'Invalid Credentials');
+                return false;
             }
         }
     }
+
 }
