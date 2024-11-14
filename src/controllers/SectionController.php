@@ -38,8 +38,7 @@ class SectionController
                 if (in_array($sectionImage['type'], $allowedTypes)) {
                     $sectionData['section_image'] = file_get_contents($sectionImage['tmp_name']); // Store the image data
                 } else {
-                    echo "Invalid section image type.";
-                    return; // Early exit
+                    return ["error", "Invalid section image type."];
                 }
             }
 
@@ -49,7 +48,7 @@ class SectionController
                 header('Location: ../section_admin.php?success=1');
             } else {
                 // Error handling
-                echo "Failed to add section.";
+                return ["error", "Failed to add section."];
             }
         }
     }

@@ -66,13 +66,66 @@ function apply_section_modal(element) {
 
         allInputs.each(function () {
             let input = $(this);
-            if (input.is(':required') && !input.is(':disabled') && !input.is('[readonly]') && input.is(':visible') && !input.val()) {
+            let value = input.val();
+            let min = input.attr('min');
+            let max = input.attr('max');
+            let type = input.attr('type'); // Get the input type (text, date, number, etc.)
+
+            // Reset the is-invalid class and error message by default
+            input.removeClass('is-invalid');
+            input.next('.invalid-feedback').hide();
+
+            // Handle required field validation
+            if (input.is(':required') && !input.is(':disabled') && !input.is('[readonly]') && input.is(':visible') && !value) {
                 incomplete = true;
                 input.addClass('is-invalid');
                 input.next('.invalid-feedback').text('This field is required.').show();
-            } else {
-                input.removeClass('is-invalid');
-                input.next('.invalid-feedback').hide();
+            }
+
+            // Date and number validation for min attribute
+            if (min && value) {
+                if (type === "date") {
+                    let minDate = new Date(min);
+                    let valueDate = new Date(value);
+                    if (valueDate < minDate) {
+                        console.log("WOO");
+
+                        incomplete = true;
+                        input.addClass('is-invalid');
+                        input.next('.invalid-feedback').text(`Date must be on or after ${min}.`).show();
+                        makeToast("warning", `Date must be on or after ${min}.`);
+                    }
+                } else if (parseFloat(value) < parseFloat(min)) {
+                    console.log("WAA");
+
+                    incomplete = true;
+                    input.addClass('is-invalid');
+                    input.next('.invalid-feedback').text(`Value must be greater than or equal to ${min}.`).show();
+                    makeToast("warning", `Value must be greater than or equal to ${min}.`);
+                }
+            }
+
+            // Date and number validation for max attribute
+            if (max && value) {
+                if (type === "date") {
+                    let maxDate = new Date(max);
+                    let valueDate = new Date(value);
+                    if (valueDate > maxDate) {
+                        console.log("FOO");
+
+                        incomplete = true;
+                        input.addClass('is-invalid');
+                        input.next('.invalid-feedback').text(`Date must be on or before ${max}.`).show();
+                        makeToast("warning", `Date must be on or before ${max}.`);
+                    }
+                } else if (parseFloat(value) > parseFloat(max)) {
+                    console.log("BAR");
+
+                    incomplete = true;
+                    input.addClass('is-invalid');
+                    input.next('.invalid-feedback').text(`Value must be less than or equal to ${max}.`).show();
+                    makeToast("warning", `Value must be less than or equal to ${max}.`);
+                }
             }
         });
 
@@ -84,7 +137,7 @@ function apply_section_modal(element) {
             if (isStepComplete(currentStep)) {
                 currentStep += 1;
             } else {
-                showToast('warning', 'Please complete all required fields in this step.', 3000);
+                makeToast('warning', 'Please complete all required fields in this step.', 3000);
             }
         } else if (request === 'decrement' && currentStep > 0) {
             currentStep -= 1;
@@ -107,9 +160,7 @@ function apply_section_modal(element) {
 
     getSectionModal.find('input, select, textarea').on('input', function () {
         let input = $(this);
-        if (input.val()) {
-            input.removeClass('is-invalid');
-            input.next('.invalid-feedback').hide();
-        }
+        input.removeClass('is-invalid');
+        input.next('.invalid-feedback').hide();
     });
 }

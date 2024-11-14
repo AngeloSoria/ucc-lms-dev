@@ -7,6 +7,7 @@ class LoginController
 {
     public function login()
     {
+        msgLog('INFO', 'Login Controller Called!');
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $username = $_POST['username'];
             $password = $_POST['password'];
@@ -57,10 +58,10 @@ class LoginController
                         header('Location: src/views/users/level_coordinator/dashboard_level_coordinator.php');
                         break;
                     case 'Teacher':
-                        header('Location: src/views/users/teacher/dashboard_teacher.php');
+                        header('Location: src/views/users/teachers/dashboard_teacher.php');
                         break;
                     case 'Student':
-                        header('Location: src/views/users/student/dashboard_student.php');
+                        header('Location: src/views/users/students/dashboard_student.php');
                         break;
                     default:
                         msgLog('ERROR', 'Something went wrong when trying to identify the user role.');

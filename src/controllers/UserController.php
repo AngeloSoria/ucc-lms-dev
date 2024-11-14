@@ -2,6 +2,7 @@
 require_once(__DIR__ . '../../../src/config/PathsHandler.php');
 require_once(FILE_PATHS['DATABASE']);
 require_once(FILE_PATHS['Models']['User']);
+require_once(FILE_PATHS['Functions']['PHPLogger']);
 
 class UserController
 {
@@ -29,21 +30,24 @@ class UserController
         }
 
         // Add the user and get the user_id (auto-incremented by MySQL)
-        $userId = $this->userModel->addUser($userData);
+        $MODEL_RESULT = $this->userModel->addUser($userData);
 
         // If user creation was successful
-        if ($userId) {
+        if ($MODEL_RESULT == true) {
+            msgLog('TEST LOG', $MODEL_RESULT);
             // If the user is a teacher, add them to the teacher_level table
             if ($userData['role'] == 'Teacher') {
-                $addTeacherResult = $this->userModel->addTeacher($userId, $userData['educational_level']);
+                $addTeacherResult = $this->userModel->addTeacher($userData['user_id'], $userData['educational_level']);
                 if ($addTeacherResult !== true) {
                     return ["error", "Error adding teacher to teacher_level table."];
                 }
             }
 
+            msgLog("CRUD", "[ADD] [USER] [USERNAME: " . $userData["username"] . "] | [" . $_SESSION["username"] . "] [" . $_SESSION["role"] . "]");
+
             return ["success", "User added successfully!"];
         } else {
-            return ["error", "Error adding user."];
+            return $MODEL_RESULT;
         }
     }
 

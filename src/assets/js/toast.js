@@ -1,4 +1,4 @@
-function showToast(toastType = "default", message, delay = 5000) {
+function makeToast(toastType = "default", message, delay = 5000) {
   // Create the toast container if it doesn't exist
   let toastContainer = document.querySelector(".toast-container");
   if (!toastContainer) {

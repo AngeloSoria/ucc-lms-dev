@@ -18,7 +18,7 @@ function outputToasts()
         <script>
             const toastData = $toastData;
             toastData.forEach(({type, message, delay}) => {
-                showToast(type, message, delay);
+                makeToast(type, message, delay);
             });
         </script>
         HTML;

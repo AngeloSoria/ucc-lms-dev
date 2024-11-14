@@ -6,12 +6,13 @@ $available_widgets = [
     "Calendar" => "mycalendar.php",
     "Tasks" => "mytasks.php",
     "Announcements" => "announcements.php",
+    "Upcoming" => "upcoming.php",
 ];
 
 $user_widgets = [
     // Role => [Keys, ...]
     'Admin' => ["Calendar", "Announcements"],
-    'Teacher' => ["Calendar", "Tasks", "Announcements"],
-    'Student' => ["Calendar", "Tasks", "Announcements"],
+    'Teacher' => ["Calendar", "Tasks", "Announcements", "Upcoming"],
+    'Student' => ["Calendar", "Tasks", "Announcements", "Upcoming"],
     'Level Coordinator' => ["Calendar", "Tasks", "Announcements"]
 ];

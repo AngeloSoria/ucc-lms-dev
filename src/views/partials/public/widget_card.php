@@ -39,7 +39,7 @@ class Card
 
         // Use Heredoc to create the main card structure, embedding the dynamic content
         $DOM = <<<HTML
-        <div class="c-card $card_type" id="$unique_id">
+        <div class="c-card rounded $card_type" id="$unique_id">
             $DOM_IMAGE
             <div class="card-body p-2">
                 <div class="row">
