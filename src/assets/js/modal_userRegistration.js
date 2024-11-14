@@ -73,23 +73,26 @@ document.addEventListener("DOMContentLoaded", function () {
           }
         });
       }
-
-      // Event Listener for Role onselect dropdown.
-      const roleSelect = document.getElementById("role");
-      roleSelect.addEventListener("change", function () {
-        const selectedRole = roleSelect.value;
-        clearRoleTypeOptions();
-        switch (selectedRole) {
-          case "Teacher":
-            container_RoleType.classList.remove("d-none");
-            // Add options to role_type dropdown
-            addRoleTypeOption(["SHS", "College"]);
-            break;
-          default:
-            container_RoleType.classList.add("d-none");
-            break;
-        }
-      });
     });
+
   }
+
+  // Event Listener for Role onselect dropdown.
+  const roleSelect = document.getElementById("role");
+  roleSelect.addEventListener("change", function () {
+    console.log("qweqwe");
+
+    const selectedRole = roleSelect.value;
+    clearRoleTypeOptions();
+    switch (selectedRole) {
+      case "Teacher":
+        container_RoleType.classList.remove("d-none");
+        // Add options to role_type dropdown
+        addRoleTypeOption(["SHS", "College"]);
+        break;
+      default:
+        container_RoleType.classList.add("d-none");
+        break;
+    }
+  });
 });
