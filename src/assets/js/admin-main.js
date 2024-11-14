@@ -1,13 +1,6 @@
 
 
 
-
-
-
-
-
-
-
 // Users Page
 var data_view_catalog = $('#data_view_catalog');
 var data_view_table = $('#data_view_table');

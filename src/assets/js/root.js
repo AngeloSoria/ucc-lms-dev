@@ -35,26 +35,34 @@ function togglePasswordInputText(toggler) {
     .addClass(isPassword ? "bi-eye-fill" : "bi-eye-slash-fill");
 }
 
+
+// Hide.bs.modal: Runs before the modal starts to hide
 $(".modal").on("hide.bs.modal", function (e) {
-  // Check if the modal has the closing-confirmation attribute
-  if ($(this).attr("closing-confirmation") !== undefined) {
-    // Get the custom confirmation text
-    var confirmationText =
-      $(this).attr("closing-confirmation-text") ||
-      "Are you sure you want to close this modal?";
-
-    // Show confirmation dialog with the custom text
-    var confirmation = confirm(confirmationText);
-
-    // If the user clicks "Cancel", prevent the modal from closing
-    if (!confirmation) {
-      e.preventDefault(); // Prevent the modal from closing
-    } else {
-      // Clear all inputs or textboxes contents.
-      $(this).find('input[type="text"], input[type="password"]').val("");
+  if ($(this).attr("closing-confirmation") === "true") {
+    let confirmationText = $(this).attr("closing-confirmation-text") || "Are you sure you want to close this modal?";
+    if (!confirm(confirmationText)) {
+      e.preventDefault();
+      return;
     }
   }
+
+  // Clear fields only if confirmation passed
+  // Clear text and password inputs if not disabled, readonly, or hidden
+  $(this).find('input[type="text"]:not([disabled]):not([readonly]):not(:hidden), input[type="password"]:not([disabled]):not([readonly]):not(:hidden)').val("");
+
+  // Reset dropdowns if not disabled, readonly, or hidden
+  $(this).find("select:not([disabled]):not([readonly]):not(:hidden)").val(function () {
+    return $(this).find("option:first").val();
+  });
+
+  // Clear date inputs if not disabled, readonly, or hidden
+  $(this).find('input[type="date"]:not([disabled]):not([readonly]):not(:hidden)').val("");
+
+  // Uncheck radio and checkbox inputs if not disabled, readonly, or hidden
+  $(this).find('input[type="radio"]:not([disabled]):not([readonly]):not(:hidden), input[type="checkbox"]:not([disabled]):not([readonly]):not(:hidden)').prop("checked", false);
 });
+
+
 
 // FOR search input element.
 document.addEventListener("DOMContentLoaded", function () {

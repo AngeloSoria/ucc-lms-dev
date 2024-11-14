@@ -3,18 +3,17 @@ session_start();
 $CURRENT_PAGE = "dashboard";
 
 require_once(__DIR__ . '../../../../config/PathsHandler.php');
-$role = $_SESSION['role'];
+require_once(FILE_PATHS['DATABASE']);
+require_once(FILE_PATHS['Controllers']['User']);
+require_once(FILE_PATHS['Functions']['SessionChecker']);
+checkUserAccess(['Teacher']);
 
-// If session is not set, redirect to login
-if (!isset($_SESSION['user_id'])) {
-    header('Location: ' . BASE_PATH);
-    exit();
-}
-
-// Database connection
+// Create a new instance of the Database class
 $database = new Database();
-$pdo = $database->getConnection();
+$db = $database->getConnection(); // Establish the database connection
 
+// Create an instance of the UserController
+$userController = new UserController($db);
 
 ?>
 
@@ -26,32 +25,23 @@ $pdo = $database->getConnection();
     <?php require_once(FILE_PATHS['Partials']['User']['Navbar']) ?>
 
     <section class="d-flex justify-content-between gap-2 box-sizing-border-box m-0 p-0">
-
         <!-- SIDEBAR -->
         <?php require_once(FILE_PATHS['Partials']['User']['Sidebar']) ?>
 
         <!-- content here -->
-        <section class="row min-vh-100 w-100 m-0 p-2 d-flex justify-content-end align-items-start" id="contentSection">
-            <div class="col box-sizing-border-box flex-grow-1">
+        <section id="contentSection">
+            <div class="col p-0 box-sizing-border-box flex-grow-1">
                 <!-- First row, first column -->
                 <div class="d-flex flex-column gap-2 flex-grow-1">
                     <!-- CAROUSEL -->
                     <?php require_once(FILE_PATHS['Partials']['User']['Carousel']) ?>
 
-                    <!-- LIVE COUNT -->
-                    <?php require_once(FILE_PATHS['Partials']['HighLevel']['LiveCount']) ?>
+                    <!-- COURSES -->
+                    <?php require_once(FILE_PATHS['Partials']['User']['Courses']) ?>
                 </div>
             </div>
-            <div class="col bg-transparent d-flex flex-column justify-content-start align-items-center gap-2 px-1 box-sizing-border-box"
-                id="widgetPanel">
-                <!-- Second column spans both rows -->
-
-                <!-- CALENDAR -->
-                <?php require_once(FILE_PATHS['Partials']['User']['Calendar']) ?>
-
-                <!-- TASKS -->
-                <?php require_once(FILE_PATHS['Partials']['User']['Tasks']) ?>
-            </div>
+            <!-- Load Widget Panel -->
+            <?php require_once FILE_PATHS['Partials']['User']['WidgetPanel'] ?>
         </section>
 
     </section>

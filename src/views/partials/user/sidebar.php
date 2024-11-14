@@ -48,7 +48,7 @@ $fakedata_enrolled_subjects = [
 
 ?>
 
-<div class="sidebar bg-light shadow-sm py-1 border z-2" id="sidebarMenu">
+<div class="sidebar bg-light shadow-sm py-1 border z-3" id="sidebarMenu">
     <div class="sidebar-controls">
         <div class="controls">
             <button class="btn btn-close" id="btnSideBarMenu2" onclick="toggleSidebar();"></button>

@@ -2,6 +2,7 @@
 require_once(__DIR__ . '../../../src/config/PathsHandler.php');
 require_once(FILE_PATHS['DATABASE']);
 require_once(FILE_PATHS['Models']['User']);
+require_once(FILE_PATHS['Functions']['PHPLogger']);
 
 class UserController
 {
@@ -32,7 +33,7 @@ class UserController
         $userId = $this->userModel->addUser($userData);
 
         // If user creation was successful
-        if ($userId) {
+        if ($userId !== false) {
             // If the user is a teacher, add them to the teacher_level table
             if ($userData['role'] == 'Teacher') {
                 $addTeacherResult = $this->userModel->addTeacher($userId, $userData['educational_level']);
@@ -40,6 +41,8 @@ class UserController
                     return ["error", "Error adding teacher to teacher_level table."];
                 }
             }
+
+            msgLog("CRUD", "[ADD] [USER] [USERNAME: " . $userData["username"] . "] | [" . $_SESSION["username"] . "] [" . $_SESSION["role"] . "]");
 
             return ["success", "User added successfully!"];
         } else {

@@ -48,7 +48,8 @@ document.addEventListener("DOMContentLoaded", function () {
   // Reset form fields when modal is hidden
   const userFormModal = document.getElementById("userFormModal");
   userFormModal.addEventListener("hidden.bs.modal", function () {
-    userForm.reset();
+    console.log('ZZZZZZ');
+
     usernameInput.value = ""; // Clear generated username field
     passwordInput.value = ""; // Clear generated password field
     container_RoleType.classList.add("d-none");

@@ -14,7 +14,7 @@
 $sidebar_content = [
     'Admin' => [
         'dashboard' => [
-            'title' => 'Overview',
+            'title' => 'Dashboard',
             'icon' => 'bi-columns-gap',
             'link' => 'dashboard_admin.php',
         ],
@@ -96,7 +96,43 @@ $sidebar_content = [
 
     'Student' => [
         'dashboard' => [
-            'title' => 'Overview',
+            'title' => 'Dashboard',
+            'icon' => 'bi-columns-gap',
+            'link' => 'dashboard_student.php',
+        ],
+        // 'enrolled-subjectss' => [
+        //     'title' => 'Enrolled Subjects',
+        //     'icon' => 'bi-file-earmark-text',
+        //     'link' => 'enrolled_subjects.php',
+        // ],
+        'subjects' => [
+            'title' => 'Subjects',
+            'icon' => 'bi-journals',
+            'isGroup' => true,
+            'sublinks' => [
+                'enrolled-subjects' => [
+                    'title' => 'Enrolled Subjects',
+                    'icon' => 'bi-bookshelf',
+                    'link' => 'enrolled_subjects.php',
+                ],
+            ],
+        ],
+        'misc' => [
+            'title' => 'Miscellaneous',
+            'icon' => 'bi-bar-chart-steps',
+            'isGroup' => true,
+            'sublinks' => [
+                'content' => [
+                    'title' => 'My Uploads',
+                    'icon' => 'bi-images',
+                    'link' => 'content_admin.php',
+                ],
+            ],
+        ],
+    ],
+    'Teacher' => [
+        'dashboard' => [
+            'title' => 'Dashboard',
             'icon' => 'bi-columns-gap',
             'link' => 'dashboard_student.php',
         ],

@@ -88,7 +88,7 @@ $latestUserId = $userController->getLatestUserId();
 
                             <div class="flex-grow-1">
                                 <label for="dob" class="form-label">Date of Birth</label>
-                                <input type="date" class="form-control" id="dob" name="dob" required>
+                                <input type="date" class="form-control" id="dob" name="dob" min="1979-12-31" max="2025-1-31" required>
                             </div>
                         </div>
                     </div>
