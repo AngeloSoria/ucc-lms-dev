@@ -48,8 +48,6 @@ document.addEventListener("DOMContentLoaded", function () {
   // Reset form fields when modal is hidden
   const userFormModal = document.getElementById("userFormModal");
   userFormModal.addEventListener("hidden.bs.modal", function () {
-    console.log('ZZZZZZ');
-
     usernameInput.value = ""; // Clear generated username field
     passwordInput.value = ""; // Clear generated password field
     container_RoleType.classList.add("d-none");
@@ -69,25 +67,29 @@ document.addEventListener("DOMContentLoaded", function () {
   function clearRoleTypeOptions() {
     Array.from(dropdown_RoleType.options).forEach(function (option) {
       if (!option.hasAttribute("disabled")) {
-        dropdown_RoleType.removeChild(option);
+        Array.from(dropdown_RoleType.options).forEach(function (option) {
+          if (!option.hasAttribute("disabled")) {
+            dropdown_RoleType.removeChild(option);
+          }
+        });
       }
+
+      // Event Listener for Role onselect dropdown.
+      const roleSelect = document.getElementById("role");
+      roleSelect.addEventListener("change", function () {
+        const selectedRole = roleSelect.value;
+        clearRoleTypeOptions();
+        switch (selectedRole) {
+          case "Teacher":
+            container_RoleType.classList.remove("d-none");
+            // Add options to role_type dropdown
+            addRoleTypeOption(["SHS", "College"]);
+            break;
+          default:
+            container_RoleType.classList.add("d-none");
+            break;
+        }
+      });
     });
   }
-
-  // Event Listener for Role onselect dropdown.
-  const roleSelect = document.getElementById("role");
-  roleSelect.addEventListener("change", function () {
-    const selectedRole = roleSelect.value;
-    clearRoleTypeOptions();
-    switch (selectedRole) {
-      case "Teacher":
-        container_RoleType.classList.remove("d-none");
-        // Add options to role_type dropdown
-        addRoleTypeOption(["SHS", "College"]);
-        break;
-      default:
-        container_RoleType.classList.add("d-none");
-        break;
-    }
-  });
 });

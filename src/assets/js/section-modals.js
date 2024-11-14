@@ -93,7 +93,7 @@ function apply_section_modal(element) {
                         incomplete = true;
                         input.addClass('is-invalid');
                         input.next('.invalid-feedback').text(`Date must be on or after ${min}.`).show();
-                        showToast("warning", `Date must be on or after ${min}.`);
+                        makeToast("warning", `Date must be on or after ${min}.`);
                     }
                 } else if (parseFloat(value) < parseFloat(min)) {
                     console.log("WAA");
@@ -101,7 +101,7 @@ function apply_section_modal(element) {
                     incomplete = true;
                     input.addClass('is-invalid');
                     input.next('.invalid-feedback').text(`Value must be greater than or equal to ${min}.`).show();
-                    showToast("warning", `Value must be greater than or equal to ${min}.`);
+                    makeToast("warning", `Value must be greater than or equal to ${min}.`);
                 }
             }
 
@@ -116,7 +116,7 @@ function apply_section_modal(element) {
                         incomplete = true;
                         input.addClass('is-invalid');
                         input.next('.invalid-feedback').text(`Date must be on or before ${max}.`).show();
-                        showToast("warning", `Date must be on or before ${max}.`);
+                        makeToast("warning", `Date must be on or before ${max}.`);
                     }
                 } else if (parseFloat(value) > parseFloat(max)) {
                     console.log("BAR");
@@ -124,7 +124,7 @@ function apply_section_modal(element) {
                     incomplete = true;
                     input.addClass('is-invalid');
                     input.next('.invalid-feedback').text(`Value must be less than or equal to ${max}.`).show();
-                    showToast("warning", `Value must be less than or equal to ${max}.`);
+                    makeToast("warning", `Value must be less than or equal to ${max}.`);
                 }
             }
         });
@@ -137,7 +137,7 @@ function apply_section_modal(element) {
             if (isStepComplete(currentStep)) {
                 currentStep += 1;
             } else {
-                showToast('warning', 'Please complete all required fields in this step.', 3000);
+                makeToast('warning', 'Please complete all required fields in this step.', 3000);
             }
         } else if (request === 'decrement' && currentStep > 0) {
             currentStep -= 1;

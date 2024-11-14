@@ -23,29 +23,31 @@ class User
     // Add user to the database
     public function addUser($userData)
     {
-        // Query to insert the user without the user_id
-        $query = "INSERT INTO users (user_id, role, first_name, middle_name, last_name, gender, dob, username, password, profile_pic) 
-                  VALUES (:user_id, :role, :first_name, :middle_name, :last_name, :gender, :dob, :username, :password, :profile_pic)";
-        $stmt = $this->conn->prepare($query);
+        try {
+            $this->conn->beginTransaction();
+            // Query to insert the user without the user_id
+            $query = "INSERT INTO {$this->table_name} (user_id, role, first_name, middle_name, last_name, gender, dob, username, password, profile_pic) 
+        VALUES (:user_id, :role, :first_name, :middle_name, :last_name, :gender, :dob, :username, :password, :profile_pic)";
+            $stmt = $this->conn->prepare($query);
 
-        // Bind parameters
-        $stmt->bindParam(':user_id', $userData['user_id']);
-        $stmt->bindParam(':role', $userData['role']);
-        $stmt->bindParam(':first_name', $userData['first_name']);
-        $stmt->bindParam(':middle_name', $userData['middle_name']);
-        $stmt->bindParam(':last_name', $userData['last_name']);
-        $stmt->bindParam(':gender', $userData['gender']);
-        $stmt->bindParam(':dob', $userData['dob']);
-        $stmt->bindParam(':username', $userData['username']);
-        $stmt->bindParam(':password', $userData['password']);
-        $stmt->bindParam(':profile_pic', $userData['profile_pic'], PDO::PARAM_LOB);  // For binary data
+            // Bind parameters
+            $stmt->bindParam(':user_id', $userData['user_id']);
+            $stmt->bindParam(':role', $userData['role']);
+            $stmt->bindParam(':first_name', $userData['first_name']);
+            $stmt->bindParam(':middle_name', $userData['middle_name']);
+            $stmt->bindParam(':last_name', $userData['last_name']);
+            $stmt->bindParam(':gender', $userData['gender']);
+            $stmt->bindParam(':dob', $userData['dob']);
+            $stmt->bindParam(':username', $userData['username']);
+            $stmt->bindParam(':password', $userData['password']);
+            $stmt->bindParam(':profile_pic', $userData['profile_pic'], PDO::PARAM_LOB);  // For binary data
 
-        // Execute the query
-        if ($stmt->execute()) {
-            // Get the last inserted user_id
-            return $this->conn->lastInsertId();
-        } else {
-            return false;  // If insertion fails
+            $this->conn->commit();
+            $stmt->execute();
+            return true;
+        } catch (PDOException $e) {
+            $this->conn->rollBack();  // Rollback the transaction if an error occurs.
+            return ['error' => $e->getMessage()];
         }
     }
 

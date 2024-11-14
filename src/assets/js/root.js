@@ -156,7 +156,7 @@ document.addEventListener("DOMContentLoaded", function () {
         );
 
         if (existingUserItem) {
-          showToast(
+          makeToast(
             "warning",
             "Duplicate User",
             `User already added: ${user.name} (${user.id})`

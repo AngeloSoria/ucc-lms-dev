@@ -69,7 +69,7 @@ try {
             <div class="col box-sizing-border-box flex-grow-1 bg-white border rounded p-2 pt-3">
                 <div>
                     <div class="d-flex justify-content-between px-2">
-                        <h5 class="mb-3">Carousel</h5>
+                        <h5 class="mb-3">Carousel Management</h5>
                         <div>
                             <button class="btn btn-primary c-primary" data-bs-toggle="modal"
                                 data-bs-target="#fileSelectModal">
@@ -95,50 +95,40 @@ try {
                         <div class="tab-pane fade show active" id="home" role="tabpanel" aria-labelledby="home-tab">
                             <!-- Display Selected Images for Homepage -->
                             <br>
-                            <h5>Selected Images <i class="text-danger"
+                            <h5>Home Carousel <i class="text-danger"
                                     style="font-size: 0.85rem; font-weight: normal;">(Max item: 4)</i></h5>
                             <?php
                             $images = $selectedImagesHome;
                             require(FILE_PATHS['Partials']['HighLevel']['Dragger']["Carousel"]["Home"]);
                             ?>
 
-                            <h5>Selected Images <i class="text-danger"
+                        </div>
+
+                        <!-- User Content Tab Section -->
+                        <div class="tab-pane fade" id="user-content" role="tabpanel" aria-labelledby="user-content-tab">
+                            <h5>Dashboard Carousel <i class="text-danger"
                                     style="font-size: 0.85rem; font-weight: normal;">(Max item: 4)</i></h5>
                             <?php
                             $images = $selectedImagesDashboard;
                             require(FILE_PATHS['Partials']['HighLevel']['Dragger']["Carousel"]["Home"]);
                             ?>
                         </div>
-
-                        User Content Tab Section
-                        <!-- <div class="tab-pane fade" id="user-content" role="tabpanel" aria-labelledby="user-content-tab">
-                            Display Selected Images for User Content Section 
-                            <br>
-
-
-                            Unselected Images for User Content Section -->
-                        <!-- <h5 class="mt-4">Available Images</h5>
-                        -- <?php
-                            $images = $unselectedImagesDashboard;
-                            require(FILE_PATHS['Partials']['HighLevel']['Dragger']["Carousel"]["Home"]);
-                            ?> -->
+                    </section>
                 </div>
+            </div>
+            <div id="widgetPanel">
+                <!-- CALENDAR -->
+                <?php require_once(FILE_PATHS['Partials']['User']['Calendar']) ?>
+                <!-- TASKS -->
+                <?php require_once(FILE_PATHS['Partials']['User']['Tasks']) ?>
+            </div>
         </section>
-        </div>
-        </div>
-        <div id="widgetPanel">
-            <!-- CALENDAR -->
-            <?php require_once(FILE_PATHS['Partials']['User']['Calendar']) ?>
-            <!-- TASKS -->
-            <?php require_once(FILE_PATHS['Partials']['User']['Tasks']) ?>
-        </div>
-    </section>
     </section>
 
     <!-- FOOTER -->
     <?php require_once(FILE_PATHS['Partials']['User']['Footer']) ?>
 
 </body>
-<script src="<?php echo asset('js/admin-main.js') ?>"></script>
+<script src="<?php asset('js/admin-main.js') ?>"></script>
 
 </html>

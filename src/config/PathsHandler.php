@@ -36,7 +36,7 @@ define('FILE_PATHS', [
         'Section' => __DIR__ . '../../controllers/SectionController.php',
         'Subject' => __DIR__ . '../../controllers/SubjectController.php',
         'User' => __DIR__ . '../../controllers/UserController.php',
-        'AcademicTerm' => __DIR__ . '../../controllers/AcademicTermController.php',
+        'AcademicPeriod' => __DIR__ . '../../controllers/AcademicPeriodController.php',
     ],
 
     'Models' => [
@@ -46,7 +46,7 @@ define('FILE_PATHS', [
         'Section' => __DIR__ . '../../models/Section.php',
         'Subject' => __DIR__ . '../../models/Subject.php',
         'User' => __DIR__ . '../../models/User.php',
-        'AcademicTerm' => __DIR__ . '../../models/AcademicTerm.php',
+        'AcademicPeriod' => __DIR__ . '../../models/AcademicPeriod.php',
     ],
 
     'Partials' => [
@@ -98,7 +98,7 @@ define('FILE_PATHS', [
                     // 'Config' => __DIR__ . '../../views/partials/high-level/modal_configCourse.php',
                 ],
                 'Academic' => [
-                    'Add' => __DIR__ . '../../views/partials/high-level/modal_addAcademicTerm.php',
+                    'Add' => __DIR__ . '../../views/partials/high-level/modal_addAcademicPeriod.php',
                     // 'Config' => __DIR__ . '../../views/partials/high-level/modal_configCourse.php',
                 ],
                 'Department' => [

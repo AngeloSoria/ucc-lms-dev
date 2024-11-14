@@ -30,13 +30,14 @@ class UserController
         }
 
         // Add the user and get the user_id (auto-incremented by MySQL)
-        $userId = $this->userModel->addUser($userData);
+        $MODEL_RESULT = $this->userModel->addUser($userData);
 
         // If user creation was successful
-        if ($userId !== false) {
+        if ($MODEL_RESULT == true) {
+            msgLog('TEST LOG', $MODEL_RESULT);
             // If the user is a teacher, add them to the teacher_level table
             if ($userData['role'] == 'Teacher') {
-                $addTeacherResult = $this->userModel->addTeacher($userId, $userData['educational_level']);
+                $addTeacherResult = $this->userModel->addTeacher($userData['user_id'], $userData['educational_level']);
                 if ($addTeacherResult !== true) {
                     return ["error", "Error adding teacher to teacher_level table."];
                 }
@@ -46,7 +47,7 @@ class UserController
 
             return ["success", "User added successfully!"];
         } else {
-            return ["error", "Error adding user."];
+            return $MODEL_RESULT;
         }
     }
 

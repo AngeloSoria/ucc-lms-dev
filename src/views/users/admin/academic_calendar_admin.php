@@ -1,54 +1,80 @@
 <?php
 session_start(); // Start the session at the top of your file
-$CURRENT_PAGE = "academic-calendar";
+$CURRENT_PAGE = 'AcademicPeriod';
 
 require_once(__DIR__ . '../../../../config/PathsHandler.php');
 require_once(FILE_PATHS['DATABASE']);
-require_once(FILE_PATHS['Controllers']['AcademicTerm']);
+include(FILE_PATHS['Controllers']['AcademicPeriod']);
+require_once(FILE_PATHS['Partials']['Widgets']['Card']);
+require_once(FILE_PATHS['Functions']['SessionChecker']);
+require_once(FILE_PATHS['Functions']['ToastLogger']);
+checkUserAccess(['Admin']); // Ensure the user has admin access
 
+// Create a new instance of the Database class
 $database = new Database();
 $db = $database->getConnection(); // Establish the database connection
-$academicTermController = new AcademicTermController();
 
-// Check if the form is submitted
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    // Retrieve form data
-    $start_year = $_POST['start_year'];
-    $end_year = $_POST['end_year'];
-    $semester = $_POST['semester'];
-    $start_date = $_POST['start_date'];
-    $end_date = $_POST['end_date'];
+// Create an instance of the AcademicPeriodController
+$academicPeriodController = new AcademicPeriodController($db);
 
-    // Combine academic year
-    $academic_year = $start_year . ' - ' . $end_year;
-
-    // Prepare the data array
-    $data = [
-        'academic_year' => $academic_year,
-        'semester' => $semester,
-        'start_date' => $start_date,
-        'end_date' => $end_date,
+// Handle form submission for adding an academic year
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['action'] == 'addAcademicYearWithSemesters') {
+    // Collect academic year data from POST request
+    $academicData = [
+        "academic_year_start" => $_POST['academic_year_start'],
+        "academic_year_end" => $_POST['academic_year_end'],
+        "first_semester" => [
+            "start_date" => $_POST['first_semester_start'],
+            "end_date" => $_POST['first_semester_end'],
+        ],
+        "second_semester" => [
+            "start_date" => $_POST['second_semester_start'],
+            "end_date" => $_POST['second_semester_end'],
+        ],
+        "semester" => $_POST['semester'],
+        "is_active" => $_POST['is_active'],
     ];
 
-    // Call the controller method to add the academic term
-    $result = $academicTermController->addAcademicTerm($data);
+    // $academicYear = $_POST['start_year'] . '-' . $_POST['end_year'];
+    // $firstSemesterDates = [
+    //     'start_date' => $_POST['first_semester_start'],
+    //     'end_date' => $_POST['first_semester_end']
+    // ];
+    // $secondSemesterDates = [
+    //     'start_date' => $_POST['second_semester_start'],
+    //     'end_date' => $_POST['second_semester_end']
+    // ];
 
-    if ($result) {
-        $_SESSION['message'] = "Academic term added successfully!";
-    } else {
-        $_SESSION['message'] = "Failed to add academic term.";
-    }
+    $_SESSION["_ResultMessage"] = $academicPeriodController->addAcademicYearWithSemesters($academicData);
 
-    // Redirect or load the page again to show the message
-    header("Location: " . $_SERVER['PHP_SELF']);
+    // Redirect to the same page to prevent resubmission
+    header("Location: " . $_SERVER['REQUEST_URI']);
     exit();
 }
 
-// Fetch the current active term
-$currentTerm = $academicTermController->getCurrentActiveTerm();
-// Fetch all academic terms
-$allTerms = $academicTermController->getAllAcademicTerms();
+$currentDate = $academicPeriodController->showCurrentDate();
+$academicPeriodController->checkAndUpdateActiveStatus();
+// Fetch active terms
+$activeTermsResponse = $academicPeriodController->getActiveTerms();
+if ($activeTermsResponse['success']) {
+    $activeTerms = $activeTermsResponse['data'];
+    $currentTerm = $activeTerms[0]; // Assuming there's at least one active term
+} else {
+    $errorMessage = $activeTermsResponse['error'] ?? $activeTermsResponse['message'];
+}
+
+// Fetch all terms
+$allTermsResponse = $academicPeriodController->getAllTerms();
+$_SESSION["_ResultMessage"] = $allTermsResponse;
+
+if ($allTermsResponse != null) {
+    $allTerms = $allTermsResponse;
+} else {
+    $allTerms = []; // In case of error, return an empty array
+    // $errorMessage = $allTermsResponse['error'] ?? $allTermsResponse['message'];
+}
 ?>
+
 
 <!DOCTYPE html>
 <html lang="en">
@@ -67,7 +93,7 @@ $allTerms = $academicTermController->getAllAcademicTerms();
                     <div>
                         <div class="mb-3 row align-items-start">
                             <div class="col-4 d-flex gap-3">
-                                <h5 class="ctxt-primary">Academic Calendar</h5>
+                                <h5 class="ctxt-primary">Academic Period Settings</h5>
                             </div>
                             <div class="col-8 d-flex justify-content-end gap-2">
                                 <button
@@ -84,33 +110,54 @@ $allTerms = $academicTermController->getAllAcademicTerms();
                     </div>
                     <hr>
                     <section>
-                        <h5>Current</h5>
-                        <div class="d-flex gap-2">
-                            <h6>Academic Term:</h6>
-                            <p><?php echo $currentTerm ? htmlspecialchars($currentTerm['academic_year']) : 'N/A'; ?></p>
+                        <h5>Active Academic Period</h5>
+                        <div class="d-flex gap-2 pt-2 ">
+                            <h6>Academic Year:</h6>
+                            <p>
+                                <?php echo isset($currentTerm) ? htmlspecialchars($currentTerm['academic_year_start']) . ' - ' . htmlspecialchars($currentTerm['academic_year_end']) : 'N/A'; ?>
+                            </p>
                         </div>
+
                         <div class="d-flex gap-2">
                             <h6>Academic Semester:</h6>
-                            <p><?php echo $currentTerm ? htmlspecialchars($currentTerm['semester']) : 'N/A'; ?></p>
+                            <?php
+                            if (isset($currentTerm['semester'])) {
+                                // Assuming $currentTerm['semester'] contains the year (1 or 2)
+                                if ($currentTerm['semester'] == 1) {
+                                    echo '1st Semester';
+                                } elseif ($currentTerm['semester'] == 2) {
+                                    echo '2nd Semester';
+                                } else {
+                                    echo 'N/A';
+                                }
+                            } else {
+                                echo 'N/A';
+                            }
+                            ?>
                         </div>
                         <div class="d-flex gap-2">
                             <h6>Start Date:</h6>
-                            <p><?php echo $currentTerm ? htmlspecialchars($currentTerm['start_date']) : 'N/A'; ?></p>
+                            <p><?php echo isset($currentTerm['start_date']) ? htmlspecialchars($currentTerm['start_date']) : 'N/A'; ?>
+                            </p>
                         </div>
                         <div class="d-flex gap-2">
                             <h6>End Date:</h6>
-                            <p><?php echo $currentTerm ? htmlspecialchars($currentTerm['end_date']) : 'N/A'; ?></p>
+                            <p><?php echo isset($currentTerm['end_date']) ? htmlspecialchars($currentTerm['end_date']) : 'N/A'; ?>
+                            </p>
                         </div>
                     </section>
 
+
+
+
                     <br>
                     <section>
-                        <h5>List of Academic Year</h5>
+                        <h5>List of Academic Term</h5>
                         <div class="border">
                             <table class="table table-striped">
                                 <thead>
                                     <tr>
-                                        <th>Year</th>
+                                        <th>Academic Year</th>
                                         <th>Semester</th>
                                         <th>Start Date</th>
                                         <th>End Date</th>
@@ -118,16 +165,40 @@ $allTerms = $academicTermController->getAllAcademicTerms();
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    <?php foreach ($allTerms as $term): ?>
+                                    <?php if (is_array($allTerms) && !empty($allTerms)): ?>
+                                        <?php foreach ($allTerms as $term): ?>
+                                            <tr>
+                                                <td><?php echo htmlspecialchars($term['academic_year_start'] ?? 'N/A') . ' - ' . htmlspecialchars($term['academic_year_end'] ?? 'N/A'); ?></td>
+                                                <td>
+                                                    <?php
+                                                    if (isset($term['semester'])) {
+                                                        // Assuming $term['semester'] contains the year (1 or 2)
+                                                        if ($term['semester'] == 1) {
+                                                            echo '1st Semester';
+                                                        } elseif ($term['semester'] == 2) {
+                                                            echo '2nd Semester';
+                                                        } else {
+                                                            echo 'N/A';
+                                                        }
+                                                    } else {
+                                                        echo 'N/A';
+                                                    }
+                                                    ?>
+                                                </td>
+
+                                                <td><?php echo htmlspecialchars($term['start_date'] ?? 'N/A'); ?></td>
+                                                <td><?php echo htmlspecialchars($term['end_date'] ?? 'N/A'); ?></td>
+                                                <td><?php echo isset($term['is_active']) && $term['is_active'] ? 'Yes' : 'No'; ?>
+                                                </td>
+                                            </tr>
+                                        <?php endforeach; ?>
+                                    <?php else: ?>
                                         <tr>
-                                            <td><?php echo htmlspecialchars($term['academic_year']); ?></td>
-                                            <td><?php echo htmlspecialchars($term['semester']); ?></td>
-                                            <td><?php echo htmlspecialchars($term['start_date']); ?></td>
-                                            <td><?php echo htmlspecialchars($term['end_date']); ?></td>
-                                            <td><?php echo $term['is_active'] ? 'Yes' : 'No'; ?></td>
+                                            <td colspan="5">No academic period available</td>
                                         </tr>
-                                    <?php endforeach; ?>
+                                    <?php endif; ?>
                                 </tbody>
+
                             </table>
                         </div>
                     </section>
@@ -145,6 +216,22 @@ $allTerms = $academicTermController->getAllAcademicTerms();
     <?php require_once(FILE_PATHS['Partials']['HighLevel']['Modals']['Academic']['Add']) ?>
     <?php require_once(FILE_PATHS['Partials']['User']['Footer']) ?>
 </body>
-<script src="<?php echo asset('js/admin-main.js') ?>"></script>
+<script src="<?php asset('js/admin-main.js') ?>"></script>
+<script src="<?php echo asset('js/toast.js') ?>"></script>
+
+<?php
+// Show Toast
+if (isset($_SESSION["_ResultMessage"]) && $_SESSION["_ResultMessage"] != null) {
+    $type = $_SESSION["_ResultMessage"][0];
+    $text = $_SESSION["_ResultMessage"][1];
+    makeToast([
+        'type' => $type,
+        'message' => $text,
+    ]);
+    outputToasts(); // Execute toast on screen.
+    unset($_SESSION["_ResultMessage"]); // Dispose
+}
+
+?>
 
 </html>

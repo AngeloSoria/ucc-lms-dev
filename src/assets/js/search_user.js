@@ -33,14 +33,14 @@ document.addEventListener('DOMContentLoaded', () => {
         if (container) {
             const maxContentCount = container.getAttribute('target-container-max-content');
             // Check if maxContentCount is -1, which means no limit, or if the current count is less than the limit
-            
+
             if (maxContentCount !== "-1") {
                 if (container.children.length >= maxContentCount) {
-                    showToast('warning', 'Maximum Content Reached', `(${container.children.length}/${maxContentCount}) Maximum number of content reached. (${containerID})`); // Show warning toast
+                    makeToast('warning', 'Maximum Content Reached', `(${container.children.length}/${maxContentCount}) Maximum number of content reached. (${containerID})`); // Show warning toast
                     return; // Do not add more users if the container is full and maxContentCount is not -1
                 }
             }
-            
+
 
             // Check if the user is already in the list to avoid duplicates
             const existingUserItem = Array.from(container.children).some(item => {
@@ -55,7 +55,7 @@ document.addEventListener('DOMContentLoaded', () => {
             });
 
             if (existingUserItem) {
-                showToast('warning', 'Duplicate User', `User already added: ${data.username} (${data.userid})`); // Show warning toast
+                makeToast('warning', 'Duplicate User', `User already added: ${data.username} (${data.userid})`); // Show warning toast
                 return; // Do not add the user if they already exist
             }
 
@@ -126,7 +126,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const containerID = element.getAttribute('data-container-id');
 
         if (!containerID) {
-            showToast('warning', 'Attribute Missing', 'Data Container ID not specified');
+            makeToast('warning', 'Attribute Missing', 'Data Container ID not specified');
             return;
         }
 

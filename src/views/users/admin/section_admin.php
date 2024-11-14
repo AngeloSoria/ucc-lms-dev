@@ -38,10 +38,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     ];
 
     // Call the method in your SectionController to handle the insert
-    $addSectionResult = $sectionController->addSection($sectionData);
+    $_SESSION["_ResultMessage"] = $sectionController->addSection();
 
-    // Redirect to the same page or handle as needed
-    header("Location: " . $_SERVER['PHP_SELF']);
+    // Redirect to the same page to prevent resubmissions of forms.
+    header("Location: " . $_SERVER['REQUEST_URI']);
     exit();
 }
 
@@ -226,5 +226,19 @@ try {
 </body>
 <script src="<?php echo asset('js/admin-main.js') ?>"></script>
 
+<?php
+// Show Toast
+if (isset($_SESSION["_ResultMessage"]) && $_SESSION["_ResultMessage"] != null) {
+    $type = $_SESSION["_ResultMessage"][0];
+    $text = $_SESSION["_ResultMessage"][1];
+    makeToast([
+        'type' => $type,
+        'message' => $text,
+    ]);
+    outputToasts(); // Execute toast on screen.
+    unset($_SESSION["_ResultMessage"]); // Dispose
+}
+
+?>
 
 </html>

@@ -14,7 +14,7 @@
 $sidebar_content = [
     'Admin' => [
         'dashboard' => [
-            'title' => 'Dashboard',
+            'title' => 'Overview',
             'icon' => 'bi-columns-gap',
             'link' => 'dashboard_admin.php',
         ],
@@ -62,8 +62,8 @@ $sidebar_content = [
             'icon' => 'bi-gear-fill',
             'isGroup' => true,
             'sublinks' => [
-                'academic-calendar' => [
-                    'title' => 'Academic Calendar',
+                'AcademicPeriod' => [
+                    'title' => 'Academic Terms',
                     'icon' => 'bi-calendar-event',
                     'link' => 'academic_calendar_admin.php',
                 ],
