@@ -2,7 +2,7 @@
 class AcademicPeriod
 {
     private $conn;
-    private $table_name = 'academic_terms';
+    private $table_name = 'academic_period';
 
     public function __construct($db)
     {
@@ -20,7 +20,7 @@ class AcademicPeriod
             $this->conn->beginTransaction();
 
             // Get all terms to check the current one and update accordingly
-            $query = "SELECT term_id, start_date, end_date, is_active FROM {$this->table_name}";
+            $query = "SELECT period_id, start_date, end_date, is_active FROM {$this->table_name}";
             $stmt = $this->conn->prepare($query);
             $stmt->execute();
 
@@ -29,7 +29,7 @@ class AcademicPeriod
 
             // Loop through all terms and update the active status
             foreach ($terms as $term) {
-                $termId = $term['term_id'];
+                $termId = $term['period_id'];
                 $startDate = $term['start_date'];
                 $endDate = $term['end_date'];
                 $isActive = $term['is_active'];
@@ -157,7 +157,7 @@ class AcademicPeriod
     public function getActiveTerms()
     {
         try {
-            $query = "SELECT term_id, academic_year_start, academic_year_end, semester, start_date, end_date, is_active FROM academic_terms WHERE is_active = 1";
+            $query = "SELECT term_id, academic_year_start, academic_year_end, semester, start_date, end_date, is_active FROM {$this->table_name} WHERE is_active = 1";
             $stmt = $this->conn->prepare($query);
             $stmt->execute();
 
@@ -166,6 +166,24 @@ class AcademicPeriod
         } catch (PDOException $e) {
             // Instead of returning an error message, throw the exception to be handled elsewhere
             throw new PDOException("Failed to get active terms. <br>" . $e->getMessage());
+        }
+    }
+
+    public function getCurrentPeriods()
+    {
+        try {
+            $sql = "SELECT *
+                    FROM {$this->table_name}
+                    WHERE CURDATE() BETWEEN start_date AND end_date 
+                    AND is_active = 1";
+
+            $stmt = $this->conn->prepare($sql);
+            $stmt->execute();
+            return $stmt->fetch(PDO::FETCH_ASSOC); // Return the semester details
+        } catch (PDOException $e) {
+            // Log error for debugging
+            error_log("Database Error: " . $e->getMessage());
+            return null;
         }
     }
 

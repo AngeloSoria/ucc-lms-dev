@@ -35,15 +35,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
         "is_active" => $_POST['is_active'],
     ];
 
-    // $academicYear = $_POST['start_year'] . '-' . $_POST['end_year'];
-    // $firstSemesterDates = [
-    //     'start_date' => $_POST['first_semester_start'],
-    //     'end_date' => $_POST['first_semester_end']
-    // ];
-    // $secondSemesterDates = [
-    //     'start_date' => $_POST['second_semester_start'],
-    //     'end_date' => $_POST['second_semester_end']
-    // ];
 
     $_SESSION["_ResultMessage"] = $academicPeriodController->addAcademicYearWithSemesters($academicData);
 
@@ -168,7 +159,8 @@ if ($allTermsResponse != null) {
                                     <?php if (is_array($allTerms) && !empty($allTerms)): ?>
                                         <?php foreach ($allTerms as $term): ?>
                                             <tr>
-                                                <td><?php echo htmlspecialchars($term['academic_year_start'] ?? 'N/A') . ' - ' . htmlspecialchars($term['academic_year_end'] ?? 'N/A'); ?></td>
+                                                <td><?php echo htmlspecialchars($term['academic_year_start'] ?? 'N/A') . ' - ' . htmlspecialchars($term['academic_year_end'] ?? 'N/A'); ?>
+                                                </td>
                                                 <td>
                                                     <?php
                                                     if (isset($term['semester'])) {
