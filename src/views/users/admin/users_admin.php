@@ -52,8 +52,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['action']) && $_POST['a
     exit();
 }
 
-
-
 $VIEW_ITEM = 'admin';
 $VALID_VIEWS = ['admin', 'level coordinator', 'student', 'teacher'];
 

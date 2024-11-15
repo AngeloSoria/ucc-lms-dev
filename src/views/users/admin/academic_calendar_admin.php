@@ -142,10 +142,6 @@ if ($allTermsResponse != null) {
                             </p>
                         </div>
                     </section>
-
-
-
-
                     <br>
                     <section>
                         <h5>List of Academic Term</h5>
@@ -162,7 +158,6 @@ if ($allTermsResponse != null) {
                                 </thead>
                                 <tbody>
                                     <?php if (is_array($allTerms) && !empty($allTerms)): ?>
-                                        <?= print_r($allTerms) ?>
                                         <?php foreach ($allTerms as $term): ?>
                                             <tr>
                                                 <td><?php echo htmlspecialchars($term['academic_year_start'] ?? 'N/A') . ' - ' . htmlspecialchars($term['academic_year_end'] ?? 'N/A'); ?>
