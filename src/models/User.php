@@ -3,11 +3,43 @@ class User
 {
     private $conn;
     private $table_name = 'users';
+    public const ENUM_USER_ROLES = ['admin', 'level coordinator', 'teacher', 'student'];
 
     public function __construct($db)
     {
         $this->conn = $db;
     }
+
+    // ADD user to DATABASE
+    public function addUser($userData)
+    {
+        try {
+            $this->conn->beginTransaction();
+            // Query to insert the user without the user_id
+            $query = "INSERT INTO {$this->table_name} (user_id, role, first_name, middle_name, last_name, gender, dob, username, password, profile_pic) VALUES (:user_id, :role, :first_name, :middle_name, :last_name, :gender, :dob, :username, :password, :profile_pic)";
+            $stmt = $this->conn->prepare($query);
+
+            // Bind parameters
+            $stmt->bindParam(':user_id', $userData['user_id']);
+            $stmt->bindParam(':role', $userData['role']);
+            $stmt->bindParam(':first_name', $userData['first_name']);
+            $stmt->bindParam(':middle_name', $userData['middle_name']);
+            $stmt->bindParam(':last_name', $userData['last_name']);
+            $stmt->bindParam(':gender', $userData['gender']);
+            $stmt->bindParam(':dob', $userData['dob']);
+            $stmt->bindParam(':username', $userData['username']);
+            $stmt->bindParam(':password', $userData['password']);
+            $stmt->bindParam(':profile_pic', $userData['profile_pic'], PDO::PARAM_LOB);  // For binary data
+
+            $this->conn->commit();
+            $stmt->execute();
+            return ["success" => true];
+        } catch (PDOException $e) {
+            $this->conn->rollBack();  // Rollback the transaction if an error occurs.
+            return ['success' => false, "message" => $e->getMessage()];
+        }
+    }
+
     public function getAllUsersByRole($role)
     {
         $query = "SELECT user_id, first_name, last_name FROM users WHERE role = :role";
@@ -28,52 +60,24 @@ class User
         return $stmt->fetchColumn() > 0;
     }
 
-    // Add user to the database
-    public function addUser($userData)
-    {
-        try {
-            $this->conn->beginTransaction();
-            // Query to insert the user without the user_id
-            $query = "INSERT INTO {$this->table_name} (user_id, role, first_name, middle_name, last_name, gender, dob, username, password, profile_pic) 
-        VALUES (:user_id, :role, :first_name, :middle_name, :last_name, :gender, :dob, :username, :password, :profile_pic)";
-            $stmt = $this->conn->prepare($query);
-
-            // Bind parameters
-            $stmt->bindParam(':user_id', $userData['user_id']);
-            $stmt->bindParam(':role', $userData['role']);
-            $stmt->bindParam(':first_name', $userData['first_name']);
-            $stmt->bindParam(':middle_name', $userData['middle_name']);
-            $stmt->bindParam(':last_name', $userData['last_name']);
-            $stmt->bindParam(':gender', $userData['gender']);
-            $stmt->bindParam(':dob', $userData['dob']);
-            $stmt->bindParam(':username', $userData['username']);
-            $stmt->bindParam(':password', $userData['password']);
-            $stmt->bindParam(':profile_pic', $userData['profile_pic'], PDO::PARAM_LOB);  // For binary data
-
-            $this->conn->commit();
-            $stmt->execute();
-            return ["isSuccess" => true];
-        } catch (PDOException $e) {
-            $this->conn->rollBack();  // Rollback the transaction if an error occurs.
-            return ['isSuccess' => false, "message" => $e->getMessage()];
-        }
-    }
-
-
     public function getAllUsers($limit)
     {
-        // Use a placeholder :limit for the limit value
-        $query = "SELECT user_id, username, first_name, middle_name, last_name, role, gender, dob, status FROM users LIMIT :limit OFFSET 0";
-        $stmt = $this->conn->prepare($query);
+        try {
+            // Use a placeholder :limit for the limit value
+            $query = "SELECT user_id, username, first_name, middle_name, last_name, role, gender, dob, status FROM users LIMIT :limit OFFSET 0";
+            $stmt = $this->conn->prepare($query);
 
-        // Bind the $limit parameter to the :limit placeholder
-        $stmt->bindParam(':limit', $limit, PDO::PARAM_INT);
+            // Bind the $limit parameter to the :limit placeholder
+            $stmt->bindParam(':limit', $limit, PDO::PARAM_INT);
 
-        // Execute the query
-        $stmt->execute();
+            // Execute the query
+            $stmt->execute();
 
-        // Fetch and return the results
-        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+            // Fetch and return the results
+            return $stmt->fetchAll(PDO::FETCH_ASSOC);
+        } catch (Exception $e) {
+            throw new Exception("Failed to get all users: " . $e->getMessage());
+        }
     }
 
     // Edit user information
@@ -112,5 +116,10 @@ class User
         } catch (PDOException $e) {
             return ["error", $e->getMessage()];
         }
+    }
+
+    public function getValidRoles()
+    {
+        return self::ENUM_USER_ROLES;
     }
 }

@@ -199,13 +199,6 @@ try {
 
 
             </div>
-
-            <div id="widgetPanel">
-                <!-- CALENDAR -->
-                <?php require_once(FILE_PATHS['Partials']['User']['Calendar']) ?>
-                <!-- TASKS -->
-                <?php require_once(FILE_PATHS['Partials']['User']['Tasks']) ?>
-            </div>
         </section>
 
     </section>

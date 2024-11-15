@@ -106,7 +106,7 @@ class AcademicPeriod
             $query = "INSERT INTO {$this->table_name} 
                       (academic_year_start, academic_year_end, semester, start_date, end_date, is_active) 
                       VALUES 
-                      (:academicYear_start, :academicYear_end, '1st Semester', :firstStartDate, :firstEndDate, 1)";
+                      (:academicYear_start, :academicYear_end, '1', :firstStartDate, :firstEndDate, 1)";
             $stmt = $this->conn->prepare($query);
             $stmt->bindParam(':academicYear_start', $academicYear_start, PDO::PARAM_STR);
             $stmt->bindParam(':academicYear_end', $academicYear_end, PDO::PARAM_STR);
@@ -118,7 +118,7 @@ class AcademicPeriod
             $query = "INSERT INTO {$this->table_name} 
                       (academic_year_start, academic_year_end, semester, start_date, end_date, is_active) 
                       VALUES 
-                      (:academicYear_start, :academicYear_end, '2nd Semester', :secondStartDate, :secondEndDate, 1)";
+                      (:academicYear_start, :academicYear_end, '2', :secondStartDate, :secondEndDate, 0)";
             $stmt = $this->conn->prepare($query);
             $stmt->bindParam(':academicYear_start', $academicYear_start, PDO::PARAM_STR);
             $stmt->bindParam(':academicYear_end', $academicYear_end, PDO::PARAM_STR);
@@ -187,5 +187,4 @@ class AcademicPeriod
             return null;
         }
     }
-
 }

@@ -142,10 +142,6 @@ if ($allTermsResponse != null) {
                             </p>
                         </div>
                     </section>
-
-
-
-
                     <br>
                     <section>
                         <h5>List of Academic Term</h5>
@@ -201,12 +197,6 @@ if ($allTermsResponse != null) {
                     </section>
                 </div>
             </div>
-
-            <div class="col bg-transparent d-flex flex-column justify-content-start align-items-center gap-2 px-1 box-sizing-border-box"
-                id="widgetPanel">
-                <?php require_once(FILE_PATHS['Partials']['User']['Calendar']) ?>
-                <?php require_once(FILE_PATHS['Partials']['User']['Tasks']) ?>
-            </div>
         </section>
     </section>
 
@@ -218,9 +208,9 @@ if ($allTermsResponse != null) {
 
 <?php
 // Show Toast
-if (isset($_SESSION["_ResultMessage"]) && $_SESSION["_ResultMessage"] != null) {
-    $type = $_SESSION["_ResultMessage"][0];
-    $text = $_SESSION["_ResultMessage"][1];
+if (isset($_SESSION["_ResultMessage"]) && isset($_SESSION["_ResultMessage"]['success'])) {
+    $type = $_SESSION["_ResultMessage"]['success'] ? 'success' : 'danger';
+    $text = isset($_SESSION["_ResultMessage"]['message']) ? $_SESSION["_ResultMessage"]['message'] : 'No message passed.';
     makeToast([
         'type' => $type,
         'message' => $text,
