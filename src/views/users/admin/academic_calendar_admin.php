@@ -162,6 +162,7 @@ if ($allTermsResponse != null) {
                                 </thead>
                                 <tbody>
                                     <?php if (is_array($allTerms) && !empty($allTerms)): ?>
+                                        <?= print_r($allTerms) ?>
                                         <?php foreach ($allTerms as $term): ?>
                                             <tr>
                                                 <td><?php echo htmlspecialchars($term['academic_year_start'] ?? 'N/A') . ' - ' . htmlspecialchars($term['academic_year_end'] ?? 'N/A'); ?>
@@ -218,9 +219,9 @@ if ($allTermsResponse != null) {
 
 <?php
 // Show Toast
-if (isset($_SESSION["_ResultMessage"]) && $_SESSION["_ResultMessage"] != null) {
-    $type = $_SESSION["_ResultMessage"][0];
-    $text = $_SESSION["_ResultMessage"][1];
+if (isset($_SESSION["_ResultMessage"]) && isset($_SESSION["_ResultMessage"]['success'])) {
+    $type = $_SESSION["_ResultMessage"]['success'] ? 'success' : 'danger';
+    $text = isset($_SESSION["_ResultMessage"]['message']) ? $_SESSION["_ResultMessage"]['message'] : 'No message passed.';
     makeToast([
         'type' => $type,
         'message' => $text,
