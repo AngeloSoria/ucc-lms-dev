@@ -24,6 +24,7 @@ define('FILE_PATHS', [
         'ToastLogger' => __DIR__ . '../../functions/ToastLogger.php',
         'PHPLogger' => __DIR__ . '../../functions/PHPLogger.php',
         'SessionChecker' => __DIR__ . '../../functions/sessionChecker.php',
+        'UpdateURLParams' => __DIR__ . '../../functions/updateURLParams.php',
     ],
 
 
@@ -122,6 +123,7 @@ define('FILE_PATHS', [
         'Widgets' => [
             'Card' => __DIR__ . '../../views/partials/public/widget_card.php',
             'SearchUser' => __DIR__ . '../../views/partials/public/widget_searchUser.php',
+            'DataTable' => __DIR__ . '../../views/partials/public/widget_dataTable.php',
         ]
     ],
 
@@ -135,7 +137,7 @@ define('FILE_PATHS', [
             'Users' => __DIR__ . '../../views/users/admin/users_admin.php',
             'Content' => __DIR__ . '../../views/users/admin/content_admin.php',
             'AcademicTerm' => __DIR__ . '../../views/users/admin/academic_calendar_admin.php',
-            'GeneralLogs' => __DIR__ . '../../views/users/admin/academic_calendar_admin.php',
+            'GeneralLogs' => __DIR__ . '../../views/users/admin/general_logs_admin.php',
         ],
         'Level Coordinator' => [
             'Dashboard' => __DIR__ . '../../views/users/level_coordinator/dashboard_level_coordinator.php',
@@ -154,6 +156,4 @@ function asset($path)
     return BASE_PATH_LINK . 'src/assets/' . ltrim($path, '/');
 }
 
-function route($path)
-{
-}
+function route($path) {}

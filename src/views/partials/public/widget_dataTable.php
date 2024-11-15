@@ -48,17 +48,6 @@ $RETRIEVED_USERS = $userController->getAllUsers();
             }
         }
         ?>
-    <tfoot>
-        <tr>
-            <th>User Id</th>
-            <th>Username</th>
-            <th>FirstName</th>
-            <th>LastName</th>
-            <th>Date of Birth</th>
-            <th>Active</th>
-            <th>Action</th>
-        </tr>
-    </tfoot>
 </table>
 
 <script>
