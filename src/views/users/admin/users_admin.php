@@ -52,12 +52,9 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['action']) && $_POST['a
     exit();
 }
 
-$VIEW_ITEM = 'admin';
-$VALID_VIEWS = ['admin', 'level coordinator', 'student', 'teacher'];
-
 // Check if the requested view is valid
 if (isset($_GET['view'])) {
-    if (!in_array(strtolower($_GET['view']), $VALID_VIEWS)) {
+    if (!in_array(strtolower($_GET['view']), $userController->getValidRoles())) {
         header('Location: ' . clearUrlParams());
         exit();
     }
@@ -124,6 +121,11 @@ if (isset($_GET['view'])) {
                             <?php
                             $RETRIEVED_USERS = $userController->getAllUsers(); // will return dictionary of users from database
                             // [user_id, first_name, middle_name, last_name, role, gender, dob, status]
+                            if ($RETRIEVED_USERS['success'] == false) {
+                                $_SESSION['_ResultMessage'] = $RETRIEVED_USERS['message'];
+                            } else {
+                                $RETRIEVED_USERS = $RETRIEVED_USERS['data'];
+                            }
 
                             // Calculate the total number of users for "All"
                             $total_users = count($RETRIEVED_USERS);
@@ -291,12 +293,6 @@ if (isset($_GET['view'])) {
                         </div>
                     </div>
                 <?php endif; ?>
-            </div>
-            <div id="widgetPanel">
-                <!-- CALENDAR -->
-                <?php require_once(FILE_PATHS['Partials']['User']['Calendar']) ?>
-                <!-- TASKS -->
-                <?php require_once(FILE_PATHS['Partials']['User']['Tasks']) ?>
             </div>
         </section>
     </section>

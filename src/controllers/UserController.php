@@ -65,7 +65,7 @@ class UserController
                 "success" => true,
                 "message" => "User added successfully.",
                 "data" => $queryResult
-            ];;
+            ];
         } catch (Exception $e) {
             return ['error' => false, 'message' => $e->getMessage()];
         }

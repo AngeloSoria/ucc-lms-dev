@@ -197,12 +197,6 @@ if ($allTermsResponse != null) {
                     </section>
                 </div>
             </div>
-
-            <div class="col bg-transparent d-flex flex-column justify-content-start align-items-center gap-2 px-1 box-sizing-border-box"
-                id="widgetPanel">
-                <?php require_once(FILE_PATHS['Partials']['User']['Calendar']) ?>
-                <?php require_once(FILE_PATHS['Partials']['User']['Tasks']) ?>
-            </div>
         </section>
     </section>
 

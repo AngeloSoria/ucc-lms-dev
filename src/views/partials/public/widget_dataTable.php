@@ -15,15 +15,16 @@ $RETRIEVED_USERS = $userController->getAllUsers();
             <th>FirstName</th>
             <th>LastName</th>
             <th>Date of Birth</th>
+            <th>Role</th>
             <th>Status</th>
             <th>Action</th>
         </tr>
     </thead>
     <tbody>
         <?php
-        if ($RETRIEVED_USERS != null && count($RETRIEVED_USERS) > 0) {
+        if (isset($RETRIEVED_USERS['data']) && count($RETRIEVED_USERS['data']) > 0) {
             // print_r($RETRIEVED_USERS);
-            foreach ($RETRIEVED_USERS as $userdata => $user) {
+            foreach ($RETRIEVED_USERS['data'] as $userdata => $user) {
                 if (strtolower($_GET['view']) !== strtolower($user['role'])) {
                     continue;
                 }
@@ -33,6 +34,7 @@ $RETRIEVED_USERS = $userController->getAllUsers();
                 $firstname = $user['first_name'];
                 $lastname = $user['last_name'];
                 $dob = $user['dob'];
+                $role = $user['role'];
                 $status = $user['status'];
                 echo <<<HTML
                     <tr>
@@ -41,6 +43,7 @@ $RETRIEVED_USERS = $userController->getAllUsers();
                         <td>$firstname</td>
                         <td>$lastname</td>
                         <td>$dob</td>
+                        <td>$role</td>
                         <td>$status</td>
                         <td><a href='#' class='btn btn-primary'>Edit</a></td>
                     </tr>
