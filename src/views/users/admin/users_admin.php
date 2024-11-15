@@ -95,7 +95,7 @@ if (isset($_GET['view'])) {
                                     class="btn btn-primary btn-sm rounded fs-6 px-3 c-primary d-flex gap-3 align-items-center"
                                     data-bs-toggle="modal" data-bs-target="#userFormModal"
                                     onclick="apply_section_modal(this);">
-                                    <i class="bi bi-plus-circle"></i> Add Users
+                                    <i class="bi bi-plus-circle"></i> Add User
                                 </button>
 
                                 <!-- Reload Button -->
@@ -126,7 +126,7 @@ if (isset($_GET['view'])) {
                             <?php
                             $RETRIEVED_USERS = $userController->getAllUsers(); // will return dictionary of users from database
                             // [user_id, first_name, middle_name, last_name, role, gender, dob, status]
-                        
+
                             // Calculate the total number of users for "All"
                             $total_users = count($RETRIEVED_USERS);
 
@@ -140,6 +140,7 @@ if (isset($_GET['view'])) {
 
                                 // Check if the role is already a key in groups
                                 if (!array_key_exists($role, $ROLE_GROUPS)) {
+
                                     // If not, initialize an empty array for this role
                                     $ROLE_GROUPS[$role] = [];
                                 }

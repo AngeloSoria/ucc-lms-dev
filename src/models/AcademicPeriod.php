@@ -61,12 +61,12 @@ class AcademicPeriod
     private function toggleTermActiveStatus($termId, $status)
     {
         try {
-            $query = "UPDATE {$this->table_name} SET is_active = :status WHERE term_id = :term_id";
+            $query = "UPDATE {$this->table_name} SET is_active = :status WHERE period_id = :period_id";
             $stmt = $this->conn->prepare($query);
 
             // Bind the parameters
             $stmt->bindParam(':status', $status, PDO::PARAM_INT);
-            $stmt->bindParam(':term_id', $termId, PDO::PARAM_INT);
+            $stmt->bindParam(':period_id', $termId, PDO::PARAM_INT);
 
             // Execute the query
             $stmt->execute();
@@ -140,7 +140,7 @@ class AcademicPeriod
     public function getAllTerms()
     {
         try {
-            $query = "SELECT term_id, academic_year_start, academic_year_end, semester, start_date, end_date, is_active 
+            $query = "SELECT period_id, academic_year_start, academic_year_end, semester, start_date, end_date, is_active 
                       FROM {$this->table_name} 
                       ORDER BY start_date DESC";
             $stmt = $this->conn->prepare($query);
@@ -157,7 +157,8 @@ class AcademicPeriod
     public function getActiveTerms()
     {
         try {
-            $query = "SELECT term_id, academic_year_start, academic_year_end, semester, start_date, end_date, is_active FROM {$this->table_name} WHERE is_active = 1";
+
+            $query = "SELECT period_id, academic_year_start, academic_year_end, semester, start_date, end_date, is_active FROM academic_period WHERE is_active = 1";
             $stmt = $this->conn->prepare($query);
             $stmt->execute();
 

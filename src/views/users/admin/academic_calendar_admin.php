@@ -56,14 +56,19 @@ if ($activeTermsResponse['success']) {
 
 // Fetch all terms
 $allTermsResponse = $academicPeriodController->getAllTerms();
-$_SESSION["_ResultMessage"] = $allTermsResponse;
+
 
 if ($allTermsResponse != null) {
-    $allTerms = $allTermsResponse;
+    if ($allTermsResponse['success'] == true) {
+        $allTerms = $allTermsResponse['data'];
+    } else {
+        $allTerms = []; // In case of error, return an empty array
+        $_SESSION["_ResultMessage"] = ['error', $allTermsResponse['message']];
+    }
 } else {
-    $allTerms = []; // In case of error, return an empty array
-    // $errorMessage = $allTermsResponse['error'] ?? $allTermsResponse['message'];
+    $_SESSION["_ResultMessage"] = ['error', 'Error retrieving all terms'];
 }
+
 ?>
 
 

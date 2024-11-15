@@ -137,7 +137,7 @@ define('FILE_PATHS', [
             'Users' => __DIR__ . '../../views/users/admin/users_admin.php',
             'Content' => __DIR__ . '../../views/users/admin/content_admin.php',
             'AcademicTerm' => __DIR__ . '../../views/users/admin/academic_calendar_admin.php',
-            'GeneralLogs' => __DIR__ . '../../views/users/admin/academic_calendar_admin.php',
+            'GeneralLogs' => __DIR__ . '../../views/users/admin/general_logs_admin.php',
         ],
         'Level Coordinator' => [
             'Dashboard' => __DIR__ . '../../views/users/level_coordinator/dashboard_level_coordinator.php',
@@ -156,6 +156,4 @@ function asset($path)
     return BASE_PATH_LINK . 'src/assets/' . ltrim($path, '/');
 }
 
-function route($path)
-{
-}
+function route($path) {}
