@@ -84,9 +84,6 @@
 
     /* TRANSITIONS */
     --c-transition-1: 0.3s ease;
-
-    /* GRADIENTS */
-    --c-brand-primary-linear-gradient: linear-gradient(to bottom, var(--c-brand-primary-a60), var(--c-brand-primary-a0));
 }
 /* General thin scrollbar style for WebKit browsers (Chrome, Safari, Edge) */
 ::-webkit-scrollbar {

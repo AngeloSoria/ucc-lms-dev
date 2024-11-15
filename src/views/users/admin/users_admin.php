@@ -10,8 +10,6 @@ require_once(FILE_PATHS['Functions']['ToastLogger']);
 require_once(FILE_PATHS['Functions']['SessionChecker']);
 checkUserAccess(['Admin']);
 
-require_once(FILE_PATHS['Functions']['UpdateURLParams']);
-
 $widget_card = new Card();
 
 // Create a new instance of the Database class
@@ -38,13 +36,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['action']) && $_POST['a
     ];
 
     // Call the controller to add the user
-    // return [
-    //     "isSuccess" => true,
-    //     "showAsToast" => true,
-    //     "message" => "User added successfully.",
-    //     "type" => "success",
-    //     // "data" => <data_here> (situational)
-    // ];
     $_SESSION["_ResultMessage"] = $userController->addUser($userData);
 
     // Redirect to the same page to prevent resubmission
@@ -52,17 +43,10 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['action']) && $_POST['a
     exit();
 }
 
-
-
-$VIEW_ITEM = 'admin';
-$VALID_VIEWS = ['admin', 'level coordinator', 'student', 'teacher'];
-
-// Check if the requested view is valid
+// View mode
+$viewMode = false;
 if (isset($_GET['view'])) {
-    if (!in_array(strtolower($_GET['view']), $VALID_VIEWS)) {
-        header('Location: ' . clearUrlParams());
-        exit();
-    }
+    $viewMode = true;
 }
 ?>
 
@@ -80,7 +64,7 @@ if (isset($_GET['view'])) {
         <!-- content here -->
         <section id="contentSection">
             <div class="col box-sizing-border-box flex-grow-1">
-                <?php if (!isset($_GET['view'])): ?>
+                <?php if ($viewMode === false): ?>
                     <div class="bg-white rounded p-3 shadow-sm border">
                         <!-- Headers -->
                         <div class="mb-3 row align-items-start">
@@ -122,7 +106,7 @@ if (isset($_GET['view'])) {
 
                         <!-- Catalog View -->
                         <div id="data_view_catalog" preview-container-default-view preview-container-name="view_catalog"
-                            class="d-flex justify-content-start align-items-start gap-2 flex-wrap overflow-hidden">
+                            class="d-flex justify-content-start align-items-start gap-2 flex-wrap">
                             <?php
                             $RETRIEVED_USERS = $userController->getAllUsers(); // will return dictionary of users from database
                             // [user_id, first_name, middle_name, last_name, role, gender, dob, status]
@@ -152,7 +136,7 @@ if (isset($_GET['view'])) {
                             foreach ($ROLE_GROUPS as $role => $role_data) {
                                 echo $widget_card->Create(
                                     'small',
-                                    $role,
+                                    "rolegroup_" . $role,
                                     null,
                                     [
                                         "title" => $role,
@@ -160,13 +144,11 @@ if (isset($_GET['view'])) {
                                             [
                                                 'hint' => 'Total ' . $role,
                                                 'icon' => '<i class="bi bi-person-fill"></i>',
-                                                'data' => number_format(count($role_data) ?? 0) . ' Users', // Display user count for this role
+                                                'data' => 'Users: ' . number_format(count($role_data) ?? 0), // Display user count for this role
                                             ],
                                         ],
                                     ],
-                                    true,
-                                    true,
-                                    updateUrlParams(['view' => $role])
+                                    true
                                 );
                             }
 
@@ -241,11 +223,9 @@ if (isset($_GET['view'])) {
                             <div class="col-4 d-flex gap-2 justify-content-start align-items-center box-sizing-border-box">
                                 <!-- breadcrumbs -->
                                 <h5 class="ctxt-primary p-0 m-0">
-                                    <a class="ctxt-primary" href="<?= clearUrlParams(); ?>">Users</a>
-                                    <?php if (isset($_GET['view'])) { ?>
-                                        <span>/</span>
-                                        <a class="ctxt-primary" href="<?= updateUrlParams(['view' => $_GET['view']]) ?>"><?= ucfirst($_GET['view']) ?></a>
-                                    <?php } ?>
+                                    <a class="ctxt-primary" href="users_admin.php">Users</a>
+                                    /
+                                    <a class="ctxt-primary" href="users_admin.php?view=admin">Admin</a>
                                 </h5>
                             </div>
                             <div class="col-8 d-flex justify-content-end gap-2">
@@ -265,11 +245,7 @@ if (isset($_GET['view'])) {
                                     <i class="bi bi-arrow-clockwise"></i>
                                     Refresh Data
                                 </button>
-                                <a href="<?= updateUrlParams(['view' => 'user', 'filter' => 'active']); ?>">
-                                    <button class="btn btn-primary c-primary">
-                                        Redirect
-                                    </button>
-                                </a>
+
                                 <!-- View Type -->
                                 <!-- <div class="btn-group" id="previewTypeContainer">
                                     <button id="btnPreviewTypeCatalog" type="button"
@@ -287,8 +263,8 @@ if (isset($_GET['view'])) {
 
                         <!-- preview data -->
                         <!-- Table View -->
-                        <div id="data_view_table" class="">
-                            <?php require_once(FILE_PATHS['Partials']['Widgets']['DataTable']) ?>
+                        <div id="data_view_table" class="d-none">
+
                         </div>
                     </div>
                 <?php endif; ?>
@@ -313,10 +289,12 @@ if (isset($_GET['view'])) {
 
 <?php
 // Show Toast
-if (isset($_SESSION["_ResultMessage"]) && $_SESSION["_ResultMessage"] != null && $_SESSION["_ResultMessage"]["showAsToast"] == true) {
+if (isset($_SESSION["_ResultMessage"]) && $_SESSION["_ResultMessage"] != null) {
+    $type = $_SESSION["_ResultMessage"][0];
+    $text = $_SESSION["_ResultMessage"][1];
     makeToast([
-        'type' => $_SESSION["_ResultMessage"]["type"],
-        'message' => $_SESSION["_ResultMessage"]["message"],
+        'type' => $type,
+        'message' => $text,
     ]);
     outputToasts(); // Execute toast on screen.
     unset($_SESSION["_ResultMessage"]); // Dispose

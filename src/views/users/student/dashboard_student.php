@@ -50,6 +50,5 @@ $userController = new UserController($db);
     <?php require_once(FILE_PATHS['Partials']['User']['Footer']) ?>
 </body>
 <script src="<?php echo asset('js/admin-main.js') ?>"></script>
-<!-- <script src="<?php echo asset('js/toast.js') ?>"></script> -->
 
 </html>

@@ -1,11 +1,8 @@
 <?php
 require_once(__DIR__ . '../../../../config/PathsHandler.php');
 require_once(FILE_PATHS['DATABASE']);
-require_once(FILE_PATHS['Functions']["PHPLogger"]);
-
 
 if (isset($_POST['educational_level'])) {
-    msgLog("FETCH PROGRAMS", "POST");
     $level = $_POST['educational_level'];
 
     $database = new Database();

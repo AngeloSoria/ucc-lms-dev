@@ -3,7 +3,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="icon" type="image/x-icon" href="<?php echo asset('img/favicon.png') ?>">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
-    <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/dataTables.bootstrap5.min.css" />
     <script src="<?php echo asset('js/jquery-3.6.0.min.js') ?>"></script>
     <script src="<?php echo asset('js/toast.js') ?>"></script>
     <script src="<?php echo asset('js/root.js') ?>"></script>

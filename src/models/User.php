@@ -52,10 +52,10 @@ class User
 
             $this->conn->commit();
             $stmt->execute();
-            return ["isSuccess" => true];
+            return true;
         } catch (PDOException $e) {
             $this->conn->rollBack();  // Rollback the transaction if an error occurs.
-            return ['isSuccess' => false, "message" => $e->getMessage()];
+            return ['error' => $e->getMessage()];
         }
     }
 
@@ -63,7 +63,7 @@ class User
     public function getAllUsers($limit)
     {
         // Use a placeholder :limit for the limit value
-        $query = "SELECT user_id, username, first_name, middle_name, last_name, role, gender, dob, status FROM users LIMIT :limit OFFSET 0";
+        $query = "SELECT user_id, first_name, middle_name, last_name, role, gender, dob, status FROM users LIMIT :limit OFFSET 0";
         $stmt = $this->conn->prepare($query);
 
         // Bind the $limit parameter to the :limit placeholder
