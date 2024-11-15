@@ -7,7 +7,6 @@ require_once(FILE_PATHS['DATABASE']);
 require_once(FILE_PATHS['Controllers']['User']);
 require_once(FILE_PATHS['Partials']['Widgets']['Card']);
 require_once(FILE_PATHS['Functions']['ToastLogger']);
-
 require_once(FILE_PATHS['Functions']['SessionChecker']);
 checkUserAccess(['Admin']);
 
@@ -111,7 +110,7 @@ if (isset($_GET['view'])) {
                             <?php
                             $RETRIEVED_USERS = $userController->getAllUsers(); // will return dictionary of users from database
                             // [user_id, first_name, middle_name, last_name, role, gender, dob, status]
-
+                        
                             // Calculate the total number of users for "All"
                             $total_users = count($RETRIEVED_USERS);
 
@@ -157,8 +156,7 @@ if (isset($_GET['view'])) {
                             ?>
                         </div>
                         <!-- Table View -->
-                        <div id="data_view_table" preview-container-name="view_table"
-                            class="d-none">
+                        <div id="data_view_table" preview-container-name="view_table" class="d-none">
                             <table class="c-table table">
                                 <thead>
                                     <tr>

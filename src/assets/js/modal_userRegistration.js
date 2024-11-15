@@ -30,9 +30,9 @@ document.addEventListener("DOMContentLoaded", function () {
       const formattedDob = `${(date.getMonth() + 1)
         .toString()
         .padStart(2, "0")}${date
-          .getDate()
-          .toString()
-          .padStart(2, "0")}${date.getFullYear()}`; // MMDDYYYY format
+        .getDate()
+        .toString()
+        .padStart(2, "0")}${date.getFullYear()}`; // MMDDYYYY format
       const password = `${formattedLastName}.${formattedDob}`; // Password is last name + formatted date
       passwordInput.value = password;
     } else {
@@ -74,7 +74,6 @@ document.addEventListener("DOMContentLoaded", function () {
         });
       }
     });
-
   }
 
   // Event Listener for Role onselect dropdown.

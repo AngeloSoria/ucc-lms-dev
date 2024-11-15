@@ -105,7 +105,14 @@ define('FILE_PATHS', [
                     'Add' => __DIR__ . '../../views/partials/high-level/modal_addDepartment.php',
                     // 'Config' => __DIR__ . '../../views/partials/high-level/modal_configCourse.php',
                 ],
+
             ],
+
+            'Fetcher' => [
+                'Program' => 'src/views/partials/high-level/fetch_programs.php',
+            ],
+
+
             'Dragger' => [
                 'Carousel' => [
                     'Home' => __DIR__ . '../../views/partials/high-level/draggable_homeCarousel.php',
@@ -147,4 +154,6 @@ function asset($path)
     return BASE_PATH_LINK . 'src/assets/' . ltrim($path, '/');
 }
 
-function route($path) {}
+function route($path)
+{
+}
