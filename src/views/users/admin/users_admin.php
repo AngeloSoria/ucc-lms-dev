@@ -95,7 +95,7 @@ if (isset($_GET['view'])) {
                                     class="btn btn-primary btn-sm rounded fs-6 px-3 c-primary d-flex gap-3 align-items-center"
                                     data-bs-toggle="modal" data-bs-target="#userFormModal"
                                     onclick="apply_section_modal(this);">
-                                    <i class="bi bi-plus-circle"></i> Add Users
+                                    <i class="bi bi-plus-circle"></i> Add User
                                 </button>
 
                                 <!-- Reload Button -->
