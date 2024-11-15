@@ -38,6 +38,8 @@ class ProgramController
         $programList = $this->programModel->getAllPrograms();  // Call the Model method to get programs
         return $programList;
     }
+
+
 }
 
 ?>

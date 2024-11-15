@@ -11,46 +11,54 @@ class AcademicPeriodController
     {
         $this->academicPeriodModel = new AcademicPeriod($db);
     }
+
+    // Show the current date in the format YYYY-MM-DD
     public function showCurrentDate()
     {
-        // Get today's date
-        $currentDate = date('Y-m-d');
-
-        // Return the current date
-        return ['success' => true, 'currentDate' => $currentDate];
+        try {
+            $currentDate = date('Y-m-d'); // Get today's date
+            return ['success' => true, 'currentDate' => $currentDate];
+        } catch (Exception $e) {
+            return ['success' => false, 'error' => 'Failed to fetch current date: ' . $e->getMessage()];
+        }
     }
+
     // Check and update the active status of academic terms based on the current date
     public function checkAndUpdateActiveStatus()
     {
         try {
-            // Get all academic terms
+            // Get all academic terms and check their status
             $this->academicPeriodModel->checkActiveTerm();
-            return ["success", "Academic terms' active status updated successfully."];
+            return ["success" => true, "message" => "Academic terms' active status updated successfully."];
         } catch (Exception $e) {
-            return ["error", "Failed to update active status: " . $e->getMessage()];
+            return ["success" => false, "error" => "Failed to update active status: " . $e->getMessage()];
         }
     }
 
-
-
-    // controllers/AcademicTermController.php
+    // Add an academic year with its semesters
     public function addAcademicYearWithSemesters($academicData)
     {
-        // Check if the academic year already exists
-        if ($this->academicPeriodModel->isAcademicYearExists($academicData['academic_year_start'], $academicData['academic_year_end'])) {
-            return ["error", "Academic year already exists."];
-        } else {
-            // Add academic year with semesters
-            try {
-                $response = $this->academicPeriodModel->addAcademicYearWithSemesters($academicData['academic_year_start'], $academicData['academic_year_end'], $academicData['first_semester'], $academicData['second_semester']);
-
-                if ($response === true) {
-                    return ["success", "Academic year with two semesters added successfully."];
-                }
-            } catch (Exception $e) {
-                // Return error with message
-                return ["error", "Failed to add academic year with semesters: " . $e->getMessage()];
+        try {
+            // Check if the academic year already exists
+            if ($this->academicPeriodModel->isAcademicYearExists($academicData['academic_year_start'], $academicData['academic_year_end'])) {
+                return ["success" => false, "message" => "Academic year already exists."];
             }
+
+            // Add the new academic year with semesters
+            $response = $this->academicPeriodModel->addAcademicYearWithSemesters(
+                $academicData['academic_year_start'],
+                $academicData['academic_year_end'],
+                $academicData['first_semester'],
+                $academicData['second_semester']
+            );
+
+            if ($response === true) {
+                return ["success" => true, "message" => "Academic year with two semesters added successfully."];
+            } else {
+                return ["success" => false, "message" => "Failed to add academic year with semesters."];
+            }
+        } catch (Exception $e) {
+            return ["success" => false, "error" => "Failed to add academic year with semesters: " . $e->getMessage()];
         }
     }
 
@@ -62,14 +70,14 @@ class AcademicPeriodController
 
             // If terms are found, return them
             if ($allTerms) {
-                return $allTerms;
+                return ['success' => true, 'data' => $allTerms];
             }
 
             // In case no terms are found
-            return ['error', 'No terms found.'];
+            return ['success' => false, 'message' => 'No terms found.'];
         } catch (Exception $e) {
             // Return error with message
-            return ["error", 'Failed to fetch all terms: ' . $e->getMessage()];
+            return ["success" => false, 'error' => 'Failed to fetch all terms: ' . $e->getMessage()];
         }
     }
 

@@ -88,7 +88,8 @@ $latestUserId = $userController->getLatestUserId();
 
                             <div class="flex-grow-1">
                                 <label for="dob" class="form-label">Date of Birth</label>
-                                <input type="date" class="form-control" id="dob" name="dob" min="1979-12-31" max="2025-1-31" required>
+                                <input type="date" class="form-control" id="dob" name="dob" min="1979-12-31"
+                                    max="2025-1-31" required>
                             </div>
                         </div>
                     </div>
@@ -140,12 +141,12 @@ $latestUserId = $userController->getLatestUserId();
 
 <script>
     // JavaScript for dynamic role type requirement
-    document.addEventListener('DOMContentLoaded', function() {
+    document.addEventListener('DOMContentLoaded', function () {
         const roleSelect = document.getElementById('role');
         const roleTypeContainer = document.getElementById('role_type_container');
         const teacherTypeSelect = document.getElementById('educational_level');
 
-        roleSelect.addEventListener('change', function() {
+        roleSelect.addEventListener('change', function () {
             if (roleSelect.value === 'Teacher') {
                 roleTypeContainer.classList.remove('d-none'); // Show the Role Type container
                 teacherTypeSelect.required = true; // Make Role Type required

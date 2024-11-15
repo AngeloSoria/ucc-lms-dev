@@ -1,10 +1,13 @@
 <?php
 session_start(); // Start the session at the top of your file
+$CURRENT_PAGE = "subjects";
 
 require_once(__DIR__ . '../../../../config/PathsHandler.php');
 require_once(FILE_PATHS['DATABASE']);
 require_once(FILE_PATHS['Controllers']['Subject']);
 require_once(FILE_PATHS['Partials']['Widgets']['Card']);
+require_once(FILE_PATHS['Functions']['SessionChecker']);
+checkUserAccess(['Admin']);
 
 $widget_card = new Card();
 

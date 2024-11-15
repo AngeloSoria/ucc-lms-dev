@@ -11,10 +11,6 @@ checkUserAccess(['Admin']);
 
 $widget_card = new Card();
 
-// Create a new instance of the Database class
-$database = new Database();
-$db = $database->getConnection(); // Establish the database connectio
-
 $database = new Database();
 $db = $database->getConnection(); // Establish the database connection
 
@@ -81,6 +77,7 @@ try {
 <?php require_once(FILE_PATHS['Partials']['User']['Head']) ?>
 
 <body>
+
     <?php require_once(FILE_PATHS['Partials']['User']['Navbar']) ?>
 
     <section class="d-flex justify-content-between gap-2 box-sizing-border-box m-0 p-0">
@@ -218,8 +215,7 @@ try {
     </section>
 
     <?php require_once(FILE_PATHS['Partials']['HighLevel']['Modals']['Section']['Add']) ?>
-    <?php require_once(FILE_PATHS['Partials']['HighLevel']['Modals']['Section']['Details']) ?>
-    <?php require_once(FILE_PATHS['Partials']['HighLevel']['Modals']['Section']['Config']) ?>
+
 
     <!-- FOOTER -->
     <?php require_once(FILE_PATHS['Partials']['User']['Footer']) ?>

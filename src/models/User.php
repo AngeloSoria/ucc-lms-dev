@@ -8,7 +8,15 @@ class User
     {
         $this->conn = $db;
     }
+    public function getAllUsersByRole($role)
+    {
+        $query = "SELECT user_id, first_name, last_name FROM users WHERE role = :role";
+        $stmt = $this->conn->prepare($query);
+        $stmt->bindParam(':role', $role, PDO::PARAM_STR);
+        $stmt->execute();
 
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
     // Check if user exists by email or username
     public function checkUserExists($username)
     {
