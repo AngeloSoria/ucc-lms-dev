@@ -24,6 +24,7 @@ define('FILE_PATHS', [
         'ToastLogger' => __DIR__ . '../../functions/ToastLogger.php',
         'PHPLogger' => __DIR__ . '../../functions/PHPLogger.php',
         'SessionChecker' => __DIR__ . '../../functions/sessionChecker.php',
+        'UpdateURLParams' => __DIR__ . '../../functions/updateURLParams.php',
     ],
 
 
@@ -122,6 +123,7 @@ define('FILE_PATHS', [
         'Widgets' => [
             'Card' => __DIR__ . '../../views/partials/public/widget_card.php',
             'SearchUser' => __DIR__ . '../../views/partials/public/widget_searchUser.php',
+            'DataTable' => __DIR__ . '../../views/partials/public/widget_dataTable.php',
         ]
     ],
 
