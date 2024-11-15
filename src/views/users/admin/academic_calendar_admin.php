@@ -142,10 +142,6 @@ if ($allTermsResponse != null) {
                             </p>
                         </div>
                     </section>
-
-
-
-
                     <br>
                     <section>
                         <h5>List of Academic Term</h5>
@@ -162,7 +158,6 @@ if ($allTermsResponse != null) {
                                 </thead>
                                 <tbody>
                                     <?php if (is_array($allTerms) && !empty($allTerms)): ?>
-                                        <?= print_r($allTerms) ?>
                                         <?php foreach ($allTerms as $term): ?>
                                             <tr>
                                                 <td><?php echo htmlspecialchars($term['academic_year_start'] ?? 'N/A') . ' - ' . htmlspecialchars($term['academic_year_end'] ?? 'N/A'); ?>
@@ -201,12 +196,6 @@ if ($allTermsResponse != null) {
                         </div>
                     </section>
                 </div>
-            </div>
-
-            <div class="col bg-transparent d-flex flex-column justify-content-start align-items-center gap-2 px-1 box-sizing-border-box"
-                id="widgetPanel">
-                <?php require_once(FILE_PATHS['Partials']['User']['Calendar']) ?>
-                <?php require_once(FILE_PATHS['Partials']['User']['Tasks']) ?>
             </div>
         </section>
     </section>

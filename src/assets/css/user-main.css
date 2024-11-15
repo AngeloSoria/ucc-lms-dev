@@ -292,10 +292,10 @@ p {
     max-width: 49.5%;
 
     cursor: pointer;
-    transition: outline 0.05s ease-in-out;
+    transition: border 0.05s ease-in-out;
 }
 .c-card:hover {
-    outline: 2px solid var(--c-brand-secondary-a0);
+    border: 2px solid var(--c-brand-secondary-a0) !important;
 }
 .c-card.c-card-small {
     min-width: 49.5%;

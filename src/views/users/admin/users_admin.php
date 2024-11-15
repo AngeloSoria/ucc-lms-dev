@@ -8,7 +8,8 @@ require_once(FILE_PATHS['Controllers']['User']);
 require_once(FILE_PATHS['Partials']['Widgets']['Card']);
 require_once(FILE_PATHS['Functions']['ToastLogger']);
 require_once(FILE_PATHS['Functions']['SessionChecker']);
-checkUserAccess(['Admin']);
+
+checkUserAccess(['Admin', 'Level Coordinator']);
 
 require_once(FILE_PATHS['Functions']['UpdateURLParams']);
 
@@ -52,14 +53,16 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['action']) && $_POST['a
     exit();
 }
 
-
-
-$VIEW_ITEM = 'admin';
-$VALID_VIEWS = ['admin', 'level coordinator', 'student', 'teacher'];
-
 // Check if the requested view is valid
-if (isset($_GET['view'])) {
-    if (!in_array(strtolower($_GET['view']), $VALID_VIEWS)) {
+if (isset($_GET['viewRole']) && isset($_GET['user_id'])) {
+    if (!in_array(strtolower($_GET['viewRole']), $userController->getValidRoles())) {
+        if (!is_int($_GET['user_id'])) {
+            header('Location: ' . clearUrlParams());
+            exit();
+        }
+    }
+} elseif (isset($_GET['viewRole'])) {
+    if (!in_array(strtolower($_GET['viewRole']), $userController->getValidRoles())) {
         header('Location: ' . clearUrlParams());
         exit();
     }
@@ -80,7 +83,7 @@ if (isset($_GET['view'])) {
         <!-- content here -->
         <section id="contentSection">
             <div class="col box-sizing-border-box flex-grow-1">
-                <?php if (!isset($_GET['view'])): ?>
+                <?php if (!isset($_GET['viewRole'])): ?>
                     <div class="bg-white rounded p-3 shadow-sm border">
                         <!-- Headers -->
                         <div class="mb-3 row align-items-start">
@@ -126,6 +129,11 @@ if (isset($_GET['view'])) {
                             <?php
                             $RETRIEVED_USERS = $userController->getAllUsers(); // will return dictionary of users from database
                             // [user_id, first_name, middle_name, last_name, role, gender, dob, status]
+                            if ($RETRIEVED_USERS['success'] == false) {
+                                $_SESSION['_ResultMessage'] = $RETRIEVED_USERS['message'];
+                            } else {
+                                $RETRIEVED_USERS = $RETRIEVED_USERS['data'];
+                            }
 
                             // Calculate the total number of users for "All"
                             $total_users = count($RETRIEVED_USERS);
@@ -167,7 +175,7 @@ if (isset($_GET['view'])) {
                                     ],
                                     true,
                                     true,
-                                    updateUrlParams(['view' => $role])
+                                    updateUrlParams(['viewRole' => $role])
                                 );
                             }
 
@@ -243,9 +251,25 @@ if (isset($_GET['view'])) {
                                 <!-- breadcrumbs -->
                                 <h5 class="ctxt-primary p-0 m-0">
                                     <a class="ctxt-primary" href="<?= clearUrlParams(); ?>">Users</a>
-                                    <?php if (isset($_GET['view'])) { ?>
-                                        <span>/</span>
-                                        <a class="ctxt-primary" href="<?= updateUrlParams(['view' => $_GET['view']]) ?>"><?= ucfirst($_GET['view']) ?></a>
+                                    <?php if (isset($_GET['viewRole'])) { ?>
+                                        <span><i class="bi bi-caret-right-fill"></i></span>
+                                        <a class="ctxt-primary" href="<?= updateUrlParams(['viewRole' => $_GET['viewRole']]) ?>"><?= ucfirst($_GET['viewRole']) ?></a>
+                                    <?php } ?>
+                                    <?php if (isset($_GET['viewRole']) && isset($_GET['user_id'])) { ?>
+                                        <?php
+                                        $retrieve_user = $UserController->getUserById($_GET['user_id']);
+                                        if (!isset($_GET["_ResultMessage"])) {
+                                            if ($retrieve_user['success'] == false) {
+                                                $_GET["_ResultMessage"] = $retrieve_user['message'];
+                                            }
+                                        }
+                                        ?>
+                                        <span><i class="bi bi-caret-right-fill"></i></span>
+                                        <a class="ctxt-primary" href="<?= updateUrlParams(['viewRole' => $_GET['viewRole']]) ?>"><?= ucfirst($_GET['viewRole']) ?></a>
+                                        <span><i class="bi bi-caret-right-fill"></i></span>
+                                        <a class="ctxt-primary" href="<?= updateUrlParams(['viewRole' => $_GET['viewRole'], 'user_id' => $_GET['user_id']]) ?>">
+                                            <?php ucfirst($retrieve_user['data']['user_id']) ?>
+                                        </a>
                                     <?php } ?>
                                 </h5>
                             </div>
@@ -293,12 +317,6 @@ if (isset($_GET['view'])) {
                         </div>
                     </div>
                 <?php endif; ?>
-            </div>
-            <div id="widgetPanel">
-                <!-- CALENDAR -->
-                <?php require_once(FILE_PATHS['Partials']['User']['Calendar']) ?>
-                <!-- TASKS -->
-                <?php require_once(FILE_PATHS['Partials']['User']['Tasks']) ?>
             </div>
         </section>
     </section>
