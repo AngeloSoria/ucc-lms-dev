@@ -12,7 +12,7 @@ class UserController
         $this->userModel = new User($db);
     }
 
-    // Add user to database with checks
+    // ADD DATA
     public function addUser($userData)
     {
         // Check if the user already exists
@@ -21,7 +21,7 @@ class UserController
         }
 
         // Read the profile picture file directly from $_FILES
-        if (isset($_FILES['profile_pic']) && $_FILES['profile_pic']['error'] === UPLOAD_ERR_OK) {
+        if (isset($_FILES['profile_pic']) && $_FILES['profile_pic']['success'] === UPLOAD_ERR_OK) {
             // Open the file and read its contents
             $userData['profile_pic'] = file_get_contents($_FILES['profile_pic']['tmp_name']);
         } else {
@@ -56,7 +56,24 @@ class UserController
         }
     }
 
+    public function getUserById($userId)
+    {
+        try {
+            $userData = $this->userModel->getUserById($userId);
+            return [
+                "success" => true,
+                "message" => "User retrieved successfully.",
+                "data" => $userData
+            ];
+        } catch (Exception $e) {
+            return ['success' => false, 'message' => $e->getMessage()];
+        }
+    }
 
+
+
+
+    // GET DATA
     public function getAllUsers($limit = 100)
     {
         try {
@@ -67,7 +84,7 @@ class UserController
                 "data" => $queryResult
             ];
         } catch (Exception $e) {
-            return ['error' => false, 'message' => $e->getMessage()];
+            return ['success' => false, 'message' => $e->getMessage()];
         }
     }
 
@@ -75,9 +92,9 @@ class UserController
     {
         try {
             $roleCounts = $this->userModel->getRoleCounts();  // Call the model method to get counts
-            return ['error' => true, 'data' => $roleCounts];
+            return ['success' => true, 'data' => $roleCounts];
         } catch (Exception $e) {
-            return ['error' => false, 'message' => 'Failed to get role counts: ' . $e->getMessage()];
+            return ['success' => false, 'message' => 'Failed to get role counts: ' . $e->getMessage()];
         }
     }
 

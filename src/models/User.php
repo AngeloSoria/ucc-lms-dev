@@ -40,6 +40,22 @@ class User
         }
     }
 
+    // Add teacher role
+    public function addTeacher($userId, $educational_level)
+    {
+        try {
+            $query = "INSERT INTO teacher_educational_level (user_id, educational_level) VALUES (:user_id, :educational_level)";
+            $stmt = $this->conn->prepare($query);
+            $stmt->bindParam(':user_id', $userId);
+            $stmt->bindParam(':educational_level', $educational_level);
+            $stmt->execute();
+
+            return true;
+        } catch (PDOException $e) {
+            return ["error", $e->getMessage()];
+        }
+    }
+
     public function getAllUsersByRole($role)
     {
         $query = "SELECT user_id, first_name, last_name FROM users WHERE role = :role";
@@ -80,7 +96,20 @@ class User
         }
     }
 
-    // Edit user information
+    public function getUserById($userId)
+    {
+        try {
+            // Use a placeholder :limit for the limit value
+            $query = "SELECT * FROM users WHERE user_id = :user_id LIMIT 1";
+            $stmt = $this->conn->prepare($query);
+            $stmt->bindParam(':user_id', $userId, PDO::PARAM_INT);
+
+            $stmt->execute();
+            return $stmt->fetch(PDO::FETCH_ASSOC);
+        } catch (Exception $e) {
+            throw new Exception("Error retrieving user: " . $e->getMessage());
+        }
+    }
 
     // Get the latest user ID for auto-incrementing
     public function getLatestUserId()
@@ -101,21 +130,6 @@ class User
 
         // Fetch all results as an associative array
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
-    }
-    // Add teacher role
-    public function addTeacher($userId, $educational_level)
-    {
-        try {
-            $query = "INSERT INTO teacher_educational_level (user_id, educational_level) VALUES (:user_id, :educational_level)";
-            $stmt = $this->conn->prepare($query);
-            $stmt->bindParam(':user_id', $userId);
-            $stmt->bindParam(':educational_level', $educational_level);
-            $stmt->execute();
-
-            return true;
-        } catch (PDOException $e) {
-            return ["error", $e->getMessage()];
-        }
     }
 
     public function getValidRoles()

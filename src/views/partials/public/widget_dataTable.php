@@ -1,12 +1,13 @@
 <?php
 
 $RETRIEVED_USERS = $userController->getAllUsers();
+
+// TODO: Make a dynamic widget_dataTable. plz
+function generateDataTable() {}
+
+
 ?>
-<style>
-    .table>* {
-        font-family: var(--bs-body-font-family) !important;
-    }
-</style>
+
 <table id="example" class="table table-striped border" style="width: 100%">
     <thead style="background-color: var(--c-brand-primary-a0) !important;">
         <tr>
@@ -25,9 +26,10 @@ $RETRIEVED_USERS = $userController->getAllUsers();
         if (isset($RETRIEVED_USERS['data']) && count($RETRIEVED_USERS['data']) > 0) {
             // print_r($RETRIEVED_USERS);
             foreach ($RETRIEVED_USERS['data'] as $userdata => $user) {
-                if (strtolower($_GET['view']) !== strtolower($user['role'])) {
+                if (strtolower($_GET['viewRole']) !== strtolower($user['role'])) {
                     continue;
                 }
+                // TODO: user_id based filter to view.
 
                 $userid = $user['user_id'];
                 $username = $user['username'];
