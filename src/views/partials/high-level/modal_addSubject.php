@@ -1,4 +1,6 @@
-<div class="modal fade" id="createSubjectModal" tabindex="-1" aria-labelledby="createSubjectModalLabel" aria-hidden="true" closing-confirmation="true" closing-confirmation-text="Are you sure closing this form? (You will lose all progress)">
+<div class="modal fade" id="createSubjectModal" tabindex="-1" aria-labelledby="createSubjectModalLabel"
+    aria-hidden="true" closing-confirmation="true"
+    closing-confirmation-text="Are you sure closing this form? (You will lose all progress)">
     <div class="modal-dialog modal-lg modal-dialog-centered">
         <div class="modal-content">
             <div class="modal-header">
@@ -7,32 +9,6 @@
             </div>
             <div class="modal-body">
                 <form>
-                    <!-- 
-                        Subject Code
-                        Subject Name
-                        Semester
-                        Level
-                        Profile Image
-                    -->
-                    <div class="mb-3 d-flex gap-2">
-                        <div class="flex-grow-1">
-                            <label for="subjectCode" class="form-label">Subject Code:</label>
-                            <input type="text" class="form-control" id="subjectCode" placeholder="Enter Subject Code" required>
-                        </div>
-
-                        <div class="flex-grow-1 col-md-7">
-                            <label for="subjectname" class="form-label">Subject Name</label>
-                            <input type="text" class="form-control" id="subjectname" placeholder="Enter Section Name" required>
-                        </div>
-                    </div>
-
-                    <div class="mb-3">
-                        <div class="form-floating">
-                            <textarea class="form-control" placeholder="Add Description here" id="program_description" name="program_description" style="height: 100px"></textarea>
-                            <label for="program_description">Description</label>
-                        </div>
-                    </div>
-
                     <div class="mb-3 d-flex gap-2">
                         <div class="flex-grow-1">
                             <label for="program_id" class="form-label">Program</label>
@@ -58,9 +34,34 @@
                         </div>
                     </div>
 
+                    <div class="mb-3 d-flex gap-2">
+                        <div class="flex-grow-1">
+                            <label for="subjectCode" class="form-label">Subject Code:</label>
+                            <input type="text" class="form-control" id="subjectCode" placeholder="Enter Subject Code"
+                                required>
+                        </div>
+
+                        <div class="flex-grow-1 col-md-7">
+                            <label for="subjectname" class="form-label">Subject Name</label>
+                            <input type="text" class="form-control" id="subjectname" placeholder="Enter Section Name"
+                                required>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <div class="form-floating">
+                            <textarea class="form-control" placeholder="Add Description here" id="program_description"
+                                name="program_description" style="height: 100px"></textarea>
+                            <label for="program_description">Description</label>
+                        </div>
+                    </div>
+
+
+
                     <div class="mb-3">
                         <label for="section_image" class="form-label">Tile Picture</label>
-                        <input type="file" class="form-control" id="section_image" name="section_image" accept="image/*">
+                        <input type="file" class="form-control" id="section_image" name="section_image"
+                            accept="image/*">
                     </div>
             </div>
 

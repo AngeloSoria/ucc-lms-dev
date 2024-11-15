@@ -157,6 +157,7 @@ class AcademicPeriod
     public function getActiveTerms()
     {
         try {
+
             $query = "SELECT period_id, academic_year_start, academic_year_end, semester, start_date, end_date, is_active FROM academic_period WHERE is_active = 1";
             $stmt = $this->conn->prepare($query);
             $stmt->execute();
@@ -168,4 +169,23 @@ class AcademicPeriod
             throw new PDOException("Failed to get active terms. <br>" . $e->getMessage());
         }
     }
+
+    public function getCurrentPeriods()
+    {
+        try {
+            $sql = "SELECT *
+                    FROM {$this->table_name}
+                    WHERE CURDATE() BETWEEN start_date AND end_date 
+                    AND is_active = 1";
+
+            $stmt = $this->conn->prepare($sql);
+            $stmt->execute();
+            return $stmt->fetch(PDO::FETCH_ASSOC); // Return the semester details
+        } catch (PDOException $e) {
+            // Log error for debugging
+            error_log("Database Error: " . $e->getMessage());
+            return null;
+        }
+    }
+
 }
