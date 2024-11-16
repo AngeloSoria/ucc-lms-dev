@@ -8,6 +8,7 @@ require_once(FILE_PATHS['Controllers']['User']);
 require_once(FILE_PATHS['Partials']['Widgets']['Card']);
 require_once(FILE_PATHS['Functions']['ToastLogger']);
 require_once(FILE_PATHS['Functions']['SessionChecker']);
+require_once(FILE_PATHS['Partials']['Widgets']['DataTable']);
 
 checkUserAccess(['Admin', 'Level Coordinator']);
 
@@ -257,7 +258,7 @@ if (isset($_GET['viewRole']) && isset($_GET['user_id'])) {
                                     <?php } ?>
                                     <?php if (isset($_GET['viewRole']) && isset($_GET['user_id'])) { ?>
                                         <?php
-                                        $retrieve_user = $UserController->getUserById($_GET['user_id']);
+                                        $retrieve_user = $userController->getUserById($_GET['user_id']);
                                         if (!isset($_GET["_ResultMessage"])) {
                                             if ($retrieve_user['success'] == false) {
                                                 $_GET["_ResultMessage"] = $retrieve_user['message'];
@@ -265,56 +266,46 @@ if (isset($_GET['viewRole']) && isset($_GET['user_id'])) {
                                         }
                                         ?>
                                         <span><i class="bi bi-caret-right-fill"></i></span>
-                                        <a class="ctxt-primary" href="<?= updateUrlParams(['viewRole' => $_GET['viewRole']]) ?>"><?= ucfirst($_GET['viewRole']) ?></a>
-                                        <span><i class="bi bi-caret-right-fill"></i></span>
                                         <a class="ctxt-primary" href="<?= updateUrlParams(['viewRole' => $_GET['viewRole'], 'user_id' => $_GET['user_id']]) ?>">
                                             <?php ucfirst($retrieve_user['data']['user_id']) ?>
                                         </a>
                                     <?php } ?>
                                 </h5>
                             </div>
-                            <div class="col-8 d-flex justify-content-end gap-2">
-                                <!-- Tools -->
-
-                                <!-- Add New Button -->
-                                <!-- <button
-                                    class="btn btn-primary btn-sm rounded fs-6 px-3 c-primary d-flex gap-3 align-items-center"
-                                    data-bs-toggle="modal" data-bs-target="#userFormModal"
-                                    onclick="apply_section_modal(this);">
-                                    <i class="bi bi-plus-circle"></i> Add User
-                                </button> -->
-
-                                <!-- Reload Button -->
-                                <button
-                                    class="btn btn-outline-primary btn-sm rounded px-2 c-primary d-flex gap-2 align-items-center">
-                                    <i class="bi bi-arrow-clockwise"></i>
-                                    Refresh Data
-                                </button>
-                                <a href="<?= updateUrlParams(['view' => 'user', 'filter' => 'active']); ?>">
-                                    <button class="btn btn-primary c-primary">
-                                        Redirect
-                                    </button>
-                                </a>
-                                <!-- View Type -->
-                                <!-- <div class="btn-group" id="previewTypeContainer">
-                                    <button id="btnPreviewTypeCatalog" type="button"
-                                        class="btn btn-sm btn-primary c-primary px-2">
-                                        <i class="bi bi-card-heading fs-6"></i>
-                                    </button>
-                                    <button id="btnPreviewTypeTable" type="button"
-                                        class="btn btn-sm btn-outline-primary c-primary px-2">
-                                        <i class="bi bi-table fs-6"></i>
-                                    </button>
-                                </div> -->
-
-                            </div>
+                            <div class="col-8 d-flex justify-content-end gap-2"></div>
                         </div>
 
                         <!-- preview data -->
                         <!-- Table View -->
                         <div id="data_view_table" class="">
-                            <?php require_once(FILE_PATHS['Partials']['Widgets']['DataTable']) ?>
+                            <?php
+                            $getAllUsers = $userController->getAllUsers();
+                            if ($getAllUsers['success'] == true) {
+                                echo generateDataTable(
+                                    "datatable_userRoleData",
+                                    true,
+                                    'user_id',
+                                    ['gender', 'middle_name', 'dob'],
+                                    [
+                                        "username" => "Username",
+                                        "user_id" => "User ID",
+                                        "first_name" => "First Name",
+                                        "last_name" => "Last Name",
+                                        "role" => "Role",
+                                        "status" => "Status"
+                                    ],
+                                    ['role' => $_GET['viewRole']],
+                                    ['role'],
+                                    $getAllUsers['data']
+                                );
+                            } else {
+                                $_SESSION["_ResultMessage"] = $getAllUsers['message'];
+                            }
+
+                            ?>
                         </div>
+
+
                     </div>
                 <?php endif; ?>
             </div>
@@ -332,9 +323,9 @@ if (isset($_GET['viewRole']) && isset($_GET['user_id'])) {
 
 <?php
 // Show Toast
-if (isset($_SESSION["_ResultMessage"]) && $_SESSION["_ResultMessage"] != null && $_SESSION["_ResultMessage"]["showAsToast"] == true) {
+if (isset($_SESSION["_ResultMessage"]) && $_SESSION["_ResultMessage"] != null) {
     makeToast([
-        'type' => $_SESSION["_ResultMessage"]["type"],
+        'type' => $_SESSION["_ResultMessage"]["success"] == true ? 'success' : 'error',
         'message' => $_SESSION["_ResultMessage"]["message"],
     ]);
     outputToasts(); // Execute toast on screen.

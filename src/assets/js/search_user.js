@@ -24,7 +24,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
   // Wait for the users to be retrieved
   const USERS = await retrieveUsers();
-  console.log(USERS); // Now you can use USERS after it's fetched.
+  // console.log(USERS); // Now you can use USERS after it's fetched.
 
   // Define the function to add users to the container
   function addToContainer(containerID, data) {
