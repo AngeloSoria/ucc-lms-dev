@@ -11,7 +11,26 @@ checkUserAccess(['Admin']);
 
 $widget_card = new Card();
 
-$CURRENT_PAGE = "subjects";
+$database = new Database();
+$db = $database->getConnection();
+
+$subjectController = new SubjectController($db);
+
+if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['action']) && $_POST['action'] == 'addSubject') {
+    // Collect user data from form inputs
+    $subjectData = [
+        'subject_code' => $_POST['subject_code'],
+        'subject_name' => $_POST['subject_name'],
+        'semester' => $_POST['semester'],
+        'educational_level' => $_POST['educational_level']
+    ];
+
+    $_SESSION["_ResultMessage"] = $subjectController->addSubject($subjectData);
+
+    // Redirect to the same page to prevent resubmission
+    header("Location: " . $_SERVER['REQUEST_URI']);
+    exit();
+}
 ?>
 
 <!DOCTYPE html>
