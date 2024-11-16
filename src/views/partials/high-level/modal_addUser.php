@@ -31,13 +31,6 @@ $latestUserId = $userController->getLatestUserId();
                         </div>
                         <div class="mb-3 d-flex gap-2">
                             <div class="flex-grow-1">
-                                <label for="user_id" class="form-label">User ID <i style="font-size:0.75rem;"
-                                        class="text-danger">(Auto Generated)</i></label>
-                                <input type="text" class="form-control" id="user_id" name="user_id"
-                                    value="<?php echo $latestUserId; ?>" readonly>
-                            </div>
-
-                            <div class="flex-grow-1">
                                 <label for="role" class="form-label">Role</label>
                                 <select class="form-select" id="role" name="role" required>
                                     <option value="" disabled selected>Select Role</option>
@@ -47,6 +40,14 @@ $latestUserId = $userController->getLatestUserId();
                                     <option value="Teacher">Teacher</option>
                                 </select>
                             </div>
+
+                            <div class="flex-grow-1">
+                                <label for="user_id" class="form-label">User ID <i style="font-size:0.75rem;"
+                                        class="text-danger">(Auto Generated)</i></label>
+                                <input type="text" class="form-control" id="user_id" name="user_id"
+                                    value="<?php echo $latestUserId; ?>" readonly>
+                            </div>
+
 
                             <div class="flex-grow-1 d-none" id="role_type_container">
                                 <label for="educational_level" class="form-label">Educational level</label>
@@ -141,12 +142,12 @@ $latestUserId = $userController->getLatestUserId();
 
 <script>
     // JavaScript for dynamic role type requirement
-    document.addEventListener('DOMContentLoaded', function () {
+    document.addEventListener('DOMContentLoaded', function() {
         const roleSelect = document.getElementById('role');
         const roleTypeContainer = document.getElementById('role_type_container');
         const teacherTypeSelect = document.getElementById('educational_level');
 
-        roleSelect.addEventListener('change', function () {
+        roleSelect.addEventListener('change', function() {
             if (roleSelect.value === 'Teacher') {
                 roleTypeContainer.classList.remove('d-none'); // Show the Role Type container
                 teacherTypeSelect.required = true; // Make Role Type required
