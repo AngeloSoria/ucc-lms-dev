@@ -7,6 +7,7 @@ require_once(FILE_PATHS['DATABASE']);
 require_once(FILE_PATHS['Controllers']['Subject']);
 require_once(FILE_PATHS['Partials']['Widgets']['Card']);
 require_once(FILE_PATHS['Functions']['SessionChecker']);
+require_once(FILE_PATHS['Functions']['ToastLogger']);
 checkUserAccess(['Admin']);
 
 $widget_card = new Card();
@@ -197,5 +198,19 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['action']) && $_POST['a
     <?php require_once(FILE_PATHS['Partials']['User']['Footer']) ?>
 </body>
 <script src="<?php echo asset('js/admin-main.js') ?>"></script>
+<script src="<?php echo asset('js/toast.js') ?>"></script>
+
+<?php
+// Show Toast
+if (isset($_SESSION["_ResultMessage"]) && $_SESSION["_ResultMessage"] != null) {
+    makeToast([
+        'type' => $_SESSION["_ResultMessage"]["success"] == true ? 'success' : 'error',
+        'message' => $_SESSION["_ResultMessage"]["message"],
+    ]);
+    outputToasts(); // Execute toast on screen.
+    unset($_SESSION["_ResultMessage"]); // Dispose
+}
+
+?>
 
 </html>
