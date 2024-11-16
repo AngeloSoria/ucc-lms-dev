@@ -16,9 +16,10 @@ class AcademicPeriod
         $currentDate = date('Y-m-d');
 
         try {
+
             // Begin a transaction to ensure all updates occur as a unit
             $this->conn->beginTransaction();
-
+            error_log("checkAndUpdateActiveStatus() called");
             // Get all terms to check the current one and update accordingly
             $query = "SELECT period_id, start_date, end_date, is_active FROM {$this->table_name}";
             $stmt = $this->conn->prepare($query);

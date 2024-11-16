@@ -136,4 +136,45 @@ class User
     {
         return self::ENUM_USER_ROLES;
     }
+
+    public function getAllTeachersWithEducationLevel()
+    {
+        try {
+            // SQL query to join teacher_educational_level and users tables
+            $query = "
+            SELECT 
+                u.user_id,
+                u.first_name,
+                u.middle_name,
+                u.last_name,
+                u.dob,
+                u.gender,
+                u.role,
+                u.username,
+                u.profile_pic,
+                u.status,
+                u.created_at,
+                u.updated_at,
+                u.requirePasswordReset,
+                tel.educational_level
+            FROM 
+                teacher_educational_level tel
+            JOIN 
+                users u ON u.user_id = tel.user_id
+        ";
+
+            // Prepare the statement
+            $stmt = $this->conn->prepare($query);
+
+            // Execute the statement
+            $stmt->execute();
+
+            // Fetch all the results as an associative array
+            $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+            return $result ? $result : []; // Return result or an empty array if no records found
+        } catch (PDOException $e) {
+            throw new PDOException("Failed to get all terms: " . $e->getMessage());
+        }
+    }
 }

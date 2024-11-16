@@ -107,4 +107,25 @@ class UserController
     {
         return $this->userModel->getValidRoles();
     }
+
+    public function getAllTeachers()
+    {
+        // Fetch all teachers with their educational level from the model
+        $teachers = $this->userModel->getAllTeachersWithEducationLevel();
+
+        // Check if teachers are found
+        if (!empty($teachers)) {
+            // Pass data to the view (or handle as needed, e.g., return it as JSON)
+            return [
+                "success" => true,
+                "data" => $teachers
+            ];
+        } else {
+            // If no teachers are found
+            return [
+                "success" => false,
+                "message" => "No teachers found."
+            ];
+        }
+    }
 }

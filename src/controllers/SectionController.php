@@ -15,46 +15,64 @@ class SectionController
         $this->sectionModel = new Section($this->db);
     }
 
+    /**
+     * Handles adding a section via POST request.
+     */
     public function addSection()
     {
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             // Sanitize and assign section data
             $sectionData = [
                 'section_name' => htmlspecialchars(strip_tags($_POST['section_name'])),
-                'educational_level' => htmlspecialchars(strip_tags($_POST['educational_level'])),
                 'program_id' => htmlspecialchars(strip_tags($_POST['program_id'])),
                 'year_level' => htmlspecialchars(strip_tags($_POST['year_level'])),
                 'semester' => htmlspecialchars(strip_tags($_POST['semester'])),
-                'section_image' => null, // Initialize section_image to null
+                'section_image' => null, // Default to null unless provided
                 'adviser_id' => htmlspecialchars(strip_tags($_POST['adviser_id']))
             ];
 
             // Handle section image upload
             if (isset($_FILES['section_image']) && $_FILES['section_image']['error'] === UPLOAD_ERR_OK) {
                 $sectionImage = $_FILES['section_image'];
-                $allowedTypes = ['image/jpeg', 'image/png', 'image/gif']; // Allowed image types
+                $allowedTypes = ['image/jpeg', 'image/png', 'image/gif']; // Define allowed image MIME types
 
                 // Check file type
                 if (in_array($sectionImage['type'], $allowedTypes)) {
-                    $sectionData['section_image'] = file_get_contents($sectionImage['tmp_name']); // Store the image data
+                    $sectionData['section_image'] = file_get_contents($sectionImage['tmp_name']); // Store binary image data
                 } else {
-                    return ["error", "Invalid section image type."];
+                    // Return error for invalid image type
+                    return ["error" => "Invalid section image type. Allowed types are: JPEG, PNG, GIF."];
                 }
             }
 
-            // Call the model to add the section
+            // Check if the section already exists
+            if ($this->sectionModel->sectionExists($sectionData)) {
+                return ["error" => "The section already exists. Please verify the information."];
+            }
+
+            // Add the section using the model
             if ($this->sectionModel->addSection($sectionData)) {
-                // Success handling, e.g., redirect or display success message
+                // Redirect to the section admin page on success
                 header('Location: ../section_admin.php?success=1');
+                exit;
             } else {
-                // Error handling
-                return ["error", "Failed to add section."];
+                // Return error if the addition fails
+                return ["error" => "Failed to add section. Please try again."];
             }
         }
+        return ["error" => "Invalid request method."];
     }
 
+    /**
+     * Retrieves all sections using the model.
+     */
     public function getAllSections()
     {
-        return $this->sectionModel->getAllSections(); // Get sections from model
+        return $this->sectionModel->getAllSections(); // Fetch all sections from the model
+    }
+
+    public function updateAcademicPeriod()
+    {
+        return $this->sectionModel->updateAcademicPeriod(); // Fetch all sections from the model
     }
 }

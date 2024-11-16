@@ -16,7 +16,7 @@ $db = $database->getConnection(); // Establish the database connection
 
 $sectionController = new SectionController();
 $sectionList = $sectionController->getAllSections(); // Fetch all sections
-
+$sectionList = $sectionController->updateAcademicPeriod();
 
 
 // At the beginning of your main file
