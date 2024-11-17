@@ -10,6 +10,7 @@ require_once(FILE_PATHS['Functions']['ToastLogger']);
 require_once(FILE_PATHS['Functions']['SessionChecker']);
 require_once(FILE_PATHS['Partials']['Widgets']['DataTable']);
 require_once(FILE_PATHS['Functions']['UpdateURLParams']);
+require_once(FILE_PATHS['Functions']['CalculateElapsedTime']);
 
 checkUserAccess(['Admin', 'Level Coordinator']);
 
@@ -23,7 +24,6 @@ $db = $database->getConnection(); // Establish the database connection
 // Create an instance of the UserController
 $userController = new UserController($db);
 
-unset($_SESSION["_ResultMessage"]); // Remove any past data.
 if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['action']) && $_POST['action'] == 'addUser') {
     // Collect user data from form inputs
     $userData = [
@@ -89,16 +89,10 @@ if (isset($_GET['viewRole']) && isset($_GET['user_id'])) {
 
                                 <!-- Add New Button -->
                                 <button
-                                    class="btn btn-primary btn-sm rounded fs-6 px-3 c-primary d-flex gap-3 align-items-center"
+                                    class="btn btn-primary btn-lg rounded fs-6 px-3 c-primary d-flex gap-3 align-items-center"
                                     data-bs-toggle="modal" data-bs-target="#userFormModal"
                                     onclick="apply_section_modal(this);">
                                     <i class="bi bi-plus-circle"></i> Add User
-                                </button>
-
-                                <!-- Reload Button -->
-                                <button
-                                    class="btn btn-outline-primary btn-sm rounded fs-5 px-2 c-primary d-flex gap-2 align-items-center">
-                                    <i class="bi bi-arrow-clockwise"></i>
                                 </button>
 
                                 <!-- Preview Type -->
@@ -357,14 +351,11 @@ if (isset($_GET['viewRole']) && isset($_GET['user_id'])) {
                             </div>
                             <div class="col-8 d-flex justify-content-end gap-2"></div>
                         </div>
-
+                        <hr>
                         <section class="role_table">
                             <?php
                             $getAllUsers = $userController->getAllUsersByRole(strtolower($_GET['viewRole']));
-                            if ($getAllUsers['success'] == true) {
-                                // prepare data to be shown.
-
-                            ?>
+                            if ($getAllUsers['success'] == true) { ?>
                                 <!-- =============================================== -->
                                 <!-- DATA TABLE BY ROLES -->
                                 <div class="actionControls mb-2 p-1 bg-transparent d-flex gap-2 justify-content-end align-items-center">
@@ -377,7 +368,7 @@ if (isset($_GET['viewRole']) && isset($_GET['user_id'])) {
                                     <thead style="background-color: var(--c-brand-primary-a0) !important;">
                                         <tr>
                                             <th>
-                                                <input type="checkbox" class="form-check-input" value="<?php htmlspecialchars($row[$uniqueIDTarget] ?? '') ?>">
+                                                <input type="checkbox" id="checkbox_selectAll" class="form-check-input" value="<?php htmlspecialchars($row[$uniqueIDTarget] ?? '') ?>">
                                             </th>
                                             <th>User Id</th>
                                             <th>Role</th>
@@ -386,7 +377,6 @@ if (isset($_GET['viewRole']) && isset($_GET['user_id'])) {
                                             <th>Birthdate</th>
                                             <th>Gender</th>
                                             <th>Status</th>
-                                            <th>Date Registered</th>
                                             <th>Action</th>
                                         </tr>
                                     </thead>
@@ -408,7 +398,6 @@ if (isset($_GET['viewRole']) && isset($_GET['user_id'])) {
                                                     <td><?php echo $userData['dob'] ?></td>
                                                     <td><?php echo ucfirst($userData['gender']) ?></td>
                                                     <td class="fw-bold <?php echo $userData['status'] == 'active' ? 'ctxt-primary' : 'text-danger' ?>"><?php echo ucfirst($userData['status']) ?></td>
-                                                    <td><?php echo ucfirst($userData['created_at']) ?></td>
                                                     <td>
                                                         <a href="<?php echo htmlspecialchars(updateUrlParams(['viewRole' => $userData['role'], 'user_id' => $userData['user_id']])) ?>" title="Configure" class="btn btn-primary m-auto">
                                                             <i class="bi bi-pencil-square"></i>
@@ -429,7 +418,6 @@ if (isset($_GET['viewRole']) && isset($_GET['user_id'])) {
                                             <th></th>
                                             <th></th>
                                             <th></th>
-                                            <th></th>
                                         </tr>
                                     </tfoot>
                                 </table>
@@ -438,7 +426,7 @@ if (isset($_GET['viewRole']) && isset($_GET['user_id'])) {
                                         $('#dataTable_allUsers').DataTable({
                                             columnDefs: [{
                                                 "orderable": false,
-                                                "targets": [0, 9]
+                                                "targets": [0, 8]
                                             }],
                                             language: {
                                                 "paginate": {
@@ -529,17 +517,24 @@ if (isset($_GET['viewRole']) && isset($_GET['user_id'])) {
                                             $_SESSION["_ResultMessage"] = ['success' => false, 'message' => 'No user_id with a value (' . $_GET['user_id'] . ') found.'];
                                         }
                                         ?>
-                                        <?php if (!empty($retrieved_user['data'])): ?>
+                                        <?php if (!empty($retrieved_user['data'])) { ?>
                                             <span><i class="bi bi-caret-right-fill"></i></span>
                                             <a class="ctxt-primary" href="<?= updateUrlParams(['viewRole' => $_GET['viewRole'], 'user_id' => $_GET['user_id']]) ?>">
                                                 <?php ucfirst(print_r($retrieved_user['data']['user_id'])) ?>
                                             </a>
-                                        <?php else: ?>
-                                            <span><i class="bi bi-caret-right-fill"></i></span>
-                                            <a class="ctxt-primary" href="<?= updateUrlParams(['viewRole' => $_GET['viewRole'], 'user_id' => $_GET['user_id']]) ?>">
-                                                {user not found}
-                                            </a>
-                                        <?php endif; ?>
+                                        <?php } else {
+                                            $_SESSION["_ResultMessage"] = ['success' => false, 'message' => 'No user_id with a value (' . $_GET['user_id'] . ') found.'];
+                                            echo "<script>window.location = '" . updateUrlParams(['viewRole' => $_GET['viewRole']]) . "';</script>";
+                                            exit();
+                                        } ?>
+                                        <?php
+                                        // prevent bypassing viewRole while having specific user_id
+                                        if ($retrieved_user['data']['role'] != $_GET['viewRole']) {
+                                            $_SESSION["_ResultMessage"] = ['success' => false, 'message' => 'Role does match with user id.'];
+                                            echo "<script>window.location = '" . clearUrlParams() . "';</script>";
+                                            exit();
+                                        }
+                                        ?>
                                     <?php } ?>
                                 </h5>
                                 <!-- end of breadcrumbs -->
@@ -551,64 +546,130 @@ if (isset($_GET['viewRole']) && isset($_GET['user_id'])) {
                             // prepare the data.
                             $user_profileImage = base64_encode($retrieved_user['data']['profile_pic']);
                             $user_userid = $retrieved_user['data']['user_id'];
-                            $user_fullName = $retrieved_user['data']['first_name'] . ' ' . $retrieved_user['data']['last_name'];
+                            $user_firstName = $retrieved_user['data']['first_name'];
+                            $user_middleName = $retrieved_user['data']['middle_name'];
+                            $user_lastName = $retrieved_user['data']['last_name'];
+                            $user_fullName = $retrieved_user['data']['first_name'] . ' ' . $retrieved_user['data']['middle_name'] . ' ' . $retrieved_user['data']['last_name'];
                             $user_dob = $retrieved_user['data']['dob'];
+                            $user_gender = $retrieved_user['data']['gender'];
                             $user_username = $retrieved_user['data']['username'];
                             $user_status = $retrieved_user['data']['status'];
                             $user_createdDate = $retrieved_user['data']['created_at'];
                             $user_lastUpdate = $retrieved_user['data']['updated_at'];
                             $user_requirePasswordReset = $retrieved_user['data']['requirePasswordReset'];
-                            $user_lastLogin = $retrieved_user['data']['last_login'];
+                            $user_lastLogin = timeElapsedSince($retrieved_user['data']['last_login']);
                         ?>
                             <hr>
                             <!-- generated -->
                             <div class="container my-4">
+                                <h4 class="fw-bolder text-success">Edit Profile</h4>
                                 <div class="card shadow-sm position-relative">
-                                    <div class="card-header text-center">
-                                        <div class="position-absolute top-0 end-0 m-2">
-                                            <button class="btn btn-primary btn-sm me-2">Edit Profile</button>
-                                            <button class="btn btn-danger btn-sm">Deactivate</button>
+                                    <div class="card-header position-relative d-flex justify-content-start align-items-center gap-3 bg-success bg-opacity-75">
+                                        <div class="statusContainer position-absolute top-0 end-0 mt-3 me-4">
+                                            <button class="btn cbtn-secondary px-4">
+                                                Edit
+                                            </button>
                                         </div>
                                         <img src="<?= isset($user_profileImage) && !empty($user_profileImage)
                                                         ? 'data:image/jpeg;base64,' . $user_profileImage
                                                         : 'https://via.placeholder.com/120?text=No+Image' ?>"
                                             alt="Profile Picture"
-                                            class="rounded-circle img-fluid"
+                                            class="rounded-circle img-fluid border border-3 border-success"
                                             style="width: 120px; height: 120px; object-fit: cover;">
-                                        <h4 class="mt-3"><?= htmlspecialchars($user_fullName) ?></h4>
-                                        <p class="text-muted">@<?= htmlspecialchars($user_username) ?></p>
+                                        <div class="text-white p-0">
+                                            <h3 class="mt-3 p-0 m-0"><?= htmlspecialchars($user_fullName) ?></h3>
+                                            <p class="text-white p-0 m-0">@<?= htmlspecialchars($user_username) ?></p>
+                                        </div>
                                     </div>
                                     <div class="card-body">
-                                        <div class="row mb-3">
-                                            <div class="col-md-6">
-                                                <h6 class="fw-bold">Date of Birth:</h6>
-                                                <p><?= htmlspecialchars($user_dob) ?></p>
+                                        <section class="mb-4">
+                                            <div class="row mb-3">
+                                                <h5>Account Information</h5>
                                             </div>
-                                            <div class="col-md-6">
-                                                <h6 class="fw-bold">Status:</h6>
-                                                <p><?= htmlspecialchars($user_status) ?></p>
+                                            <div class="row mb-3">
+                                                <div class="col-md-4">
+                                                    <h6 class="">User Name</h6>
+                                                    <input updateEnabled class="form-control" type="text" disabled value="<?= htmlspecialchars($user_username) ?>">
+                                                </div>
+                                                <div class="col-md-4">
+                                                    <h6 class="">Password</h6>
+                                                    <input updateEnabled class="form-control" type="password" disabled value="<?= htmlspecialchars($user_username) ?>">
+                                                </div>
+                                                <div class="col-md-4">
+                                                    <h6 class="">Requires Password Change</h6>
+                                                    <select class="form-select" disabled>
+                                                        <?php if ($user_requirePasswordReset) { ?>
+                                                            <option value="1" selected>Yes</option>
+                                                        <?php } else { ?>
+                                                            <option value="0" selected>No</option>
+                                                        <?php } ?>
+                                                    </select>
+                                                </div>
                                             </div>
-                                        </div>
-                                        <div class="row mb-3">
-                                            <div class="col-md-6">
-                                                <h6 class="fw-bold">Created Date:</h6>
-                                                <p><?= htmlspecialchars($user_createdDate) ?></p>
+                                        </section>
+
+                                        <hr>
+
+                                        <section class="mb-4">
+                                            <div class="row mb-3">
+                                                <h5>Personal Information</h5>
                                             </div>
-                                            <div class="col-md-6">
-                                                <h6 class="fw-bold">Last Update:</h6>
-                                                <p><?= htmlspecialchars($user_lastUpdate) ?></p>
+                                            <div class="row mb-3">
+                                                <div class="col-md-4">
+                                                    <h6 class="">First Name</h6>
+                                                    <input updateEnabled class="form-control" type="text" disabled value="<?= htmlspecialchars($user_firstName) ?>">
+                                                </div>
+                                                <div class="col-md-4">
+                                                    <h6 class="">Middle Name</h6>
+                                                    <input updateEnabled class="form-control" type="text" disabled value="<?= htmlspecialchars($user_middleName) ?>">
+                                                </div>
+                                                <div class="col-md-4">
+                                                    <h6 class="">Last Name</h6>
+                                                    <input updateEnabled class="form-control" type="text" disabled value="<?= htmlspecialchars($user_lastName) ?>">
+                                                </div>
                                             </div>
-                                        </div>
-                                        <div class="row mb-3">
-                                            <div class="col-md-6">
-                                                <h6 class="fw-bold">Require Password Reset:</h6>
-                                                <p><?= $user_requirePasswordReset ? "Yes" : "No" ?></p>
+                                            <div class="row mb-3">
+                                                <div class="col-md-4">
+                                                    <h6 class="">Date of Birth</h6>
+                                                    <input updateEnabled class="form-control" type="date" disabled value="<?= htmlspecialchars($user_dob) ?>">
+                                                </div>
+                                                <div class="col-md-4">
+                                                    <h6 class="">Gender</h6>
+                                                    <select class="form-select" disabled>
+                                                        <?php if ($user_gender == 'male') { ?>
+                                                            <option value="male" selected>Male</option>
+                                                        <?php } else { ?>
+                                                            <option value="female" selected>Female</option>
+                                                        <?php } ?>
+                                                    </select>
+                                                </div>
                                             </div>
-                                            <div class="col-md-6">
-                                                <h6 class="fw-bold">Last Login:</h6>
-                                                <p><?= !empty($user_lastLogin) ? htmlspecialchars($user_lastLogin) : 'No activity yet.' ?></p>
+                                        </section>
+
+                                        <hr>
+
+                                        <section class="mb-4">
+                                            <div class="row mb-3">
+                                                <h5>Miscellaneous</h5>
                                             </div>
-                                        </div>
+                                            <div class="row mb-3">
+                                                <div class="col-md-4">
+                                                    <h6 class="">Created Date</h6>
+                                                    <span class=""><?= htmlspecialchars($user_createdDate) ?></span>
+                                                </div>
+                                                <div class="col-md-4">
+                                                    <h6 class="">Last Update Date</h6>
+                                                    <span class=""><?= htmlspecialchars($user_lastUpdate) ?></span>
+                                                </div>
+                                            </div>
+                                            <div class="row mb-3">
+                                                <div class="col-md-6">
+                                                    <h6 class="">Last Login:</h6>
+                                                    <span class=""><?= !empty($user_lastLogin) ? htmlspecialchars($user_lastLogin) : 'No activity yet.' ?></span>
+                                                </div>
+                                            </div>
+                                        </section>
+
                                     </div>
                                 </div>
                             </div>

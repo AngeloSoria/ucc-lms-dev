@@ -25,6 +25,7 @@ define('FILE_PATHS', [
         'PHPLogger' => __DIR__ . '../../functions/PHPLogger.php',
         'SessionChecker' => __DIR__ . '../../functions/sessionChecker.php',
         'UpdateURLParams' => __DIR__ . '../../functions/updateURLParams.php',
+        'CalculateElapsedTime' => __DIR__ . '../../functions/CalculateElapsedTime.php',
     ],
 
 

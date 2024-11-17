@@ -74,4 +74,3 @@ class StudentSectionController
         msgLog("CRUD", "[ADD] [STUDENT_SECTION] Student: {$student_id}, Section: {$section_id}");
     }
 }
-?>

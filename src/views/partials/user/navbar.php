@@ -1,3 +1,33 @@
+<?php
+ob_start();
+// Redirect if no session role is set
+if (!isset($_SESSION['role'])) {
+    header('Location: ' . BASE_PATH_LINK);
+    exit;
+}
+
+// Determine the correct dashboard link
+$dashboardLink = '';
+switch ($_SESSION['role']) {
+    case 'Admin':
+        $dashboardLink = 'dashboard_admin.php';
+        break;
+    case 'Teacher':
+        $dashboardLink = 'dashboard_teacher.php';
+        break;
+    case 'Level Coordinator':
+        $dashboardLink = 'dashboard_level_coordinator.php';
+        break;
+    case 'Student':
+        $dashboardLink = 'dashboard_student.php';
+        break;
+    default:
+        header('Location: ' . BASE_PATH_LINK);
+        exit;
+}
+
+ob_end_flush();
+?>
 <nav class="c-navbar shadow-sm">
     <div class="nav-container">
         <section class="container-left">
@@ -7,30 +37,7 @@
             </button>
 
             <!-- Logo on the left -->
-            <a class="navbar-brand" href="<?php
-                                            // Check user role and set the appropriate dashboard link
-                                            if (isset($_SESSION['role'])) {
-                                                switch ($_SESSION['role']) {
-                                                    case 'Admin':
-                                                        echo 'dashboard_admin.php'; // Change to your admin dashboard path
-                                                        break;
-                                                    case 'Teacher':
-                                                        echo 'dashboard_teacher.php'; // Change to your teacher dashboard path
-                                                        break;
-                                                    case 'Level Coordinator':
-                                                        echo 'dashboard_level_coordinator.php'; // Change to your teacher dashboard path
-                                                        break;
-                                                    case 'Student':
-                                                        echo 'dashboard_student.php'; // Change to your student dashboard path
-                                                        break;
-                                                    default:
-                                                        header('Location: ' . BASE_PATH_LINK); // Fallback to home if role is unknown
-                                                        break;
-                                                }
-                                            } else {
-                                                header('Location: ' . BASE_PATH_LINK); // Redirect to home if no role is set
-                                            }
-                                            ?>">
+            <a class="navbar-brand" href="<?php $dashboardLink ?>">
                 <img src="<?php echo asset('img/ucc-logo.png'); ?>" alt="UCC Logo" class="d-inline-block align-text-top" />
             </a>
         </section>

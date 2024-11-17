@@ -89,6 +89,20 @@ class UserController
 
 
     // GET DATA
+
+    // [PAUSED]
+    // USAGE: getUserByColumnNames("users", ["username", "first_name"], ["status" => "active", "role" => "admin"]);
+    // public function getUserByColumnNames($columnNames, $conditions = [])
+    // {
+    //     try {
+    //         if (empty($columnNames)) {
+    //             return ['success' => false, 'message' => 'Empty columns passed'];
+    //         } else {
+    //         }
+    //     } catch (Exception $e) {
+    //     }
+    // }
+
     public function getAllUsersByRole($role)
     {
         try {

@@ -85,6 +85,28 @@ class User
         return $stmt->fetchColumn() > 0;
     }
 
+    // [PAUSED]
+    // USAGE: getUserByColumnNames("users", ["username", "first_name"], ["status" => "active", "role" => "admin"]);
+    // public function getUserByColumnNames($columnNames, $conditions = [])
+    // {
+    //     try {
+    //         $columnsList = implode(", ", $columnNames);
+
+    //         $query = "SELECT $columnsList FROM $this->table_name";
+
+    //         // Add conditions if any
+    //         if (!empty($conditions)) {
+    //             $query .= " WHERE ";
+    //             $conditionsArray = [];
+    //             foreach ($conditions as $column => $value) {
+    //                 $conditionsArray[] = "$column = ?";
+    //             }
+    //             $query .= implode(" AND ", $conditionsArray);
+    //         }
+    //     } catch (Exception $e) {
+    //     }
+    // }
+
     public function getAllUsers($limit)
     {
         try {

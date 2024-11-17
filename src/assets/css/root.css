@@ -132,6 +132,16 @@ body[data-theme="dark"] {
 .cbg-primary-a50 {
     background-color: rgba(var(--c-brand-primary-a0), 0.5) !important;
 }
+
+.cbtn-secondary {
+    background-color: var(--c-brand-secondary-a0) !important;
+    color: white !important;
+}
+.cbtn-secondary:hover {
+    background-color: var(--c-brand-secondary-a40) !important;
+    color: white !important;
+}
+
 .c-border {
     border-color: var(--c-brand-primary-a0);
 }
