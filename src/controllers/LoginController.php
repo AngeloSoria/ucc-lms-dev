@@ -7,7 +7,6 @@ class LoginController
 {
     public function login()
     {
-        msgLog('INFO', 'Login Controller Called!');
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $username = $_POST['username'];
             $password = $_POST['password'];
