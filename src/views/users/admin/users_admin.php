@@ -253,7 +253,8 @@ if (isset($_GET['viewRole']) && isset($_GET['user_id'])) {
                                     <a class="ctxt-primary" href="<?= clearUrlParams(); ?>">Users</a>
                                     <?php if (isset($_GET['viewRole'])) { ?>
                                         <span><i class="bi bi-caret-right-fill"></i></span>
-                                        <a class="ctxt-primary" href="<?= updateUrlParams(['viewRole' => $_GET['viewRole']]) ?>"><?= ucfirst($_GET['viewRole']) ?></a>
+                                        <a class="ctxt-primary"
+                                            href="<?= updateUrlParams(['viewRole' => $_GET['viewRole']]) ?>"><?= ucfirst($_GET['viewRole']) ?></a>
                                     <?php } ?>
                                     <?php if (isset($_GET['viewRole']) && isset($_GET['user_id'])) { ?>
                                         <?php
@@ -265,9 +266,11 @@ if (isset($_GET['viewRole']) && isset($_GET['user_id'])) {
                                         }
                                         ?>
                                         <span><i class="bi bi-caret-right-fill"></i></span>
-                                        <a class="ctxt-primary" href="<?= updateUrlParams(['viewRole' => $_GET['viewRole']]) ?>"><?= ucfirst($_GET['viewRole']) ?></a>
+                                        <a class="ctxt-primary"
+                                            href="<?= updateUrlParams(['viewRole' => $_GET['viewRole']]) ?>"><?= ucfirst($_GET['viewRole']) ?></a>
                                         <span><i class="bi bi-caret-right-fill"></i></span>
-                                        <a class="ctxt-primary" href="<?= updateUrlParams(['viewRole' => $_GET['viewRole'], 'user_id' => $_GET['user_id']]) ?>">
+                                        <a class="ctxt-primary"
+                                            href="<?= updateUrlParams(['viewRole' => $_GET['viewRole'], 'user_id' => $_GET['user_id']]) ?>">
                                             <?php ucfirst($retrieve_user['data']['user_id']) ?>
                                         </a>
                                     <?php } ?>
@@ -332,7 +335,7 @@ if (isset($_GET['viewRole']) && isset($_GET['user_id'])) {
 
 <?php
 // Show Toast
-if (isset($_SESSION["_ResultMessage"]) && $_SESSION["_ResultMessage"] != null && $_SESSION["_ResultMessage"]["showAsToast"] == true) {
+if (isset($_SESSION["_ResultMessage"])) {
     makeToast([
         'type' => $_SESSION["_ResultMessage"]["type"],
         'message' => $_SESSION["_ResultMessage"]["message"],
