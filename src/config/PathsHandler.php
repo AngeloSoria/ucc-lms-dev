@@ -39,6 +39,8 @@ define('FILE_PATHS', [
         'User' => __DIR__ . '../../controllers/UserController.php',
         'AcademicPeriod' => __DIR__ . '../../controllers/AcademicPeriodController.php',
         'StudentSection' => __DIR__ . '../../controllers/StudentSectionController.php',
+        'StudentEnrollment' => __DIR__ . '../../controllers/StudentEnrollmentController.php',
+        'SubjectSection' => __DIR__ . '../../controllers/SubjectSectionController.php',
         'GeneralLogs' => __DIR__ . '../../controllers/GeneralLogsController.php',
     ],
 
@@ -51,6 +53,8 @@ define('FILE_PATHS', [
         'User' => __DIR__ . '../../models/User.php',
         'AcademicPeriod' => __DIR__ . '../../models/AcademicPeriod.php',
         'StudentSection' => __DIR__ . '../../models/StudentSection.php',
+        'StudentEnrollment' => __DIR__ . '../../models/StudentEnrollment.php',
+        'SubjectSection' => __DIR__ . '../../models/SubjectSection.php',
         'GeneralLogs' => __DIR__ . '../../models/GeneralLogs.php',
     ],
 
@@ -142,6 +146,7 @@ define('FILE_PATHS', [
             'Content' => __DIR__ . '../../views/users/admin/content_admin.php',
             'AcademicTerm' => __DIR__ . '../../views/users/admin/academic_calendar_admin.php',
             'GeneralLogs' => __DIR__ . '../../views/users/admin/general_logs_admin.php',
+            'StudentSections' => __DIR__ . '../../views/users/admin/student_section_a.php',
         ],
         'Level Coordinator' => [
             'Dashboard' => __DIR__ . '../../views/users/level_coordinator/dashboard_level_coordinator.php',
