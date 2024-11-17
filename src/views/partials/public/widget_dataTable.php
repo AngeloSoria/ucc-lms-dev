@@ -8,6 +8,7 @@ function generateDataTable(
     $columnVisualNames = [],
     $filterBy = [], // ['role' => 'admin']
     $filterSelectorByColumns = [],
+    $urlParams = [], // ['viewRole', 'user_id']
     $data = []
 ) {
     $headers = '';
@@ -56,7 +57,7 @@ function generateDataTable(
             }
         }
         $uniqueIDValue = htmlspecialchars($row[$uniqueIDTarget] ?? '', ENT_QUOTES, 'UTF-8');
-        $rowHTML .= '<td><a href="' . htmlspecialchars(updateUrlParams(['viewRole' => $_GET['viewRole'] ?? '', $uniqueIDTarget => $uniqueIDValue]), ENT_QUOTES, 'UTF-8') . '" title="Configure"><i class="bi bi-pencil-square"></i></a></td>';
+        $rowHTML .= '<td><a href="' . htmlspecialchars(updateUrlParams([$urlParams[0] => $_GET[$urlParams[0]] ?? '', $urlParams[1] => $uniqueIDValue]), ENT_QUOTES, 'UTF-8') . '" title="Configure"><i class="bi bi-pencil-square"></i></a></td>';
         $rowHTML .= '</tr>';
         $dataRows .= $rowHTML;
     }
@@ -68,7 +69,7 @@ function generateDataTable(
 
     // Adjust DataTable columnDefs to disable ordering for the Action column
     $totalColumns = $visibleColumnCount - 1; // Total visible columns excluding the Action column
-
+    $filterSelectorByColumns = json_encode($filterSelectorByColumns);
     return <<<HTML
         <style>
             .pagination {
@@ -83,7 +84,7 @@ function generateDataTable(
                 Remove Selection
             </button>
         </div>
-        <table id="$dataTableID" class="table table-striped border" style="width: 100%">
+        <table id="$dataTableID" class="table table-striped border display compact" style="width: 100%">
             <thead style="background-color: var(--c-brand-primary-a0) !important;">
                 <tr>
                     $headers
@@ -113,6 +114,35 @@ function generateDataTable(
                             '<option value="50">50</option>' +
                             '<option value="-1">All</option>' +
                             '</select> Entries per page',
+                    },
+                    initComplete: function() {
+                        this.api()
+                        .columns()
+                        .every(function(){
+                            let column = this;
+                            console.log(column.header().textContent);
+                            
+                            // Create select element
+                            // let select = document.createElement('select');
+                            // select.add(new Option(''));
+                            // column.footer().replaceChildren(select);
+            
+                            // Apply listener for user change in value
+                            // select.addEventListener('change', function () {
+                            //     column
+                            //         .search(select.value, {exact: true})
+                            //         .draw();
+                            // });
+            
+                            // Add list of options
+                            column
+                                .data()
+                                .unique()
+                                .sort()
+                                .each(function (d, j) {
+                                    // select.add(new Option(d));
+                                });
+                        });
                     }
                 });
 

@@ -7,11 +7,31 @@ require_once(FILE_PATHS['DATABASE']);
 require_once(FILE_PATHS['Controllers']['Subject']);
 require_once(FILE_PATHS['Partials']['Widgets']['Card']);
 require_once(FILE_PATHS['Functions']['SessionChecker']);
+require_once(FILE_PATHS['Functions']['ToastLogger']);
 checkUserAccess(['Admin']);
 
 $widget_card = new Card();
 
-$CURRENT_PAGE = "subjects";
+$database = new Database();
+$db = $database->getConnection();
+
+$subjectController = new SubjectController($db);
+
+if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['action']) && $_POST['action'] == 'addSubject') {
+    // Collect user data from form inputs
+    $subjectData = [
+        'subject_code' => $_POST['subject_code'],
+        'subject_name' => $_POST['subject_name'],
+        'semester' => $_POST['semester'],
+        'educational_level' => $_POST['educational_level']
+    ];
+
+    $_SESSION["_ResultMessage"] = $subjectController->addSubject($subjectData);
+
+    // Redirect to the same page to prevent resubmission
+    header("Location: " . $_SERVER['REQUEST_URI']);
+    exit();
+}
 ?>
 
 <!DOCTYPE html>
@@ -178,5 +198,19 @@ $CURRENT_PAGE = "subjects";
     <?php require_once(FILE_PATHS['Partials']['User']['Footer']) ?>
 </body>
 <script src="<?php echo asset('js/admin-main.js') ?>"></script>
+<script src="<?php echo asset('js/toast.js') ?>"></script>
+
+<?php
+// Show Toast
+if (isset($_SESSION["_ResultMessage"]) && $_SESSION["_ResultMessage"] != null) {
+    makeToast([
+        'type' => $_SESSION["_ResultMessage"]["success"] == true ? 'success' : 'error',
+        'message' => $_SESSION["_ResultMessage"]["message"],
+    ]);
+    outputToasts(); // Execute toast on screen.
+    unset($_SESSION["_ResultMessage"]); // Dispose
+}
+
+?>
 
 </html>

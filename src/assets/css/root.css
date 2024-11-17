@@ -127,13 +127,16 @@ body[data-theme="dark"] {
 }
 
 .cbg-primary {
-    background-color: var(--c-brand-primary-a0);
+    background-color: var(--c-brand-primary-a0) !important;
+}
+.cbg-primary-a50 {
+    background-color: rgba(var(--c-brand-primary-a0), 0.5) !important;
 }
 .c-border {
     border-color: var(--c-brand-primary-a0);
 }
 .ctxt-primary {
-    color: var(--c-brand-primary-a0);
+    color: var(--c-brand-primary-a0) !important;
 }
 .c-text-danger {
     color: var(--c-danger-a0);

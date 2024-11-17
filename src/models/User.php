@@ -58,12 +58,21 @@ class User
 
     public function getAllUsersByRole($role)
     {
-        $query = "SELECT user_id, first_name, last_name FROM users WHERE role = :role";
-        $stmt = $this->conn->prepare($query);
-        $stmt->bindParam(':role', $role, PDO::PARAM_STR);
-        $stmt->execute();
+        try {
+            $query = "SELECT * FROM users WHERE role = :role";
+            $stmt = $this->conn->prepare($query);
+            $stmt->bindParam(':role', $role, PDO::PARAM_STR);
+            $stmt->execute();
 
-        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+            $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
+            if (count($users) <= 0) {
+                return ['success' => false, "message" => "No users found with role ($role)"];
+            } else {
+                return ['success' => true, "data" => $users];
+            }
+        } catch (PDOException $e) {
+            throw new Exception($e->getMessage());
+        }
     }
     // Check if user exists by email or username
     public function checkUserExists($username)
@@ -80,7 +89,7 @@ class User
     {
         try {
             // Use a placeholder :limit for the limit value
-            $query = "SELECT user_id, username, first_name, middle_name, last_name, role, gender, dob, status FROM users LIMIT :limit OFFSET 0";
+            $query = "SELECT * FROM users LIMIT :limit OFFSET 0";
             $stmt = $this->conn->prepare($query);
 
             // Bind the $limit parameter to the :limit placeholder
@@ -111,6 +120,33 @@ class User
         }
     }
 
+    public function updateLastLoginByUserId($userId)
+    {
+        try {
+            // Prepare the SQL query
+            $query = "UPDATE users SET last_login = NOW() WHERE user_id = :user_id";
+
+            // Assuming $this->db is the PDO instance
+            $stmt = $this->conn->prepare($query);
+
+            // Bind the parameter
+            $stmt->bindParam(':user_id', $userId, PDO::PARAM_INT);
+
+            // Execute the query
+            $stmt->execute();
+
+            // Optional: Check if rows were affected
+            if ($stmt->rowCount() > 0) {
+                return ['success' => true, 'message' => "Last login updated successfully."];
+            } else {
+                return ['success' => false, 'message' => "No rows updated. User ID may not exist."];
+            }
+        } catch (PDOException $e) {
+            // Handle any exceptions
+            throw new Exception($e->getMessage());
+        }
+    }
+
     // Get the latest user ID for auto-incrementing
     public function getLatestUserId()
     {
@@ -135,5 +171,46 @@ class User
     public function getValidRoles()
     {
         return self::ENUM_USER_ROLES;
+    }
+
+    public function getAllTeachersWithEducationLevel()
+    {
+        try {
+            // SQL query to join teacher_educational_level and users tables
+            $query = "
+            SELECT 
+                u.user_id,
+                u.first_name,
+                u.middle_name,
+                u.last_name,
+                u.dob,
+                u.gender,
+                u.role,
+                u.username,
+                u.profile_pic,
+                u.status,
+                u.created_at,
+                u.updated_at,
+                u.requirePasswordReset,
+                tel.educational_level
+            FROM 
+                teacher_educational_level tel
+            JOIN 
+                users u ON u.user_id = tel.user_id
+        ";
+
+            // Prepare the statement
+            $stmt = $this->conn->prepare($query);
+
+            // Execute the statement
+            $stmt->execute();
+
+            // Fetch all the results as an associative array
+            $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+            return $result ? $result : []; // Return result or an empty array if no records found
+        } catch (PDOException $e) {
+            throw new PDOException("Failed to get all terms: " . $e->getMessage());
+        }
     }
 }

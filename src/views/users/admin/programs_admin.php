@@ -186,16 +186,3 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['action']) && $_POST['a
 <script src="<?php echo asset('js/admin-main.js') ?>"></script>
 
 </html>
-
-<script>
-    $(document).ready(function() {
-        // Check for error or success messages from the server
-        <?php if (isset($_SESSION['message'])): ?>
-            $('#notification').addClass('alert-success').text("<?php echo $_SESSION['message']; ?>").fadeIn().delay(3000).fadeOut();
-            <?php unset($_SESSION['message']); ?>
-        <?php elseif (isset($_SESSION['error'])): ?>
-            $('#notification').addClass('alert-danger').text("<?php echo $_SESSION['error']; ?>").fadeIn().delay(3000).fadeOut();
-            <?php unset($_SESSION['error']); ?>
-        <?php endif; ?>
-    });
-</script>

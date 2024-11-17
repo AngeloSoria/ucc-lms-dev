@@ -38,6 +38,8 @@ define('FILE_PATHS', [
         'Subject' => __DIR__ . '../../controllers/SubjectController.php',
         'User' => __DIR__ . '../../controllers/UserController.php',
         'AcademicPeriod' => __DIR__ . '../../controllers/AcademicPeriodController.php',
+        'StudentSection' => __DIR__ . '../../controllers/StudentSectionController.php',
+        'GeneralLogs' => __DIR__ . '../../controllers/GeneralLogsController.php',
     ],
 
     'Models' => [
@@ -48,6 +50,8 @@ define('FILE_PATHS', [
         'Subject' => __DIR__ . '../../models/Subject.php',
         'User' => __DIR__ . '../../models/User.php',
         'AcademicPeriod' => __DIR__ . '../../models/AcademicPeriod.php',
+        'StudentSection' => __DIR__ . '../../models/StudentSection.php',
+        'GeneralLogs' => __DIR__ . '../../models/GeneralLogs.php',
     ],
 
     'Partials' => [
