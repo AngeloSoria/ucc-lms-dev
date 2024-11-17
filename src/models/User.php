@@ -111,6 +111,33 @@ class User
         }
     }
 
+    public function updateLastLoginByUserId($userId)
+    {
+        try {
+            // Prepare the SQL query
+            $query = "UPDATE users SET last_login = NOW() WHERE user_id = :user_id";
+
+            // Assuming $this->db is the PDO instance
+            $stmt = $this->conn->prepare($query);
+
+            // Bind the parameter
+            $stmt->bindParam(':user_id', $userId, PDO::PARAM_INT);
+
+            // Execute the query
+            $stmt->execute();
+
+            // Optional: Check if rows were affected
+            if ($stmt->rowCount() > 0) {
+                return ['success' => true, 'message' => "Last login updated successfully."];
+            } else {
+                return ['success' => false, 'message' => "No rows updated. User ID may not exist."];
+            }
+        } catch (PDOException $e) {
+            // Handle any exceptions
+            throw new Exception($e->getMessage());
+        }
+    }
+
     // Get the latest user ID for auto-incrementing
     public function getLatestUserId()
     {

@@ -70,7 +70,22 @@ class UserController
         }
     }
 
+    // REMOVE DATA
 
+    // UPDATE DATA
+    public function updateLastLoginByUserId($userId)
+    {
+        try {
+            // Assuming $this->db is the PDO instance
+            $updateRequest = $this->userModel->updateLastLoginByUserId($userId);
+            if ($updateRequest['success'] == false) {
+                return ['success' => false, 'message' => $updateRequest['message']];
+            }
+        } catch (PDOException $e) {
+            // Handle any exceptions
+            return ["success" => false, "message" => "Error updating last login: " . $e->getMessage()];
+        }
+    }
 
 
     // GET DATA
