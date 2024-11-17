@@ -58,12 +58,21 @@ class User
 
     public function getAllUsersByRole($role)
     {
-        $query = "SELECT user_id, first_name, last_name FROM users WHERE role = :role";
-        $stmt = $this->conn->prepare($query);
-        $stmt->bindParam(':role', $role, PDO::PARAM_STR);
-        $stmt->execute();
+        try {
+            $query = "SELECT * FROM users WHERE role = :role";
+            $stmt = $this->conn->prepare($query);
+            $stmt->bindParam(':role', $role, PDO::PARAM_STR);
+            $stmt->execute();
 
-        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+            $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
+            if (count($users) <= 0) {
+                return ['success' => false, "message" => "No users found with role ($role)"];
+            } else {
+                return ['success' => true, "data" => $users];
+            }
+        } catch (PDOException $e) {
+            throw new Exception($e->getMessage());
+        }
     }
     // Check if user exists by email or username
     public function checkUserExists($username)
@@ -80,7 +89,7 @@ class User
     {
         try {
             // Use a placeholder :limit for the limit value
-            $query = "SELECT user_id, username, first_name, middle_name, last_name, role, gender, dob, status FROM users LIMIT :limit OFFSET 0";
+            $query = "SELECT * FROM users LIMIT :limit OFFSET 0";
             $stmt = $this->conn->prepare($query);
 
             // Bind the $limit parameter to the :limit placeholder

@@ -250,26 +250,33 @@ p {
 #dashboardCarousel {
     width: 100%;
     padding: 5px;
+    box-sizing: border-box;
     background: var(--background-color);
+    
+    height: 400px;
+    max-height: 400px;
+}
+
+.carousel-inner {
+    height: 100%;
+    height: 100%;
+    overflow: hidden;
+    background-color: red;
 }
 
 .carousel-item {
     height: 100%;
-    /* width: 100%; */
+    width: 100%;
     background-color: var(--c-surface-a40);
-    object-fit: fill;
+    overflow: hidden;
 }
 
 .carousel-item img {
     width: 100%;
     height: 100%;
-    object-fit: cover;
+    object-fit: fill;
 }
 
-.carousel-inner {
-    height: 100%;
-    background-color: red;
-}
 
 
 /* ============================================================= */
@@ -546,5 +553,11 @@ table.c-table {
 
 .system_input-box-container .drop-container.active {
     display: flex;
+}
+
+.pagination {
+    --bs-pagination-color: var(--c-brand-primary-a0);
+    --bs-pagination-active-bg: var(--c-brand-primary-a40);
+    --bs-pagination-active-border-color: var(--c-brand-primary-a40);
 }
 /* ===================================================== */

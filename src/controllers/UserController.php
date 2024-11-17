@@ -89,6 +89,20 @@ class UserController
 
 
     // GET DATA
+    public function getAllUsersByRole($role)
+    {
+        try {
+            $getUsersByRole = $this->userModel->getAllUsersByRole($role);
+            if ($getUsersByRole['success'] == true) {
+                return ['success' => true, "data" => $getUsersByRole['data']];
+            } else {
+                return $getUsersByRole;
+            }
+        } catch (Exception $e) {
+            return ["success" => false, "message" => $e->getMessage()];
+        }
+    }
+
     public function getAllUsers($limit = 100)
     {
         try {

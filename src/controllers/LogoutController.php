@@ -4,8 +4,6 @@ require_once(FILE_PATHS['DATABASE']);
 require_once(FILE_PATHS['Controllers']['User']);
 require_once(FILE_PATHS['Functions']['PHPLogger']);
 
-
-
 session_start();
 class LogoutController
 {

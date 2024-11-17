@@ -39,6 +39,7 @@ define('FILE_PATHS', [
         'User' => __DIR__ . '../../controllers/UserController.php',
         'AcademicPeriod' => __DIR__ . '../../controllers/AcademicPeriodController.php',
         'StudentSection' => __DIR__ . '../../controllers/StudentSectionController.php',
+        'GeneralLogs' => __DIR__ . '../../controllers/GeneralLogsController.php',
     ],
 
     'Models' => [
@@ -50,6 +51,7 @@ define('FILE_PATHS', [
         'User' => __DIR__ . '../../models/User.php',
         'AcademicPeriod' => __DIR__ . '../../models/AcademicPeriod.php',
         'StudentSection' => __DIR__ . '../../models/StudentSection.php',
+        'GeneralLogs' => __DIR__ . '../../models/GeneralLogs.php',
     ],
 
     'Partials' => [
@@ -158,6 +160,4 @@ function asset($path)
     return BASE_PATH_LINK . 'src/assets/' . ltrim($path, '/');
 }
 
-function route($path)
-{
-}
+function route($path) {}
