@@ -77,131 +77,133 @@ if ($allTermsResponse != null) {
 <?php require_once(FILE_PATHS['Partials']['User']['Head']) ?>
 
 <body>
-    <?php require_once(FILE_PATHS['Partials']['User']['Navbar']) ?>
+    <div class="wrapper shadow-sm border">
+        <?php require_once(FILE_PATHS['Partials']['User']['Navbar']) ?>
 
-    <section class="d-flex justify-content-between gap-2 box-sizing-border-box m-0 p-0">
-        <!-- SIDEBAR -->
-        <?php require_once(FILE_PATHS['Partials']['User']['Sidebar']) ?>
-        <!-- content here -->
-        <section class="row min-vh-100 w-100 m-0 p-1 d-flex justify-content-end align-items-start" id="contentSection">
-            <div class="col box-sizing-border-box flex-grow-1">
-                <div class="bg-white rounded p-3 shadow-sm border">
-                    <div>
-                        <div class="mb-3 row align-items-start">
-                            <div class="col-4 d-flex gap-3">
-                                <h5 class="ctxt-primary">Academic Period Settings</h5>
-                            </div>
-                            <div class="col-8 d-flex justify-content-end gap-2">
-                                <button
-                                    class="btn btn-primary btn-sm rounded fs-6 px-3 c-primary d-flex gap-3 align-items-center"
-                                    data-bs-toggle="modal" data-bs-target="#academicFormModal">
-                                    <i class="bi bi-plus-circle"></i> Add New
-                                </button>
-                                <button
-                                    class="btn btn-outline-primary btn-sm rounded fs-5 px-2 c-primary d-flex gap-2 align-items-center">
-                                    <i class="bi bi-arrow-clockwise"></i>
-                                </button>
+        <section class="d-flex justify-content-between gap-2 box-sizing-border-box m-0 p-0">
+            <!-- SIDEBAR -->
+            <?php require_once(FILE_PATHS['Partials']['User']['Sidebar']) ?>
+            <!-- content here -->
+            <section class="row min-vh-100 w-100 m-0 p-1 d-flex justify-content-end align-items-start" id="contentSection">
+                <div class="col box-sizing-border-box flex-grow-1">
+                    <div class="bg-white rounded p-3 shadow-sm border">
+                        <div>
+                            <div class="mb-3 row align-items-start">
+                                <div class="col-4 d-flex gap-3">
+                                    <h5 class="ctxt-primary">Academic Period Settings</h5>
+                                </div>
+                                <div class="col-8 d-flex justify-content-end gap-2">
+                                    <button
+                                        class="btn btn-primary btn-sm rounded fs-6 px-3 c-primary d-flex gap-3 align-items-center"
+                                        data-bs-toggle="modal" data-bs-target="#academicFormModal">
+                                        <i class="bi bi-plus-circle"></i> Add New
+                                    </button>
+                                    <button
+                                        class="btn btn-outline-primary btn-sm rounded fs-5 px-2 c-primary d-flex gap-2 align-items-center">
+                                        <i class="bi bi-arrow-clockwise"></i>
+                                    </button>
+                                </div>
                             </div>
                         </div>
-                    </div>
-                    <hr>
-                    <section>
-                        <h5>Active Academic Period</h5>
-                        <div class="d-flex gap-2 pt-2 ">
-                            <h6>Academic Year:</h6>
-                            <p>
-                                <?php echo isset($currentTerm) ? htmlspecialchars($currentTerm['academic_year_start']) . ' - ' . htmlspecialchars($currentTerm['academic_year_end']) : 'N/A'; ?>
-                            </p>
-                        </div>
+                        <hr>
+                        <section>
+                            <h5>Active Academic Period</h5>
+                            <div class="d-flex gap-2 pt-2 ">
+                                <h6>Academic Year:</h6>
+                                <p>
+                                    <?php echo isset($currentTerm) ? htmlspecialchars($currentTerm['academic_year_start']) . ' - ' . htmlspecialchars($currentTerm['academic_year_end']) : 'N/A'; ?>
+                                </p>
+                            </div>
 
-                        <div class="d-flex gap-2">
-                            <h6>Academic Semester:</h6>
-                            <?php
-                            if (isset($currentTerm['semester'])) {
-                                // Assuming $currentTerm['semester'] contains the year (1 or 2)
-                                if ($currentTerm['semester'] == 1) {
-                                    echo '1st Semester';
-                                } elseif ($currentTerm['semester'] == 2) {
-                                    echo '2nd Semester';
+                            <div class="d-flex gap-2">
+                                <h6>Academic Semester:</h6>
+                                <?php
+                                if (isset($currentTerm['semester'])) {
+                                    // Assuming $currentTerm['semester'] contains the year (1 or 2)
+                                    if ($currentTerm['semester'] == 1) {
+                                        echo '1st Semester';
+                                    } elseif ($currentTerm['semester'] == 2) {
+                                        echo '2nd Semester';
+                                    } else {
+                                        echo 'N/A';
+                                    }
                                 } else {
                                     echo 'N/A';
                                 }
-                            } else {
-                                echo 'N/A';
-                            }
-                            ?>
-                        </div>
-                        <div class="d-flex gap-2">
-                            <h6>Start Date:</h6>
-                            <p><?php echo isset($currentTerm['start_date']) ? htmlspecialchars($currentTerm['start_date']) : 'N/A'; ?>
-                            </p>
-                        </div>
-                        <div class="d-flex gap-2">
-                            <h6>End Date:</h6>
-                            <p><?php echo isset($currentTerm['end_date']) ? htmlspecialchars($currentTerm['end_date']) : 'N/A'; ?>
-                            </p>
-                        </div>
-                    </section>
-                    <br>
-                    <section>
-                        <h5>List of Academic Term</h5>
-                        <div class="border">
-                            <table class="table table-striped">
-                                <thead>
-                                    <tr>
-                                        <th>Academic Year</th>
-                                        <th>Semester</th>
-                                        <th>Start Date</th>
-                                        <th>End Date</th>
-                                        <th>Active</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <?php if (is_array($allTerms) && !empty($allTerms)): ?>
-                                        <?php foreach ($allTerms as $term): ?>
-                                            <tr>
-                                                <td><?php echo htmlspecialchars($term['academic_year_start'] ?? 'N/A') . ' - ' . htmlspecialchars($term['academic_year_end'] ?? 'N/A'); ?>
-                                                </td>
-                                                <td>
-                                                    <?php
-                                                    if (isset($term['semester'])) {
-                                                        // Assuming $term['semester'] contains the year (1 or 2)
-                                                        if ($term['semester'] == 1) {
-                                                            echo '1st Semester';
-                                                        } elseif ($term['semester'] == 2) {
-                                                            echo '2nd Semester';
+                                ?>
+                            </div>
+                            <div class="d-flex gap-2">
+                                <h6>Start Date:</h6>
+                                <p><?php echo isset($currentTerm['start_date']) ? htmlspecialchars($currentTerm['start_date']) : 'N/A'; ?>
+                                </p>
+                            </div>
+                            <div class="d-flex gap-2">
+                                <h6>End Date:</h6>
+                                <p><?php echo isset($currentTerm['end_date']) ? htmlspecialchars($currentTerm['end_date']) : 'N/A'; ?>
+                                </p>
+                            </div>
+                        </section>
+                        <br>
+                        <section>
+                            <h5>List of Academic Term</h5>
+                            <div class="border">
+                                <table class="table table-striped">
+                                    <thead>
+                                        <tr>
+                                            <th>Academic Year</th>
+                                            <th>Semester</th>
+                                            <th>Start Date</th>
+                                            <th>End Date</th>
+                                            <th>Active</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <?php if (is_array($allTerms) && !empty($allTerms)): ?>
+                                            <?php foreach ($allTerms as $term): ?>
+                                                <tr>
+                                                    <td><?php echo htmlspecialchars($term['academic_year_start'] ?? 'N/A') . ' - ' . htmlspecialchars($term['academic_year_end'] ?? 'N/A'); ?>
+                                                    </td>
+                                                    <td>
+                                                        <?php
+                                                        if (isset($term['semester'])) {
+                                                            // Assuming $term['semester'] contains the year (1 or 2)
+                                                            if ($term['semester'] == 1) {
+                                                                echo '1st Semester';
+                                                            } elseif ($term['semester'] == 2) {
+                                                                echo '2nd Semester';
+                                                            } else {
+                                                                echo 'N/A';
+                                                            }
                                                         } else {
                                                             echo 'N/A';
                                                         }
-                                                    } else {
-                                                        echo 'N/A';
-                                                    }
-                                                    ?>
-                                                </td>
+                                                        ?>
+                                                    </td>
 
-                                                <td><?php echo htmlspecialchars($term['start_date'] ?? 'N/A'); ?></td>
-                                                <td><?php echo htmlspecialchars($term['end_date'] ?? 'N/A'); ?></td>
-                                                <td><?php echo isset($term['is_active']) && $term['is_active'] ? 'Yes' : 'No'; ?>
-                                                </td>
+                                                    <td><?php echo htmlspecialchars($term['start_date'] ?? 'N/A'); ?></td>
+                                                    <td><?php echo htmlspecialchars($term['end_date'] ?? 'N/A'); ?></td>
+                                                    <td><?php echo isset($term['is_active']) && $term['is_active'] ? 'Yes' : 'No'; ?>
+                                                    </td>
+                                                </tr>
+                                            <?php endforeach; ?>
+                                        <?php else: ?>
+                                            <tr>
+                                                <td colspan="5">No academic period available</td>
                                             </tr>
-                                        <?php endforeach; ?>
-                                    <?php else: ?>
-                                        <tr>
-                                            <td colspan="5">No academic period available</td>
-                                        </tr>
-                                    <?php endif; ?>
-                                </tbody>
+                                        <?php endif; ?>
+                                    </tbody>
 
-                            </table>
-                        </div>
-                    </section>
+                                </table>
+                            </div>
+                        </section>
+                    </div>
                 </div>
-            </div>
+            </section>
         </section>
-    </section>
 
-    <?php require_once(FILE_PATHS['Partials']['HighLevel']['Modals']['Academic']['Add']) ?>
-    <?php require_once(FILE_PATHS['Partials']['User']['Footer']) ?>
+        <?php require_once(FILE_PATHS['Partials']['HighLevel']['Modals']['Academic']['Add']) ?>
+        <?php require_once(FILE_PATHS['Partials']['User']['Footer']) ?>
+    </div>
 </body>
 <script src="<?php asset('js/admin-main.js') ?>"></script>
 <script src="<?php echo asset('js/toast.js') ?>"></script>

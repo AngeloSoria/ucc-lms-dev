@@ -43,6 +43,7 @@ define('FILE_PATHS', [
         'StudentEnrollment' => __DIR__ . '../../controllers/StudentEnrollmentController.php',
         'SubjectSection' => __DIR__ . '../../controllers/SubjectSectionController.php',
         'GeneralLogs' => __DIR__ . '../../controllers/GeneralLogsController.php',
+        'CardImages' => __DIR__ . '../../controllers/CardImagesController.php',
     ],
 
     'Models' => [
@@ -57,6 +58,7 @@ define('FILE_PATHS', [
         'StudentEnrollment' => __DIR__ . '../../models/StudentEnrollment.php',
         'SubjectSection' => __DIR__ . '../../models/SubjectSection.php',
         'GeneralLogs' => __DIR__ . '../../models/GeneralLogs.php',
+        'CardImages' => __DIR__ . '../../models/CardImages.php',
     ],
 
     'Partials' => [
@@ -78,6 +80,8 @@ define('FILE_PATHS', [
             'Announcements' => __DIR__ . '../../views/partials/user/announcements.php',
             'WidgetPanel' => __DIR__ . '../../views/partials/user/widgetpanel.php',
             'Courses' => __DIR__ . '../../views/partials/user/mycourses.php',
+            'UpdateCardImage' => __DIR__ . '../../views/partials/public/modal_updateCardImage.php',
+            'UpdatePassword' => __DIR__ . '../../views/partials/public/modal_formUpdatePassword.php',
         ],
         'HighLevel' => [
             'LiveCount' => __DIR__ . '../../views/partials/high-level/livecount.php',

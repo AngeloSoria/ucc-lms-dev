@@ -73,4 +73,28 @@ class StudentSectionController
     {
         msgLog("CRUD", "[ADD] [STUDENT_SECTION] Student: {$student_id}, Section: {$section_id}");
     }
+
+    public function getAllEnrolledStudentIdBySectionId($section_id)
+    {
+        try {
+            $result = $this->studentSectionModel->getAllEnrolledStudentIdBySectionId($section_id);
+            if (!empty($result)) {
+                return ['success' => true, 'data' => $result];
+            } else {
+                return ['success' => false, 'message' => 'No students enrolled.'];
+            }
+        } catch (Exception $e) {
+            return ['success' => false, 'message' => $e->getMessage()];
+        }
+    }
+
+    public function getTotalEnrolleesInSection($section_id)
+    {
+        try {
+            $getCountResult = $this->studentSectionModel->getTotalEnrolleesInSection($section_id);
+            return ['success' => true, 'data' => $getCountResult];
+        } catch (Exception $e) {
+            return ['success' => false, 'message' => $e->getMessage()];
+        }
+    }
 }

@@ -3,6 +3,7 @@
 class StudentSectionModel
 {
     private $conn;
+    private $table_name = "student_section";
 
     public function __construct($db)
     {
@@ -91,5 +92,44 @@ class StudentSectionModel
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
+    public function getTotalEnrolleesInSection($section_id)
+    {
+        try {
+            // Prepare the SQL query to count enrollees in a specific section
+            $query = "SELECT COUNT(*) AS total_students FROM student_section WHERE section_id = :section_id";
+
+            // Assuming $this->db is a PDO instance
+            $stmt = $this->conn->prepare($query);
+            $stmt->bindParam(':section_id', $section_id, PDO::PARAM_INT);
+            $stmt->execute();
+
+            // Fetch the total count
+            $result = $stmt->fetch(PDO::FETCH_ASSOC);
+
+            // Return the total number of students
+            return $result['total_students'];
+        } catch (Exception $e) {
+            // Throw an exception if something goes wrong
+            throw new Exception($e->getMessage());
+        }
+    }
+
+
+    public function getAllEnrolledStudentIdBySectionId($section_id)
+    {
+        try {
+            $query = "SELECT student_id FROM  $this->table_name WHERE section_id = :section_id";
+            $stmt = $this->conn->prepare($query);
+            $stmt->bindParam(':section_id', $section_id);
+            $stmt->execute();
+            $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
+            if (!empty($result)) {
+                return $result;
+            } else {
+                throw new Exception("No students enrolled in section ($section_id)");
+            }
+        } catch (Exception  $e) {
+            throw new Exception("[MODEL]" . $e->getMessage());
+        }
+    }
 }
-?>

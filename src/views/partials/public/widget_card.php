@@ -4,9 +4,9 @@ require_once(__DIR__ . '../../../../config/PathsHandler.php');
 
 class Card
 {
-    public function Create($cardType = 'small', $unique_id, $image, $textContents, $hasImage = true, $isLink = false, $linkPath = null)
+    public function Create($cardsPerRow = 1, $unique_id, $image, $textContents, $hasImage = true, $isLink = false, $linkPath = null)
     {
-        $card_type = ($cardType == 'small') ? 'c-card-small' : 'c-card-long';
+        // $card_type = ($cardType == 'small') ? 'c-card-small' : 'c-card-long';
 
         // Define the image source path as a variable
         $imageSrc = ($image == null) ? UPLOAD_PATH['System'] . '/img/no-image-found.jpg' : $image;
@@ -40,7 +40,7 @@ class Card
         // Use Heredoc to create the main card structure, embedding the dynamic content
         $location = ($isLink == true) ? "window.location.href = '" . $linkPath . "'; return false;" : "javascript:void(0);";
         $DOM = <<<HTML
-            <div class="c-card $card_type border rounded" id="$unique_id" onclick="$location">
+            <div class="c-card c-cards-row-$cardsPerRow border rounded" id="$unique_id" onclick="$location">
                 $DOM_IMAGE
                 <div class="card-body p-2">
                     <div class="row">

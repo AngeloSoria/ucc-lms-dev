@@ -4,6 +4,7 @@
     <link rel="icon" type="image/x-icon" href="<?php echo asset('img/favicon.png') ?>">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/dataTables.bootstrap5.min.css" />
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
     <script src="<?php echo asset('js/jquery-3.6.0.min.js') ?>"></script>
     <script src="<?php echo asset('js/toast.js') ?>"></script>
     <script src="<?php echo asset('js/root.js') ?>"></script>

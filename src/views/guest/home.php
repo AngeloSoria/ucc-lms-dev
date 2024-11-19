@@ -33,7 +33,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 // Will check if theres a session, so that a logged in users cant view this guest page.
 if (isset($_SESSION['user_id']) && isset($_SESSION['role'])) {
     // Redirect to the dashboard
-    header('Location: ' . 'src/views/users/' . strtolower($_SESSION['role']) . '/dashboard_' . strtolower($_SESSION['role']) . '.php');
+    header('Location: ' . 'src/views/users/' . strtolower(str_replace(" ", "_", $_SESSION['role'])) . '/dashboard_' . strtolower(str_replace(" ", "_", $_SESSION['role'])) . '.php');
 }
 ?>
 
