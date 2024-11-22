@@ -2,12 +2,13 @@
 // controllers/LoginController.php
 require_once(FILE_PATHS['DATABASE']);
 require_once(FILE_PATHS['Functions']['PHPLogger']);
+require_once(FILE_PATHS['Controllers']['GeneralLogs']);
+
 
 class LoginController
 {
     public function login()
     {
-        msgLog('INFO', 'Login Controller Called!');
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $username = $_POST['username'];
             $password = $_POST['password'];
@@ -16,6 +17,8 @@ class LoginController
             $db = new Database();
             $pdo = $db->getConnection();
 
+            $generalLogsController = new GeneralLogsController();
+
             // Fetch user by username
             $stmt = $pdo->prepare("SELECT * FROM users WHERE username = :username AND status = 'active'");
             $stmt->execute(['username' => $username]);
@@ -23,12 +26,16 @@ class LoginController
 
 
             if ($user && password_verify($password, $user['password'])) {
+
                 // Set session data
                 $_SESSION['user_id'] = $user['user_id'];
                 $_SESSION['username'] = $user['username'];
                 $_SESSION['role'] = $user['role'];
                 $_SESSION['first_name'] = $user['first_name'];
                 $_SESSION['last_name'] = $user['last_name'];
+
+                // Add login logs to db.
+                $generalLogsController->addLog_LOGIN($_SESSION['user_id'], $_SESSION['role']);
 
                 // Convert BLOB to base64
                 if (!empty($user['profile_pic'])) {
@@ -64,7 +71,7 @@ class LoginController
                         header('Location: src/views/users/students/dashboard_student.php');
                         break;
                     default:
-                        msgLog('ERROR', 'Something went wrong when trying to identify the user role.');
+                        msgLog('[ERROR]', 'Something went wrong when trying to identify the user role.');
                         return false;
                 }
             } else {

@@ -60,4 +60,18 @@ class SectionController
     {
         return $this->sectionModel->updateAcademicPeriod(); // Fetch all sections from the model
     }
+
+    public function getSectionById($section_id)
+    {
+        try {
+            $getSectionResult = $this->sectionModel->getSectionById($section_id);
+            if ($getSectionResult) {
+                return ['success' => true, 'data' => $getSectionResult];
+            } else {
+                return ['success' => false, 'message' => "No section found with id of ($section_id)"];
+            }
+        } catch (Exception $e) {
+            return ['success' => false, 'message' => $e->getMessage()];
+        }
+    }
 }

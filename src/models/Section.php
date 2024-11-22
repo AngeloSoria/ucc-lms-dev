@@ -175,5 +175,18 @@ class Section
 
         return $row['count'] > 0; // Return true if section exists, false otherwise
     }
+
+    public function getSectionById($section_id)
+    {
+        try {
+            $query = "SELECT * FROM $this->table_name WHERE section_id = :section_id";
+            $stmt = $this->conn->prepare($query);
+            $stmt->bindParam(':section_id', $section_id);
+            $stmt->execute();
+
+            return $stmt->fetch(PDO::FETCH_ASSOC);
+        } catch (Exception $e) {
+            throw new Exception($e->getMessage());
+        }
+    }
 }
-?>

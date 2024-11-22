@@ -4,19 +4,15 @@
 // echo updateUrlParams(['view' => 'admin', 'id' => 1001]); // Adds file.php?view=admin&id=1001 to the current URL
 function updateUrlParams($params = [])
 {
-    // Get the current URL path without query parameters
+    // Current URL path (e.g., test.php)
     $currentUrl = strtok($_SERVER["REQUEST_URI"], '?');
 
-    // Merge existing query parameters with the new ones
-    $queryParams = array_merge($_GET, $params);
+    // Build the query string from $params
+    $queryString = http_build_query($params);
 
-    // Build the new query string, ensuring proper parameter separation
-    $queryString = http_build_query($queryParams);
-
-    // Return the updated URL with the new query string
+    // Return the updated URL
     return $currentUrl . ($queryString ? '?' . $queryString : '');
 }
-
 
 function clearUrlParams()
 {

@@ -1,7 +1,7 @@
 <?php
 require_once(FILE_PATHS['DATABASE']);
 require_once(FILE_PATHS['Controllers']['User']);
-$userController = new UserController($db);
+$userController = new UserController();
 
 // Get the role counts
 $roleCountsResponse = $userController->getRoleCounts();
@@ -20,19 +20,29 @@ if ($roleCountsResponse['success'] === true) {
 }
 ?>
 
-<div class="container-fluid bg-light shadow-sm rounded p-4 border">
+<div class="bg-light shadow-sm rounded p-4 border">
     <div class="d-flex justify-content-between align-items-center">
         <p class="fs-4 fw-semibold text-success m-0">User Overview</p>
     </div>
     <hr class="opacity-90 mx-0 my-2">
 
-    <div class="d-flex container-fluid flex-wrap gap-3 mt-3">
+    <div class="row">
         <?php if (!empty($roleCountsArray)): ?>
             <?php foreach ($roleCountsArray as $role => $count): ?>
-                <div
-                    class="bg-success rounded px-5 py-4 lh-1 text-light shadow-sm d-flex flex-column justify-content-center align-items-center gap-1 fw-semibold">
-                    <p class="subtitle fs-2"><?php echo $count; ?></p>
-                    <p class="title"><?php echo strtoupper($role); ?></p>
+                <div class="p-1 col-md-12 col-lg-6 col-xxl-3">
+                    <div class="rounded p-2 flex-grow-1 position-relative" style="background: var(--c-brand-primary-linear-gradient);">
+                        <p class="fs-2 text-white fw-bolder"><?php echo $count; ?></p>
+                        <p class="bg-transparent text-white"><?php echo ($count > 1) ? strtoupper($role) . 'S' : strtoupper($role); ?></p>
+
+                        <div class="dropdown position-absolute top-0 end-0">
+                            <button class="btn btn-lg text-white" title="More" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                <i class="bi bi-three-dots-vertical"></i>
+                            </button>
+                            <ul class="dropdown-menu">
+                                <li><button class="dropdown-item" type="button" onclick="window.location = 'users_admin.php?viewRole=<?php echo $role ?>';">View</button></li>
+                            </ul>
+                        </div>
+                    </div>
                 </div>
             <?php endforeach; ?>
         <?php else: ?>

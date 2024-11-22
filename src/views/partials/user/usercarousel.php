@@ -41,7 +41,13 @@ try {
             <?php endforeach; ?>
         <?php else: ?>
             <div class="carousel-item active">
-                <img src="https://via.placeholder.com/1000x500" class="d-block w-100" alt="No images available" />
+                <img src="<?php echo UPLOAD_PATH['System'] . "/img/placeholder-1.jpg" ?>" class="d-block" alt="No images available" />
+            </div>
+            <div class="carousel-item">
+                <img src="<?php echo UPLOAD_PATH['System'] . "/img/placeholder-2.jpg" ?>" class="d-block" alt="No images available" />
+            </div>
+            <div class="carousel-item">
+                <img src="<?php echo UPLOAD_PATH['System'] . "/img/placeholder-3.jpg" ?>" class="d-block" alt="No images available" />
             </div>
         <?php endif; ?>
     </div>

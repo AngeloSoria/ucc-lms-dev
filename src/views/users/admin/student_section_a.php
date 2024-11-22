@@ -1,10 +1,10 @@
 <?php
 session_start();
-$CURRENT_PAGE = "StudentSections";
+$CURRENT_PAGE = "SubjectSections";
 
 require_once(__DIR__ . '../../../../config/PathsHandler.php');
 require_once(FILE_PATHS['DATABASE']);
-require_once(FILE_PATHS['Controllers']['StudentSection']);
+require_once(FILE_PATHS['Controllers']['SubjectSection']);
 require_once(FILE_PATHS['Functions']['SessionChecker']);
 require_once(FILE_PATHS['Functions']['ToastLogger']);
 checkUserAccess(['Admin']);
@@ -12,30 +12,36 @@ checkUserAccess(['Admin']);
 $database = new Database();
 $db = $database->getConnection();
 
-$studentSectionController = new StudentSectionController($db);
-
-// Handle form submission to add students to a section
+$subjectSectionController = new SubjectSectionController($db);
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (isset($_POST['action']) && $_POST['action'] === 'addStudentSection') {
         $studentSectionData = [
-            'student_ids' => [], // Array of student IDs
+            'student_ids' => $_POST['student_ids'], // Array of student IDs
             'section_id' => $_POST['section_id'],
-            'enrollment_type' => $_POST['enrollment_type'],
+            'subject_ids' => $_POST['subject_ids'], // Array of student IDs
+            'teacher_id' => $_POST['teacher_id'], // Added teacher ID
         ];
-        $_SESSION["_ResultMessage"] = $studentSectionController->addStudentsToSection($studentSectionData);
+
+        // Handle file upload for subject_section_image
+        if (!empty($_FILES['subject_section_image']['tmp_name'])) {
+            $studentSectionData['image'] = file_get_contents($_FILES['subject_section_image']['tmp_name']);
+        }
+
+        $_SESSION["_ResultMessage"] = $subjectSectionController->addSubjectSection($subjectSectionData);
         header("Location: " . $_SERVER['REQUEST_URI']);
         exit();
     } elseif (isset($_POST['search_type'])) {
-        // AJAX handling for search functionality
         $searchType = $_POST['search_type'];
         $searchQuery = $_POST['query'];
+        $additionalFilters = $_POST['additional_filters'] ?? [];
 
-        $response = $studentSectionController->fetchSearchResults($searchType, $searchQuery);
+        $response = $subjectSectionController->fetchSearchResults($searchType, $searchQuery, $additionalFilters);
         echo json_encode($response);
         exit();
     }
 }
 ?>
+
 <!DOCTYPE html>
 <html lang="en">
 
@@ -49,7 +55,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
 <body>
     <div class="container mt-5">
-        <h1 class="text-center mb-4">Add Students to Section</h1>
+        <h1 class="text-center mb-4">Subject to Section</h1>
 
         <!-- Add Students to Section Form -->
         <form id="addStudentSectionForm" method="POST" enctype="multipart/form-data">
@@ -64,13 +70,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 </select>
             </div>
 
-            <!-- Search and add students -->
-            <div class="mb-3">
-                <label for="student_ids" class="form-label">Select Students</label>
-                <select class="form-control" id="student_ids" name="student_ids[]" multiple required></select>
-            </div>
-
-            <!-- Select one section -->
+            <!-- Select a section -->
             <div class="mb-3">
                 <label for="section_id" class="form-label">Select Section</label>
                 <select class="form-control" id="section_id" name="section_id" required>
@@ -83,17 +83,26 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
             </div>
 
-            <!-- Enrollment type -->
+            <!-- Select students -->
             <div class="mb-3">
-                <label for="enrollment_type" class="form-label">Enrollment Type</label>
-                <select class="form-select" id="enrollment_type" name="enrollment_type" required>
-                    <option value="" disabled selected>Select Enrollment Type</option>
-                    <option value="Regular">Regular</option>
-                    <option value="Irregular">Irregular</option>
-                </select>
+                <label for="subject_ids" class="form-label">Select Students</label>
+                <select class="form-control" id="subject_ids" name="subject_ids[]" multiple required></select>
             </div>
 
-            <button type="submit" class="btn btn-primary c-primary" form="addStudentSectionForm">Save changes</button>
+            <!-- Select or assign teacher -->
+            <div class="mb-3">
+                <label for="teacher_id" class="form-label">Assign Teacher</label>
+                <select class="form-control" id="teacher_id" name="teacher_id" required></select>
+            </div>
+
+            <!-- Upload subject section image -->
+            <div class="mb-3">
+                <label for="subject_section_image" class="form-label">Upload Section Image</label>
+                <input type="file" class="form-control" id="subject_section_image" name="subject_section_image"
+                    accept="image/*">
+            </div>
+
+            <button type="submit" class="btn btn-primary">Save changes</button>
         </form>
 
         <div class="mt-3 text-center">
@@ -109,6 +118,84 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $(document).ready(function () {
             function initializeSelect2() {
                 // Initialize select2 for student search with multiple selection enabled
+                $('#student_ids').select2({
+                    placeholder: "Search and select students",
+                    ajax: {
+                        url: "",
+                        type: "POST",
+                        dataType: "json",
+                        delay: 250,
+                        data: function (params) {
+                            return { search_type: "student", query: params.term };
+                        },
+                        processResults: function (data) {
+                            return {
+                                results: data.map(student => ({
+                                    id: student.user_id,
+                                    text: `${student.name} (${student.user_id})`
+                                }))
+                            };
+                        }
+                    }
+                });
+
+                // Initialize select2 for section search with single selection only
+                $('#section_id').select2({
+                    placeholder: "Search and select a section",
+                    allowClear: true,
+                    ajax: {
+                        url: "",
+                        type: "POST",
+                        dataType: "json",
+                        delay: 250,
+                        data: function (params) {
+                            return {
+                                search_type: "section",
+                                query: params.term
+                            };
+                        },
+                        processResults: function (data) {
+                            return {
+                                results: data.map(section => ({
+                                    id: section.section_id,
+                                    text: `${section.name} (${section.section_id})`
+                                }))
+                            };
+                        }
+                    }
+                });
+
+                $('#subject_ids').select2({
+                    placeholder: "Search and select subjects",
+                    ajax: {
+                        url: "", // Empty URL to use the current URL
+                        type: "POST",
+                        dataType: "json",
+                        delay: 250,
+                        data: function (params) {
+                            return {
+                                search_type: "subject",
+                                query: params.term, // Search query from user input
+                                section_id: $('#section_id').val(), // Send the selected section_id
+                                educational_level: $('#section_id').data('educational_level') // Send educational level based on section
+                            };
+                        },
+                        processResults: function (data) {
+                            return {
+                                results: data.map(function (subject) {
+                                    return {
+                                        id: subject.subject_id,
+                                        text: `${subject.name} (${subject.semester})`
+                                    };
+                                })
+                            };
+                        }
+                    }
+                });
+
+
+                // FOR ADVISER THIS FUNCTION
+
                 $(document).ready(function () {
                     // Initialize the dropdown for teacher search with educational level filtering
                     $('#teacher_id').select2({
@@ -144,42 +231,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     });
                 });
 
-
-                // Initialize select2 for section search with single selection only
-                $('#section_id').select2({
-                    placeholder: "Search and select a section",
-                    allowClear: true,
-                    ajax: {
-                        url: "",
-                        type: "POST",
-                        dataType: "json",
-                        delay: 250,
-                        data: function (params) {
-                            return { search_type: "section", query: params.term };
-                        },
-                        processResults: function (data) {
-                            return {
-                                results: data.map(section => ({
-                                    id: section.section_id,
-                                    text: `${section.name} (${section.section_id})`
-                                }))
-                            };
-                        }
-                    }
-                });
             }
 
-            // Add event listener for form elements
-            $(document).on('change', '#student_ids, #section_id', function (e) {
-                console.log('Selection updated:', e.target.value);
-            });
-
-            // Initialize select2 inputs
             initializeSelect2();
         });
     </script>
-</body>
 
+</body>
+<script src="<?php echo asset('js/toast.js') ?>"></script>
 <?php
 if (isset($_SESSION["_ResultMessage"])) {
     makeToast([

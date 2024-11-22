@@ -25,6 +25,7 @@ define('FILE_PATHS', [
         'PHPLogger' => __DIR__ . '../../functions/PHPLogger.php',
         'SessionChecker' => __DIR__ . '../../functions/sessionChecker.php',
         'UpdateURLParams' => __DIR__ . '../../functions/updateURLParams.php',
+        'CalculateElapsedTime' => __DIR__ . '../../functions/CalculateElapsedTime.php',
     ],
 
 
@@ -41,6 +42,8 @@ define('FILE_PATHS', [
         'StudentSection' => __DIR__ . '../../controllers/StudentSectionController.php',
         'StudentEnrollment' => __DIR__ . '../../controllers/StudentEnrollmentController.php',
         'SubjectSection' => __DIR__ . '../../controllers/SubjectSectionController.php',
+        'GeneralLogs' => __DIR__ . '../../controllers/GeneralLogsController.php',
+        'CardImages' => __DIR__ . '../../controllers/CardImagesController.php',
     ],
 
     'Models' => [
@@ -53,7 +56,9 @@ define('FILE_PATHS', [
         'AcademicPeriod' => __DIR__ . '../../models/AcademicPeriod.php',
         'StudentSection' => __DIR__ . '../../models/StudentSection.php',
         'StudentEnrollment' => __DIR__ . '../../models/StudentEnrollment.php',
-        'SubjectSection' => __DIR__ . '../../models/SubjectSection.php'
+        'SubjectSection' => __DIR__ . '../../models/SubjectSection.php',
+        'GeneralLogs' => __DIR__ . '../../models/GeneralLogs.php',
+        'CardImages' => __DIR__ . '../../models/CardImages.php',
     ],
 
     'Partials' => [
@@ -75,6 +80,9 @@ define('FILE_PATHS', [
             'Announcements' => __DIR__ . '../../views/partials/user/announcements.php',
             'WidgetPanel' => __DIR__ . '../../views/partials/user/widgetpanel.php',
             'Courses' => __DIR__ . '../../views/partials/user/mycourses.php',
+            'UpdateCardImage' => __DIR__ . '../../views/partials/public/modal_updateCardImage.php',
+            'UpdatePassword' => __DIR__ . '../../views/partials/public/modal_formUpdatePassword.php',
+            'FileSelect_Carousel' => __DIR__ . '../../views/partials/public/modal_formFileSelect.php',
         ],
         'HighLevel' => [
             'LiveCount' => __DIR__ . '../../views/partials/high-level/livecount.php',
@@ -122,7 +130,7 @@ define('FILE_PATHS', [
 
             'Dragger' => [
                 'Carousel' => [
-                    'Home' => __DIR__ . '../../views/partials/high-level/draggable_homeCarousel.php',
+                    'Sortable' => __DIR__ . '../../views/partials/high-level/draggableSortableCarousel.php',
                 ],
             ],
         ],
@@ -163,6 +171,4 @@ function asset($path)
     return BASE_PATH_LINK . 'src/assets/' . ltrim($path, '/');
 }
 
-function route($path)
-{
-}
+function route($path) {}

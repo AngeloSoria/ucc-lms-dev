@@ -1,15 +1,18 @@
 <?php
 require_once(__DIR__ . '../../../src/config/PathsHandler.php');
 require_once(FILE_PATHS['Models']['User']);
+require_once(FILE_PATHS['Controllers']['GeneralLogs']);
 require_once(FILE_PATHS['Functions']['PHPLogger']);
 
 class UserController
 {
     private $userModel;
+    private $generalLogsController;
 
-    public function __construct($db)
+    public function __construct()
     {
-        $this->userModel = new User($db);
+        $this->userModel = new User();
+        $this->generalLogsController = new GeneralLogsController();
     }
 
     // ADD DATA
@@ -70,10 +73,53 @@ class UserController
         }
     }
 
+    // REMOVE DATA
 
+    // UPDATE DATA
+    public function updateUserPassword($user_id, $role, $unhashed_password)
+    {
+        try {
+            $updateRequest = $this->userModel->updateUserPassword($user_id, $unhashed_password);
+            if ($updateRequest['success']) {
+                $this->generalLogsController->addLog_UPDATEPASS($user_id, $role);
+                msgLog("UPDATE PASS", "new pass: $unhashed_password");
+                return ['success' => true, 'message' => 'Password successfully updated. good!'];
+            }
+        } catch (Exception $e) {
+            return ['success' => false, 'message' => $e->getMessage()];
+        }
+    }
+
+    public function updateLastLoginByUserId($userId)
+    {
+        try {
+            // Assuming $this->db is the PDO instance
+            $updateRequest = $this->userModel->updateLastLoginByUserId($userId);
+            if ($updateRequest['success'] == false) {
+                return ['success' => false, 'message' => $updateRequest['message']];
+            }
+        } catch (PDOException $e) {
+            // Handle any exceptions
+            return ["success" => false, "message" => "Error updating last login: " . $e->getMessage()];
+        }
+    }
 
 
     // GET DATA
+    public function getAllUsersByRole($role)
+    {
+        try {
+            $getUsersByRole = $this->userModel->getAllUsersByRole($role);
+            if ($getUsersByRole['success'] == true) {
+                return ['success' => true, "data" => $getUsersByRole['data']];
+            } else {
+                return $getUsersByRole;
+            }
+        } catch (Exception $e) {
+            return ["success" => false, "message" => $e->getMessage()];
+        }
+    }
+
     public function getAllUsers($limit = 100)
     {
         try {
@@ -126,6 +172,24 @@ class UserController
                 "success" => false,
                 "message" => "No teachers found."
             ];
+        }
+    }
+
+    public function fetchSearchTeacher($searchByTableName, $query, $educationalLevel)
+    {
+        if ($searchByTableName === 'teacher') {
+            return $this->userModel->searchTeacherByRoleAndEducationalLevel($query, $educationalLevel);
+        }
+        return [];
+    }
+
+    public function userRequiresPasswordReset($user_id)
+    {
+        try {
+            $result = $this->userModel->userRequiresPasswordReset($user_id);
+            return $result ? ['success' => true, 'data' => $result] : ['success' => true, 'data' => $result];
+        } catch (Exception $e) {
+            return ['success' => false, 'data' => $e->getMessage()];
         }
     }
 }

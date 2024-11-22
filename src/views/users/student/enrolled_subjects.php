@@ -13,7 +13,7 @@ $database = new Database();
 $db = $database->getConnection(); // Establish the database connection
 
 // Create an instance of the UserController
-$userController = new UserController($db);
+$userController = new UserController();
 
 ?>
 
@@ -50,6 +50,6 @@ $userController = new UserController($db);
     <!-- FOOTER -->
     <?php require_once(FILE_PATHS['Partials']['User']['Footer']) ?>
 </body>
-<script src="<?php echo asset('js/admin-main.js') ?>"></script>
+
 
 </html>

@@ -99,4 +99,18 @@ class AcademicPeriodController
             return ['success' => false, 'error' => 'Failed to fetch active terms: ' . $e->getMessage()];
         }
     }
+
+    public function getAcademicPeriodById($period_id)
+    {
+        try {
+            $result = $this->academicPeriodModel->getAcademicPeriodById($period_id);
+            if ($result['success']) {
+                return ['success' => true, 'data' => $result['data']];
+            } else {
+                return ['success' => false, 'message' => $result['message']];
+            }
+        } catch (Exception $e) {
+            return ['success' => false, 'message' => $e->getMessage()];
+        }
+    }
 }
