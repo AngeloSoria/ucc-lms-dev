@@ -163,6 +163,9 @@ define('FILE_PATHS', [
         'Teacher' => [
             'Dashboard' => __DIR__ . '../../views/users/teachers/dashboard_teacher.php',
         ],
+        'All' => [
+            'Profile' => __DIR__ . '../../views/users/myprofile.php',
+        ],
     ],
 ]);
 

@@ -1,12 +1,13 @@
 <?php
 session_start();
-$CURRENT_PAGE = "dashboard";
 
-require_once(__DIR__ . '../../../../config/PathsHandler.php');
+require_once(__DIR__ . '../../../config/PathsHandler.php');
 require_once(FILE_PATHS['DATABASE']);
 require_once(FILE_PATHS['Controllers']['User']);
 require_once(FILE_PATHS['Functions']['SessionChecker']);
-checkUserAccess(['Student']);
+require_once(FILE_PATHS['Functions']['UpdateURLParams']);
+
+checkUserAccess(['Student', 'Admin', 'Level Coordinator', 'Teacher']);
 
 // Create a new instance of the Database class
 $database = new Database();
@@ -14,6 +15,9 @@ $db = $database->getConnection(); // Establish the database connection
 
 // Create an instance of the UserController
 $userController = new UserController();
+
+if (isset($_GET['access_denied'])) {
+}
 
 ?>
 
@@ -25,43 +29,33 @@ $userController = new UserController();
     <div class="wrapper shadow-sm border">
         <?php require_once(FILE_PATHS['Partials']['User']['Navbar']) ?>
 
-        <section class="d-flex justify-content-between gap-2 box-sizing-border-box m-0 p-0">
+        <section class="d-flex justify-content-between gap-2 box-sizing-border-box m-0">
             <!-- SIDEBAR -->
             <?php require_once(FILE_PATHS['Partials']['User']['Sidebar']) ?>
 
             <!-- content here -->
             <section id="contentSection">
-                <div class="col p-0 box-sizing-border-box flex-grow-1">
-                    <!-- First row, first column -->
-                    <div class="d-flex flex-column gap-2 flex-grow-1">
-                        <!-- CAROUSEL -->
-                        <?php require_once(FILE_PATHS['Partials']['User']['Carousel']) ?>
-
-                        <!-- COURSES -->
-                        <?php require_once(FILE_PATHS['Partials']['User']['Courses']) ?>
+                <div class="w-100">
+                    <div class="bg-white rounded shadow-sm overflow-hidden">
+                        <div id="banner" class="bg-success bg-gradient bg-opacity-100 p-2" style="height: 10px;">
+                        </div>
+                        <div class="row p-3">
+                            <h1>ERROR</h1>
+                        </div>
                     </div>
                 </div>
-                <!-- Load Widget Panel -->
-                <?php require_once FILE_PATHS['Partials']['User']['WidgetPanel'] ?>
             </section>
         </section>
-
-        <?php
-        $user_requirePasswordReset = $userController->userRequiresPasswordReset($_SESSION['user_id']);
-        // Password reset alert modal.
-        if ($user_requirePasswordReset['data'] == true) {
-            include_once(FILE_PATHS['Partials']['User']['UpdatePassword']);
-        }
-        ?>
 
         <!-- FOOTER -->
         <?php require_once(FILE_PATHS['Partials']['User']['Footer']) ?>
     </div>
 </body>
+
 <?php
 // Show Toast
 if (isset($_SESSION["_ResultMessage"])) {
-    print_r($_SESSION["_ResultMessage"]);
+    // print_r($_SESSION["_ResultMessage"]);
     makeToast([
         'type' => $_SESSION["_ResultMessage"]['success'] ? 'success' : 'error',
         'message' => $_SESSION["_ResultMessage"]['message'],

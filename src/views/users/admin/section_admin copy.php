@@ -64,6 +64,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['action']) && $_POST['a
     $searchType = $_POST['search_type'];
     $searchQuery = $_POST['query'];
     $educationalLevel = $_POST['educational_level'] ?? '';
+
     $response = $userController->fetchSearchTeacher($searchType, $searchQuery, $educationalLevel);
     echo json_encode($response);
     exit();
@@ -76,7 +77,6 @@ try {
         s.section_name, 
         s.year_level, 
         s.semester,
-        s.section_image, 
         u.first_name, 
         u.last_name, 
         p.program_code, 
@@ -172,7 +172,8 @@ if (isset($_GET['viewSection'])) {
 
                                         <!-- Preview Type -->
                                         <div class="btn-group" id="previewTypeContainer">
-                                            <a id="btnPreviewTypeCatalog" type="button" preview-container-target="view_catalog"
+                                            <a id="btnPreviewTypeCatalog" type="button"
+                                                preview-container-target="view_catalog"
                                                 class="btn btn-sm btn-sm btn-primary c-primary px-2 d-flex justify-content-center align-items-center">
                                                 <i class="bi bi-card-heading fs-6"></i>
                                             </a>
@@ -276,7 +277,8 @@ if (isset($_GET['viewSection'])) {
                                     <h5 class="ctxt-primary p-0 m-0">
                                         <a class="ctxt-primary" href="<?= clearUrlParams(); ?>">Sections</a>
                                         <span><i class="bi bi-caret-right-fill"></i></span>
-                                        <a class="ctxt-primary" href="<?= updateUrlParams(['viewSection' => $_GET['viewSection']]) ?>">
+                                        <a class="ctxt-primary"
+                                            href="<?= updateUrlParams(['viewSection' => $_GET['viewSection']]) ?>">
                                             <?php echo $retrievedSection['data']['section_name']; ?>
                                         </a>
                                     </h5>
@@ -297,17 +299,21 @@ if (isset($_GET['viewSection'])) {
                                 <div class="container my-4">
                                     <h4 class="fw-bolder text-success">Edit Section</h4>
                                     <div class="card shadow-sm position-relative">
-                                        <div class="card-header position-relative d-flex justify-content-start align-items-center gap-3 bg-success bg-opacity-75">
+                                        <div
+                                            class="card-header position-relative d-flex justify-content-start align-items-center gap-3 bg-success bg-opacity-75">
                                             <div class="position-absolute top-0 end-0 mt-4 me-4 d-flex gap-2">
-                                                <button id="dynamic_btn_edit" class="btn btn-sm cbtn-secondary d-flex gap-2">
+                                                <button id="dynamic_btn_edit"
+                                                    class="btn btn-sm cbtn-secondary d-flex gap-2">
                                                     <i class="bi bi-pencil-square"></i>
                                                     Edit
                                                 </button>
-                                                <button id="dynamic_btn_save" class="btn btn-sm btn-success d-flex gap-2 d-none">
+                                                <button id="dynamic_btn_save"
+                                                    class="btn btn-sm btn-success d-flex gap-2 d-none">
                                                     <i class="bi bi-floppy-fill"></i>
                                                     Save
                                                 </button>
-                                                <button id="dynamic_btn_cancel" class="btn btn-sm btn-danger d-flex gap-2 d-none">
+                                                <button id="dynamic_btn_cancel"
+                                                    class="btn btn-sm btn-danger d-flex gap-2 d-none">
                                                     <i class="bi bi-x-lg"></i>
                                                     Cancel
                                                 </button>
@@ -321,29 +327,39 @@ if (isset($_GET['viewSection'])) {
                                                 <div class="row mb-2">
                                                     <div class="col-md-6 col-lg-4 mb-3">
                                                         <h6>Section Name</h6>
-                                                        <input update-enabled name="input_sectionName" class="form-control" type="text" disabled value="<?= htmlspecialchars($retrievedSection['data']['section_name']) ?>">
+                                                        <input update-enabled name="input_sectionName" class="form-control"
+                                                            type="text" disabled
+                                                            value="<?= htmlspecialchars($retrievedSection['data']['section_name']) ?>">
                                                     </div>
                                                     <div class="col-md-6 col-lg-3 mb-3">
                                                         <h6 class="text-truncate">Educational Level</h6>
-                                                        <select update-enabled name="input_sectionEducationalLevel" id="input_sectionEducationalLevel" class="form-select" disabled>
+                                                        <select update-enabled name="input_sectionEducationalLevel"
+                                                            id="input_sectionEducationalLevel" class="form-select" disabled>
                                                             <?php
                                                             $option1 = htmlspecialchars($enrolledProgramsOfSection['data'][0]['educational_level']);
                                                             $option2 = $option1 == "College" ? "SHS" : "College";
                                                             ?>
-                                                            <option value="<?php echo $option1 ?>"><?php echo $option1 ?></option>
-                                                            <option value="<?php echo $option2 ?>"><?php echo $option2 ?></option>
+                                                            <option value="<?php echo $option1 ?>"><?php echo $option1 ?>
+                                                            </option>
+                                                            <option value="<?php echo $option2 ?>"><?php echo $option2 ?>
+                                                            </option>
                                                         </select>
                                                     </div>
                                                     <div class="col-md-12 col-lg-5 mb-3">
                                                         <h6>Program</h6>
-                                                        <select update-enabled name="input_sectionProgram" id="input_sectionPrograms" class="form-select" disabled title="Enrolled Program">
+                                                        <select update-enabled name="input_sectionProgram"
+                                                            id="input_sectionPrograms" class="form-select" disabled
+                                                            title="Enrolled Program">
                                                             <?php if ($retrievedSection['success']): ?>
                                                                 <?php if (!empty($enrolledProgramsOfSection['data'][0])): ?>
                                                                     <?php if ($enrolledProgramsOfSection['data'][0]['educational_level'] == "College"): ?>
                                                                         <?php if ($retrievedAllPrograms['success']): ?>
                                                                             <?php foreach ($retrievedAllPrograms['data'] as $programs): ?>
                                                                                 <?php if ($programs['educational_level'] == $enrolledProgramsOfSection['data'][0]['educational_level']): ?>
-                                                                                    <option <?php echo ($enrolledProgramsOfSection['data'][0]['program_id'] == $programs['program_id']) ? "selected" : ""  ?> value="<?php echo $programs['program_id']  ?>"><?php echo htmlspecialchars($programs['program_code'] . " | " . $programs['program_name']) ?></option>
+                                                                                    <option <?php echo ($enrolledProgramsOfSection['data'][0]['program_id'] == $programs['program_id']) ? "selected" : "" ?>
+                                                                                        value="<?php echo $programs['program_id'] ?>">
+                                                                                        <?php echo htmlspecialchars($programs['program_code'] . " | " . $programs['program_name']) ?>
+                                                                                    </option>
                                                                                 <?php endif; ?>
                                                                             <?php endforeach; ?>
                                                                         <?php endif; ?>
@@ -361,7 +377,10 @@ if (isset($_GET['viewSection'])) {
                                                         <h6>Semester</h6>
                                                         <select class="form-select" name="" id="" disabled>
                                                             <?php if ($retrievedSection['success']): ?>
-                                                                <option value="<?= htmlspecialchars($retrievedSection['data']['semester']) ?>"><?= htmlspecialchars($retrievedSection['data']['semester']) ?></option>
+                                                                <option
+                                                                    value="<?= htmlspecialchars($retrievedSection['data']['semester']) ?>">
+                                                                    <?= htmlspecialchars($retrievedSection['data']['semester']) ?>
+                                                                </option>
                                                                 <?php if ($retrievedSection['data']['semester'] == 1): ?>
                                                                     <option value="2">2</option>
                                                                 <?php endif; ?>
@@ -371,9 +390,14 @@ if (isset($_GET['viewSection'])) {
                                                     <div class="col-sm-6 col-md-6 col-lg-4 mb-3">
                                                         <h6>Year Level</h6>
                                                         <!-- <input update-enabled class="form-control" type="text" disabled value="<?= htmlspecialchars($retrievedSection['data']['year_level']) ?>"> -->
-                                                        <select update-enabled class="form-select" name="input_sectionYearLevel" id="input_sectionYearLevel" disabled>
+                                                        <select update-enabled class="form-select"
+                                                            name="input_sectionYearLevel" id="input_sectionYearLevel"
+                                                            disabled>
                                                             <?php if ($retrievedSection['success']): ?>
-                                                                <option value="<?= htmlspecialchars($retrievedSection['data']['year_level']) ?>"><?= htmlspecialchars($retrievedSection['data']['year_level']) ?></option>
+                                                                <option
+                                                                    value="<?= htmlspecialchars($retrievedSection['data']['year_level']) ?>">
+                                                                    <?= htmlspecialchars($retrievedSection['data']['year_level']) ?>
+                                                                </option>
                                                                 <?php if ($retrievedSection['data']['year_level'] == 1): ?>
                                                                 <?php endif; ?>
                                                             <?php endif; ?>
@@ -384,9 +408,12 @@ if (isset($_GET['viewSection'])) {
                                                 <div class="row mb-3">
                                                     <div class="col-md-12 col-lg-7">
                                                         <h6>Class Adviser</h6>
-                                                        <select update-enabled class="form-select" name="input_sectionAdviser" id="input_sectionAdviser" disabled>
+                                                        <select update-enabled class="form-select"
+                                                            name="input_sectionAdviser" id="input_sectionAdviser" disabled>
                                                             <?php if ($enrolledAdviserToSection['success']): ?>
-                                                                <option value=""><?php echo $enrolledAdviserToSection['data']['first_name'] . ' ' . $enrolledAdviserToSection['data']['last_name'] ?></option>
+                                                                <option value="">
+                                                                    <?php echo $enrolledAdviserToSection['data']['first_name'] . ' ' . $enrolledAdviserToSection['data']['last_name'] ?>
+                                                                </option>
                                                             <?php endif; ?>
                                                         </select>
                                                     </div>
@@ -400,7 +427,8 @@ if (isset($_GET['viewSection'])) {
                                                     <section class="role_table">
                                                         <!-- =============================================== -->
                                                         <!-- DATA TABLE BY STUDENTS -->
-                                                        <div class="actionControls mb-2 p-1 bg-transparent d-flex gap-2 justify-content-end align-items-center">
+                                                        <div
+                                                            class="actionControls mb-2 p-1 bg-transparent d-flex gap-2 justify-content-end align-items-center">
                                                             <button class="btn btn-sm btn-success">
                                                                 <i class="bi bi-plus-circle"></i>
                                                                 Add Student
@@ -410,10 +438,12 @@ if (isset($_GET['viewSection'])) {
                                                                 Remove Selected
                                                             </button>
                                                         </div>
-                                                        <table id="dataTable_enrolledStudents" class="table table-responsive table-striped border display compact" style="width: 100%">
+                                                        <table id="dataTable_enrolledStudents"
+                                                            class="table table-responsive table-striped border display compact"
+                                                            style="width: 100%">
                                                             <thead>
                                                                 <tr>
-                                                                    <th><input type="checkbox" id="checkbox_selectAll" class="form-check-input" value="enrolledStudentsID_<?php echo $_GET['viewSection'] ?>"></th>
+                                                                    <th><input type="checkbox" id="checkbox_selectAll" class="form-check-input" accesskey="" value="enrolledStudentsID_<?php echo $_GET['viewSection'] ?>"></th>
                                                                     <th>User Id</th>
                                                                     <th>Full Name</th>
                                                                     <th>Action</th>
@@ -422,21 +452,31 @@ if (isset($_GET['viewSection'])) {
                                                             <tbody>
                                                                 <?php if (empty($enrolledStudentInfoFromSection)) { ?>
                                                                     <tr>
-                                                                        <td colspan="4" class="text-center">No Enrolled Students</td>
+                                                                        <td colspan="4" class="text-center">No Enrolled Students
+                                                                        </td>
                                                                     </tr>
                                                                 <?php } else { ?>
 
                                                                     <?php foreach ($enrolledStudentInfoFromSection as $userData) { ?>
                                                                         <tr>
-                                                                            <td class="col-md-1"><input type="checkbox" class="form-check-input" value="<?php htmlspecialchars($userData['user_id'] ?? '') ?>"></td>
-                                                                            <td class="col-md-2"><?php echo $userData['user_id'] ?></td>
-                                                                            <td class="col-md-6"><?php echo $userData['first_name'] . ' ' . $userData['middle_name'] . ' ' . $userData['last_name'] ?></td>
+                                                                            <td class="col-md-1"><input type="checkbox"
+                                                                                    class="form-check-input"
+                                                                                    value="<?php htmlspecialchars($userData['user_id'] ?? '') ?>">
+                                                                            </td>
+                                                                            <td class="col-md-2"><?php echo $userData['user_id'] ?>
+                                                                            </td>
+                                                                            <td class="col-md-6">
+                                                                                <?php echo $userData['first_name'] . ' ' . $userData['middle_name'] . ' ' . $userData['last_name'] ?>
+                                                                            </td>
                                                                             <td class="col-md-3">
-                                                                                <a href="users_admin.php<?php echo htmlspecialchars('?viewRole=' . $userData['role'] . '&user_id=' . $userData['user_id']) ?>" title="View" class="btn btn-sm btn-success m-auto">
+                                                                                <a href="users_admin.php<?php echo htmlspecialchars('?viewRole=' . $userData['role'] . '&user_id=' . $userData['user_id']) ?>"
+                                                                                    title="View"
+                                                                                    class="btn btn-sm btn-success m-auto">
                                                                                     <i class="bi bi-eye-fill"></i>
                                                                                     View
                                                                                 </a>
-                                                                                <a href="#" title="Remove" class="btn btn-sm btn-danger m-auto disabled">
+                                                                                <a href="#" title="Remove"
+                                                                                    class="btn btn-sm btn-danger m-auto disabled">
                                                                                     <i class="bi bi-x"></i>
                                                                                     Remove
                                                                                 </a>
@@ -456,6 +496,7 @@ if (isset($_GET['viewSection'])) {
                                                         </table>
                                                         <script>
                                                             $(document).ready(function() {
+                                                                // Initialize DataTable
                                                                 $('#dataTable_allUsers').DataTable({
                                                                     columnDefs: [{
                                                                         "orderable": false,
@@ -519,9 +560,50 @@ if (isset($_GET['viewSection'])) {
 
                                                                     $('#checkbox_selectAll').prop('checked', totalCheckboxes === checkedCheckboxes);
                                                                 });
+
+                                                                function initializeSelect2() {
+                                                                    // Teachers Dropdown
+                                                                    $('#input_sectionAdviser').select2({
+                                                                        placeholder: "Search and select a teacher",
+                                                                        allowClear: true,
+                                                                        ajax: {
+                                                                            url: "", // Placeholder URL for fetching teacher data
+                                                                            type: "POST",
+                                                                            dataType: "json",
+                                                                            delay: 250,
+                                                                            data: function(params) {
+                                                                                return {
+                                                                                    search_type: "teacher",
+                                                                                    query: params.term, // Search term
+                                                                                    educational_level: $('#input_sectionEducationalLevel').val() // Pass educational level filter
+                                                                                };
+                                                                            },
+                                                                            processResults: function(data) {
+                                                                                console.log(data); // Debug: Check the server's response
+                                                                                return {
+                                                                                    results: data.map(teacher => ({
+                                                                                        id: teacher.user_id,
+                                                                                        text: `${teacher.name} (${teacher.educational_level})`
+                                                                                    }))
+                                                                                };
+                                                                            }
+                                                                        }
+                                                                    });
+
+                                                                    // Dynamically update teacher options when educational level changes
+                                                                    $('#input_sectionEducationalLevel').change(function() {
+                                                                        // Clear selection and reload teachers based on the new educational level
+                                                                        $('#input_sectionAdviser').val(null).trigger('change'); // Clear selection
+                                                                        $('#input_sectionAdviser').empty(); // Clear the dropdown options
+
+                                                                        // Reload teachers after clearing
+                                                                        $('#input_sectionAdviser').select2('open'); // Force open to reload the teacher list
+                                                                    });
+                                                                }
+
+                                                                initializeSelect2();
                                                             });
                                                         </script>
-
 
                                                         <!-- END OF DATA TABLE -->
                                                         <!-- =============================================== -->
@@ -536,11 +618,6 @@ if (isset($_GET['viewSection'])) {
                     <?php endif; ?>
                 </div>
             </section>
-
-        </section>
-
-        <section>
-
         </section>
 
         <?php require_once(FILE_PATHS['Partials']['HighLevel']['Modals']['Section']['Add']) ?>

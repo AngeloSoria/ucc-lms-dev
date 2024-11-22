@@ -63,11 +63,17 @@ class UserController
     {
         try {
             $userData = $this->userModel->getUserById($userId);
-            return [
-                "success" => true,
-                "message" => "User retrieved successfully.",
-                "data" => $userData
-            ];
+            if (!empty($userData)) {
+                return [
+                    "success" => true,
+                    "data" => $userData
+                ];
+            } else {
+                return [
+                    "success" => false,
+                    "message" => "No user with ($userId) found."
+                ];
+            }
         } catch (Exception $e) {
             return ['success' => false, 'message' => $e->getMessage()];
         }

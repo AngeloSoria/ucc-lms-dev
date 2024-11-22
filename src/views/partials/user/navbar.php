@@ -1,33 +1,3 @@
-<?php
-ob_start();
-// Redirect if no session role is set
-if (!isset($_SESSION['role'])) {
-    header('Location: ' . BASE_PATH_LINK);
-    exit;
-}
-
-// Determine the correct dashboard link
-$dashboardLink = '';
-switch ($_SESSION['role']) {
-    case 'Admin':
-        $dashboardLink = 'dashboard_admin.php';
-        break;
-    case 'Teacher':
-        $dashboardLink = 'dashboard_teacher.php';
-        break;
-    case 'Level Coordinator':
-        $dashboardLink = 'dashboard_level_coordinator.php';
-        break;
-    case 'Student':
-        $dashboardLink = 'dashboard_student.php';
-        break;
-    default:
-        header('Location: ' . BASE_PATH_LINK);
-        exit;
-}
-
-ob_end_flush();
-?>
 <nav class="c-navbar shadow-sm">
     <div class="nav-container">
         <section class="container-left">
@@ -37,7 +7,7 @@ ob_end_flush();
             </button>
 
             <!-- Logo on the left -->
-            <a class="navbar-brand" href="<?php $dashboardLink ?>">
+            <a class="navbar-brand" href="<?php echo BASE_PATH_LINK ?>">
                 <img src="<?php echo asset('img/ucc-logo.png'); ?>" alt="UCC Logo" class="d-inline-block align-text-top" />
             </a>
         </section>
@@ -83,11 +53,11 @@ ob_end_flush();
                         ?>
                     </a>
                     <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
-                        <li><a class="dropdown-item" href="#">My Profile</a></li>
+                        <li><a class="dropdown-item" href="<?php echo BASE_PATH_LINK . 'src/views/users/viewprofile.php?viewProfile=' . $_SESSION['user_id'] ?>">My Profile</a></li>
                         <li>
                             <hr class="dropdown-divider">
                         </li>
-                        <li><a class="dropdown-item" href="../../../controllers/LogoutController.php">Logout</a></li>
+                        <li><a class="dropdown-item" href="<?php echo BASE_PATH_LINK . 'src/controllers/LogoutController.php' ?>">Logout</a></li>
                     </ul>
                 </div>
             </div>

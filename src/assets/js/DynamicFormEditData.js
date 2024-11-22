@@ -20,31 +20,7 @@ const dynamic_form_ids = {
                     $(input_sectionYearLevel).append('<option value="12">12</option>');
                 }
 
-                // Select2 Adviser
-                $(input_sectionAdviser).select2({
-                    placeholder: "Search and select a teacher",
-                    allowClear: true,
-                    ajax: {
-                        url: "",
-                        type: "POST",
-                        dataType: "json",
-                        delay: 250,
-                        data: function (params) {
-                            return {
-                                search_type: "teacher",
-                                query: params.term
-                            };
-                        },
-                        processResults: function (data) {
-                            return {
-                                results: data.map(teacher => ({
-                                    id: teacher.user_id,
-                                    text: `${teacher.name} (${teacher.user_id})`
-                                }))
-                            };
-                        }
-                    }
-                });
+
 
                 // Select options onchange.
                 $.ajax({
@@ -99,7 +75,7 @@ $(document).ready(function () {
         BTN_SAVE.addClass('d-none');
         BTN_CANCEL.addClass('d-none');
         setStateUpdate(false); // Ensure form elements are disabled initially
-        console.log("==[Dynamic Form Edit Data v3 loaded.]==");
+        // console.log("==[Dynamic Form Edit Data v3 loaded.]==");
     }
 
     function setStateUpdate(state) {
@@ -124,9 +100,35 @@ $(document).ready(function () {
             if (element.is('input, textarea, select')) {
                 originalValues.push({
                     element: element,
-                    value: element.val(), // Store current value
+                    value: element.text(), // Store current value
                     defaultOption: element.is('select') ? element.find(':selected').val() : null // Store default for selects
                 });
+            }
+        });
+
+        // Select2 Adviser
+        $(input_sectionAdviser).select2({
+            placeholder: "Search and select a teacher",
+            allowClear: true,
+            ajax: {
+                url: "",
+                type: "POST",
+                dataType: "json",
+                delay: 250,
+                data: function (params) {
+                    return {
+                        search_type: "teacher",
+                        query: params.term
+                    };
+                },
+                processResults: function (data) {
+                    return {
+                        results: data.map(teacher => ({
+                            id: teacher.user_id,
+                            text: `${teacher.name} (${teacher.user_id})`
+                        }))
+                    };
+                }
             }
         });
 
@@ -136,38 +138,9 @@ $(document).ready(function () {
     BTN_CANCEL.on('click', function () {
         let makeUpdate = confirm('Are you sure you do not want to update this information?');
         if (makeUpdate) {
-            BTN_CANCEL.removeClass('d-block').addClass('d-none');
-            BTN_SAVE.removeClass('d-block').addClass('d-none');
-            BTN_EDIT.removeClass('d-none').addClass('d-block');
-
-            // Revert all form elements to their original values
-            originalValues.forEach(({ element, value }) => {
-                if (element.is('select')) {
-                    // Revert select to its original option
-                    element.val(value);
-                } else {
-                    // Revert other inputs to their original value
-                    element.val(value);
-                }
-            });
-
-            setStateUpdate(false);
+            location.reload();
         }
     });
 
     init();
-
-    let isFormDirty = false;
-
-    // Example: Detect changes in a form
-    document.querySelector('form').addEventListener('change', function () {
-        isFormDirty = true;
-    });
-
-    window.addEventListener('beforeunload', function (event) {
-        if (isFormDirty) {
-            event.preventDefault();
-            // event.returnValue = ''; // Modern browsers require this to show a dialog
-        }
-    });
 });
