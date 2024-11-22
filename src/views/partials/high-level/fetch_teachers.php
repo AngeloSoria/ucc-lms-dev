@@ -1,12 +1,8 @@
 <?php
 require_once(__DIR__ . '../../../../config/PathsHandler.php');
-require_once(FILE_PATHS['DATABASE']);
 require_once(FILE_PATHS['Models']['User']);
 
-$database = new Database();
-$db = $database->getConnection();
-
-$userModel = new User($db);
+$userModel = new User();
 
 // Assuming getAllUsersByRole method fetches teachers' data
 $teachers = $userModel->getAllUsersByRole('Teacher');

@@ -60,6 +60,6 @@ $user_requirePasswordReset = $userController->userRequiresPasswordReset($_SESSIO
         <?php require_once(FILE_PATHS['Partials']['User']['Footer']) ?>
     </section>
 </body>
-<script src="<?php echo asset('js/admin-main.js') ?>"></script>
+
 
 </html>

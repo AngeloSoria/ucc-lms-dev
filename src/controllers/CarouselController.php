@@ -74,16 +74,12 @@ class CarouselController
     // }
 
     // Method to delete a carousel item by ID
-    public function deleteCarouselItem()
+    public function deleteCarouselItem($id)
     {
-        if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['action'] === 'deleteCarousel') {
-            $id = $_POST['id'];
-
-            if ($this->carouselModel->deleteCarouselItem($id)) {
-                header('Location: ../carousel_admin.php?deleted=1');
-            } else {
-                echo "Error: Failed to delete carousel item.";
-            }
+        if ($this->carouselModel->deleteCarouselItem($id)) {
+            header('Location: ../carousel_admin.php?deleted=1');
+        } else {
+            echo "Error: Failed to delete carousel item.";
         }
     }
 

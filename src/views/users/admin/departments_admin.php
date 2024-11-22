@@ -175,7 +175,7 @@ $db = $database->getConnection(); // Establish the database connection
         <?php require_once(FILE_PATHS['Partials']['User']['Footer']) ?>
     </div>
 </body>
-<script src="<?php echo asset('js/admin-main.js') ?>"></script>
+
 <?php
 // Show Toast
 if (isset($_SESSION["_ResultMessage"]) && isset($_SESSION["_ResultMessage"]['success'])) {

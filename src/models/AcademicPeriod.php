@@ -188,4 +188,22 @@ class AcademicPeriod
             return null;
         }
     }
+
+    public function getAcademicPeriodById($period_id)
+    {
+        try {
+            $query = "SELECT * FROM $this->table_name WHERE period_id = :period_id";
+            $stmt = $this->conn->prepare($query);
+            $stmt->bindParam(':period_id', $period_id);
+            $stmt->execute();
+            $result = $stmt->fetch(PDO::FETCH_ASSOC);
+            if (!empty($result)) {
+                return ['success' => true, 'data' => $result];
+            } else {
+                return ['success' => false, 'message' => "No academic period with period_id of ($period_id)"];
+            }
+        } catch (Exception $e) {
+            throw new Exception($e->getMessage());
+        }
+    }
 }

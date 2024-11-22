@@ -140,27 +140,7 @@ $latestUserId = $userController->getLatestUserId();
     </div>
 </div>
 
-<script>
-    // JavaScript for dynamic role type requirement
-    document.addEventListener('DOMContentLoaded', function() {
-        const roleSelect = document.getElementById('role');
-        const roleTypeContainer = document.getElementById('role_type_container');
-        const teacherTypeSelect = document.getElementById('educational_level');
 
-        roleSelect.addEventListener('change', function() {
-            if (roleSelect.value === 'Teacher') {
-                roleTypeContainer.classList.remove('d-none'); // Show the Role Type container
-                teacherTypeSelect.required = true; // Make Role Type required
-            } else {
-                roleTypeContainer.classList.add('d-none'); // Hide the Role Type container
-                teacherTypeSelect.required = false; // Remove the required attribute
-                teacherTypeSelect.value = ''; // Reset the Role Type select
-            }
-        });
-    });
-</script>
-
-<script src="../../../assets/js/modal_userRegistration.js"></script>
-<script src="../../../assets/js/section-modals.js"></script>
-<script src="../../../assets/js/modal-interceptor.js"></script>
-<script src="../../../assets/js/root.js"></script>
+<script src="<?php echo asset("js/modal_userRegistration.js") ?>"></script>
+<script src="<?php echo asset("js/section-modals.js") ?>"></script>
+<script src="<?php echo asset("js/modal-interceptor.js") ?>"></script>

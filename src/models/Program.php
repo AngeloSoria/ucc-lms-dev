@@ -1,12 +1,15 @@
 <?php
+require_once(__DIR__ . '../../../src/config/PathsHandler.php');
+require_once(FILE_PATHS['DATABASE']);
 class Program
 {
     private $conn;
     private $table_name = "programs"; // Adjust based on your table name
 
-    public function __construct($db)
+    public function __construct()
     {
-        $this->conn = $db;
+        $db = new Database();
+        $this->conn = $db->getConnection();
     }
 
     // Check if program exists by program code
@@ -59,6 +62,21 @@ class Program
 
             $retrievedPrograms = $stmt->fetchAll(PDO::FETCH_ASSOC); // Fetch all results as associative array
 
+            return ['success' => true, 'data' => $retrievedPrograms];
+        } catch (Exception $e) {
+            throw new Exception($e->getMessage());
+        }
+    }
+
+    public function getAllProgramsByEducationalLevel($educational_level)
+    {
+        try {
+            $query = "SELECT program_id, program_code, program_name, program_description FROM $this->table_name WHERE educational_level = :educational_level";
+            $stmt = $this->conn->prepare($query);
+            $stmt->bindParam(":educational_level", $educational_level);
+            $stmt->execute();
+
+            $retrievedPrograms = $stmt->fetchAll(PDO::FETCH_ASSOC); // Fetch all results as associative array
             return ['success' => true, 'data' => $retrievedPrograms];
         } catch (Exception $e) {
             throw new Exception($e->getMessage());

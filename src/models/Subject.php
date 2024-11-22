@@ -1,11 +1,15 @@
 <?php
+require_once(__DIR__ . '../../../src/config/PathsHandler.php');
+require_once(FILE_PATHS['DATABASE']);
+
 class Subject
 {
     private $conn;
     private $table_name = 'subjects';
-    public function __construct($db)
+    public function __construct()
     {
-        $this->conn = $db;
+        $db = new Database();
+        $this->conn = $db->getConnection();
     }
 
     public function addSubject($subjectData)
@@ -32,6 +36,20 @@ class Subject
         }
     }
 
+    public function getAllSubjects()
+    {
+        try {
+            $query = "SELECT * FROM $this->table_name";
+            $stmt = $this->conn->prepare($query);
+            $stmt->execute();
+            $queryResult = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+            return ['success' => true, 'data' => $queryResult];
+        } catch (Exception $e) {
+            throw new ($e->getMessage());
+        }
+    }
+
     public function checkSubjectExist($subject_code, $subject_name)
     {
         // Check if the subject exists in the database
@@ -42,7 +60,4 @@ class Subject
         $stmt->execute();
         return $stmt->fetchColumn() > 0;
     }
-
-
-
 }

@@ -177,7 +177,6 @@ class UserController
 
     public function fetchSearchTeacher($searchByTableName, $query, $educationalLevel)
     {
-        msgLog('TEST', $searchByTableName);
         if ($searchByTableName === 'teacher') {
             return $this->userModel->searchTeacherByRoleAndEducationalLevel($query, $educationalLevel);
         }

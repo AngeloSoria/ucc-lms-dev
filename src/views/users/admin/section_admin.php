@@ -4,11 +4,12 @@ $CURRENT_PAGE = "sections";
 
 require_once(__DIR__ . '../../../../config/PathsHandler.php');
 require_once(FILE_PATHS['DATABASE']);
+require_once(FILE_PATHS['Controllers']['User']);
 require_once(FILE_PATHS['Controllers']['Section']);
 require_once(FILE_PATHS['Controllers']['Program']);
 require_once(FILE_PATHS['Controllers']['StudentSection']);
 require_once(FILE_PATHS['Controllers']['SubjectSection']);
-require_once(FILE_PATHS['Controllers']['User']);
+require_once(FILE_PATHS['Controllers']['AcademicPeriod']);
 
 require_once(FILE_PATHS['Partials']['Widgets']['Card']);
 require_once(FILE_PATHS['Partials']['Widgets']['DataTable']);
@@ -26,14 +27,17 @@ $widget_card = new Card();
 $database = new Database();
 $db = $database->getConnection(); // Establish the database connection
 
+
+$userController = new UserController();
 $sectionController = new SectionController();
+$programController = new ProgramController($db);
+$academicYearController = new AcademicPeriodController($db);
+$studentSectionController = new StudentSectionController($db);
+$subjectSectionController = new SubjectSectionController($db);
+
 $sectionList = $sectionController->getAllSections(); // Fetch all sections
 $sectionList = $sectionController->updateAcademicPeriod();
 
-$programController = new ProgramController($db);
-$studentSectionController = new StudentSectionController($db);
-$subjectSectionController = new SubjectSectionController($db);
-$userController = new UserController($db);
 
 // At the beginning of your main file
 if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['action']) && $_POST['action'] == 'addSection') {
@@ -113,13 +117,21 @@ if (isset($_GET['viewSection'])) {
     $enrolledStudentIdsFromSection = $studentSectionController->getAllEnrolledStudentIdBySectionId($_GET['viewSection']); // [student id ...]
     $enrolledStudentInfoFromSection = [];
     if ($enrolledStudentIdsFromSection['success']) {
-        foreach ($enrolledStudentIdsFromSection['data'][0] as $key => $user_id) {
-            $getUserInfoResult = $userController->getUserById($user_id);
+        foreach ($enrolledStudentIdsFromSection['data'] as $student_info) {
+            $getUserInfoResult = $userController->getUserById($student_info['student_id']); // it was student_id all along...
             if ($getUserInfoResult['success']) {
                 $enrolledStudentInfoFromSection[] = $getUserInfoResult['data'];
             }
         }
     }
+    $retrieveAcademicYearFromSection = $academicYearController->getAcademicPeriodById($retrievedSection['data']['period_id']);
+    if (!$retrieveAcademicYearFromSection['success']) {
+        $_SESSION["_ResultMessage"] = $retrieveAcademicYearFromSection;
+        header("Location: " . clearUrlParams());
+        exit();
+    }
+
+    $retrievedAllPrograms = $programController->getAllPrograms();
 }
 ?>
 
@@ -150,20 +162,22 @@ if (isset($_GET['viewSection'])) {
                                         <!-- Tools -->
 
                                         <!-- Add New Button -->
-                                        <button
-                                            class="btn btn-primary btn-lg rounded fs-6 px-3 c-primary d-flex gap-3 align-items-center"
-                                            data-bs-toggle="modal" data-bs-target="#sectionFormModal">
-                                            <i class="bi bi-plus-circle"></i> Add Section
-                                        </button>
+                                        <div>
+                                            <button
+                                                class="btn btn-lg btn-primary rounded fs-6 px-3 c-primary d-flex gap-3 align-items-center"
+                                                data-bs-toggle="modal" data-bs-target="#sectionFormModal">
+                                                <i class="bi bi-plus-circle"></i> Add Section
+                                            </button>
+                                        </div>
 
                                         <!-- Preview Type -->
                                         <div class="btn-group" id="previewTypeContainer">
                                             <a id="btnPreviewTypeCatalog" type="button" preview-container-target="view_catalog"
-                                                class="btn btn-sm btn-primary c-primary px-2 d-flex justify-content-center align-items-center">
+                                                class="btn btn-sm btn-sm btn-primary c-primary px-2 d-flex justify-content-center align-items-center">
                                                 <i class="bi bi-card-heading fs-6"></i>
                                             </a>
                                             <a id="btnPreviewTypeTable" type="button" preview-container-target="view_table"
-                                                class="btn btn-sm btn-outline-primary c-primary px-2 d-flex justify-content-center align-items-center">
+                                                class="btn btn-sm btn-sm btn-outline-primary c-primary px-2 d-flex justify-content-center align-items-center">
                                                 <i class="bi bi-table fs-6"></i>
                                             </a>
                                         </div>
@@ -182,7 +196,7 @@ if (isset($_GET['viewSection'])) {
                                         Only active sections are shown in catalog view.
                                     </div>
                                 </div>
-                                <section class="d-flex flex-row justify-content-between align-items-start gap-2 flex-wrap">
+                                <section class="row">
                                     <?php
                                     foreach ($sectionList as $section) {
                                         $getTotalEnrollees = $studentSectionController->getTotalEnrolleesInSection($section['section_id']);
@@ -244,8 +258,8 @@ if (isset($_GET['viewSection'])) {
                                                 <td><?php echo htmlspecialchars($section['year_level']); ?></td>
                                                 <td><?php echo htmlspecialchars($section['semester']); ?></td>
                                                 <td>
-                                                    <a href="#" class="btn btn-sm btn-primary">Configure</a>
-                                                    <a href="#" class="btn btn-sm btn-danger">Delete</a>
+                                                    <a href="#" class="btn btn-sm btn-sm btn-primary">Configure</a>
+                                                    <a href="#" class="btn btn-sm btn-sm btn-danger">Delete</a>
                                                 </td>
                                             </tr>
                                         <?php } ?>
@@ -257,7 +271,7 @@ if (isset($_GET['viewSection'])) {
                     <?php else: ?>
                         <div class="bg-white rounded p-3 shadow-sm border">
                             <div class="mb-3 row align-items-start bg-transparent box-sizing-border-box">
-                                <div class="col-4 d-flex gap-2 justify-content-start align-items-center box-sizing-border-box">
+                                <div class="d-flex gap-2 justify-content-start align-items-center box-sizing-border-box">
                                     <!-- breadcrumbs -->
                                     <h5 class="ctxt-primary p-0 m-0">
                                         <a class="ctxt-primary" href="<?= clearUrlParams(); ?>">Sections</a>
@@ -269,7 +283,7 @@ if (isset($_GET['viewSection'])) {
                                     <!-- end of breadcrumbs -->
                                 </div>
                                 <!-- <div class="col-8 d-flex justify-content-end gap-2">
-                                    <button class="btn btn-success" disabled data-bs-toggle="modal" data-bs-target="#modal_updateCardModal_program">
+                                    <button class="btn btn-sm btn-success" disabled data-bs-toggle="modal" data-bs-target="#modal_updateCardModal_program">
                                         <i class="bi bi-card-image"></i>
                                         Set Image
                                     </button>
@@ -281,57 +295,96 @@ if (isset($_GET['viewSection'])) {
                                 <hr>
                                 <!-- generated -->
                                 <div class="container my-4">
-                                    <h4 class="fw-bolder text-success"></h4>
+                                    <h4 class="fw-bolder text-success">Edit Section</h4>
                                     <div class="card shadow-sm position-relative">
                                         <div class="card-header position-relative d-flex justify-content-start align-items-center gap-3 bg-success bg-opacity-75">
-                                            <div class="position-absolute top-0 end-0 mt-3 me-4">
-                                                <button class="btn cbtn-secondary px-4">
+                                            <div class="position-absolute top-0 end-0 mt-4 me-4 d-flex gap-2">
+                                                <button id="dynamic_btn_edit" class="btn btn-sm cbtn-secondary d-flex gap-2">
+                                                    <i class="bi bi-pencil-square"></i>
                                                     Edit
+                                                </button>
+                                                <button id="dynamic_btn_save" class="btn btn-sm btn-success d-flex gap-2 d-none">
+                                                    <i class="bi bi-floppy-fill"></i>
+                                                    Save
+                                                </button>
+                                                <button id="dynamic_btn_cancel" class="btn btn-sm btn-danger d-flex gap-2 d-none">
+                                                    <i class="bi bi-x-lg"></i>
+                                                    Cancel
                                                 </button>
                                             </div>
                                         </div>
                                         <div class="card-body">
-                                            <section class="mb-4">
+                                            <form dynamic-form-id="edit_Section" class="mb-4">
                                                 <div class="row mb-3">
                                                     <h5>Section Information</h5>
                                                 </div>
-
-                                                <div class="row mb-3">
-                                                    <div class="col-md-4 mb-3">
+                                                <div class="row mb-2">
+                                                    <div class="col-md-6 col-lg-4 mb-3">
                                                         <h6>Section Name</h6>
-                                                        <input updateEnabled class="form-control" type="text" disabled value="<?= htmlspecialchars($retrievedSection['data']['section_name']) ?>">
+                                                        <input update-enabled name="input_sectionName" class="form-control" type="text" disabled value="<?= htmlspecialchars($retrievedSection['data']['section_name']) ?>">
                                                     </div>
-                                                    <div class="col-md-4 mb-3">
-                                                        <h6>Program Code</h6>
-                                                        <input updateEnabled class="form-control" type="text" disabled value="<?= htmlspecialchars($enrolledProgramsOfSection['data'][0]['program_code']) ?>">
+                                                    <div class="col-md-6 col-lg-3 mb-3">
+                                                        <h6 class="text-truncate">Educational Level</h6>
+                                                        <select update-enabled name="input_sectionEducationalLevel" id="input_sectionEducationalLevel" class="form-select" disabled>
+                                                            <?php
+                                                            $option1 = htmlspecialchars($enrolledProgramsOfSection['data'][0]['educational_level']);
+                                                            $option2 = $option1 == "College" ? "SHS" : "College";
+                                                            ?>
+                                                            <option value="<?php echo $option1 ?>"><?php echo $option1 ?></option>
+                                                            <option value="<?php echo $option2 ?>"><?php echo $option2 ?></option>
+                                                        </select>
                                                     </div>
-                                                    <div class="col-md-4 mb-3">
-                                                        <h6>Educational Level</h6>
-                                                        <input updateEnabled class="form-control" type="text" disabled value="<?= htmlspecialchars($enrolledProgramsOfSection['data'][0]['educational_level']) ?>">
-                                                    </div>
-                                                </div>
-                                                <div class="row mb-3">
-                                                    <div class="col-md-12 mb-3">
-                                                        <h6>Description</h6>
-                                                        <textarea updateEnabled class="form-control" rows="5" disabled><?= htmlspecialchars($enrolledProgramsOfSection['data'][0]['program_description']) ?></textarea>
+                                                    <div class="col-md-12 col-lg-5 mb-3">
+                                                        <h6>Program</h6>
+                                                        <select update-enabled name="input_sectionProgram" id="input_sectionPrograms" class="form-select" disabled title="Enrolled Program">
+                                                            <?php if ($retrievedSection['success']): ?>
+                                                                <?php if (!empty($enrolledProgramsOfSection['data'][0])): ?>
+                                                                    <?php if ($enrolledProgramsOfSection['data'][0]['educational_level'] == "College"): ?>
+                                                                        <?php if ($retrievedAllPrograms['success']): ?>
+                                                                            <?php foreach ($retrievedAllPrograms['data'] as $programs): ?>
+                                                                                <?php if ($programs['educational_level'] == $enrolledProgramsOfSection['data'][0]['educational_level']): ?>
+                                                                                    <option <?php echo ($enrolledProgramsOfSection['data'][0]['program_id'] == $programs['program_id']) ? "selected" : ""  ?> value="<?php echo $programs['program_id']  ?>"><?php echo htmlspecialchars($programs['program_code'] . " | " . $programs['program_name']) ?></option>
+                                                                                <?php endif; ?>
+                                                                            <?php endforeach; ?>
+                                                                        <?php endif; ?>
+                                                                    <?php endif; ?>
+                                                                <?php endif; ?>
+                                                            <?php else: ?>
+                                                                <option value="null">Nothing selected</option>
+                                                            <?php endif; ?>
+                                                        </select>
                                                     </div>
                                                 </div>
 
-                                                <div class="row mb-3">
-                                                    <div class="col-md-4 mb-3">
+                                                <div class="row mb-2">
+                                                    <div class="col-sm-6 col-md-6 col-lg-4 mb-3">
                                                         <h6>Semester</h6>
-                                                        <input updateEnabled class="form-control" type="text" disabled value="<?= htmlspecialchars($enrolledProgramsOfSection['data'][0]['educational_level']) ?>">
+                                                        <select class="form-select" name="" id="" disabled>
+                                                            <?php if ($retrievedSection['success']): ?>
+                                                                <option value="<?= htmlspecialchars($retrievedSection['data']['semester']) ?>"><?= htmlspecialchars($retrievedSection['data']['semester']) ?></option>
+                                                                <?php if ($retrievedSection['data']['semester'] == 1): ?>
+                                                                    <option value="2">2</option>
+                                                                <?php endif; ?>
+                                                            <?php endif; ?>
+                                                        </select>
                                                     </div>
-                                                    <div class="col-md-4 mb-3">
-                                                        <h6>Academic Year</h6>
-                                                        <input updateEnabled class="form-control" type="text" disabled value="<?= htmlspecialchars($enrolledProgramsOfSection['data'][0]['educational_level']) ?>">
+                                                    <div class="col-sm-6 col-md-6 col-lg-4 mb-3">
+                                                        <h6>Year Level</h6>
+                                                        <!-- <input update-enabled class="form-control" type="text" disabled value="<?= htmlspecialchars($retrievedSection['data']['year_level']) ?>"> -->
+                                                        <select update-enabled class="form-select" name="input_sectionYearLevel" id="input_sectionYearLevel" disabled>
+                                                            <?php if ($retrievedSection['success']): ?>
+                                                                <option value="<?= htmlspecialchars($retrievedSection['data']['year_level']) ?>"><?= htmlspecialchars($retrievedSection['data']['year_level']) ?></option>
+                                                                <?php if ($retrievedSection['data']['year_level'] == 1): ?>
+                                                                <?php endif; ?>
+                                                            <?php endif; ?>
+                                                        </select>
                                                     </div>
                                                 </div>
 
                                                 <div class="row mb-3">
-                                                    <div class="col-md-6">
-                                                        <h6 class="">Class Adviser</h6>
-                                                        <select class="form-select" name="" id="" disabled="disabled">
+                                                    <div class="col-md-12 col-lg-7">
+                                                        <h6>Class Adviser</h6>
+                                                        <select update-enabled class="form-select" name="input_sectionAdviser" id="input_sectionAdviser" disabled>
                                                             <?php if ($enrolledAdviserToSection['success']): ?>
                                                                 <option value=""><?php echo $enrolledAdviserToSection['data']['first_name'] . ' ' . $enrolledAdviserToSection['data']['last_name'] ?></option>
                                                             <?php endif; ?>
@@ -339,150 +392,148 @@ if (isset($_GET['viewSection'])) {
                                                     </div>
                                                 </div>
 
-                                                <div class="row mb-3">
-                                                    <div class="col-md-12">
-                                                        <h6 class="">Enrolled Students</h6>
+                                            </form>
+                                            <div class="row mb-3">
+                                                <div class="col-md-12 border">
+                                                    <h6 class="">Enrolled Students</h6>
 
-                                                        <section class="role_table">
-                                                            <!-- =============================================== -->
-                                                            <!-- DATA TABLE BY STUDENTS -->
-                                                            <div class="actionControls mb-2 p-1 bg-transparent d-flex gap-2 justify-content-end align-items-center">
-                                                                <button class="btn btn-success">
-                                                                    <i class="bi bi-plus-circle"></i>
-                                                                    Enroll New Student
-                                                                </button>
-                                                                <button class="btn btn-danger" disabled>
-                                                                    <i class="bi bi-trash"></i>
-                                                                    Remove Selection
-                                                                </button>
-                                                            </div>
-                                                            <table id="dataTable_enrolledStudents" class="table table-responsive table-striped border display compact" style="width: 100%">
-                                                                <thead>
+                                                    <section class="role_table">
+                                                        <!-- =============================================== -->
+                                                        <!-- DATA TABLE BY STUDENTS -->
+                                                        <div class="actionControls mb-2 p-1 bg-transparent d-flex gap-2 justify-content-end align-items-center">
+                                                            <button class="btn btn-sm btn-success">
+                                                                <i class="bi bi-plus-circle"></i>
+                                                                Add Student
+                                                            </button>
+                                                            <button class="btn btn-sm btn-danger" disabled>
+                                                                <i class="bi bi-trash"></i>
+                                                                Remove Selected
+                                                            </button>
+                                                        </div>
+                                                        <table id="dataTable_enrolledStudents" class="table table-responsive table-striped border display compact" style="width: 100%">
+                                                            <thead>
+                                                                <tr>
+                                                                    <th><input type="checkbox" id="checkbox_selectAll" class="form-check-input" value="enrolledStudentsID_<?php echo $_GET['viewSection'] ?>"></th>
+                                                                    <th>User Id</th>
+                                                                    <th>Full Name</th>
+                                                                    <th>Action</th>
+                                                                </tr>
+                                                            </thead>
+                                                            <tbody>
+                                                                <?php if (empty($enrolledStudentInfoFromSection)) { ?>
                                                                     <tr>
-                                                                        <th><input type="checkbox" id="checkbox_selectAll" class="form-check-input" value="enrolledStudentsID_<?php echo $_GET['viewSection'] ?>"></th>
-                                                                        <th>User Id</th>
-                                                                        <th>Full Name</th>
-                                                                        <th>Action</th>
+                                                                        <td colspan="4" class="text-center">No Enrolled Students</td>
                                                                     </tr>
-                                                                </thead>
-                                                                <tbody>
-                                                                    <?php if (empty($enrolledStudentInfoFromSection)) { ?>
+                                                                <?php } else { ?>
+
+                                                                    <?php foreach ($enrolledStudentInfoFromSection as $userData) { ?>
                                                                         <tr>
-                                                                            <td colspan="4" class="text-center">No Enrolled Students</td>
+                                                                            <td class="col-md-1"><input type="checkbox" class="form-check-input" value="<?php htmlspecialchars($userData['user_id'] ?? '') ?>"></td>
+                                                                            <td class="col-md-2"><?php echo $userData['user_id'] ?></td>
+                                                                            <td class="col-md-6"><?php echo $userData['first_name'] . ' ' . $userData['middle_name'] . ' ' . $userData['last_name'] ?></td>
+                                                                            <td class="col-md-3">
+                                                                                <a href="users_admin.php<?php echo htmlspecialchars('?viewRole=' . $userData['role'] . '&user_id=' . $userData['user_id']) ?>" title="View" class="btn btn-sm btn-success m-auto">
+                                                                                    <i class="bi bi-eye-fill"></i>
+                                                                                    View
+                                                                                </a>
+                                                                                <a href="#" title="Remove" class="btn btn-sm btn-danger m-auto disabled">
+                                                                                    <i class="bi bi-x"></i>
+                                                                                    Remove
+                                                                                </a>
+                                                                            </td>
                                                                         </tr>
-                                                                    <?php } else { ?>
-                                                                        <?php foreach ($enrolledStudentInfoFromSection as $userData) { ?>
-                                                                            <tr>
-                                                                                <td class="col-md-1"><input type="checkbox" class="form-check-input" value="<?php htmlspecialchars($userData['user_id'] ?? '') ?>"></td>
-                                                                                <td class="col-md-2"><?php echo $userData['user_id'] ?></td>
-                                                                                <td class="col-md-6"><?php echo $userData['first_name'] . ' ' . $userData['middle_name'] . ' ' . $userData['last_name'] ?></td>
-                                                                                <td class="col-md-3">
-                                                                                    <a href="users_admin.php<?php echo htmlspecialchars('?viewRole=' . $userData['role'] . '&user_id=' . $userData['user_id']) ?>" title="View" class="btn btn-success m-auto">
-                                                                                        <i class="bi bi-eye-fill"></i>
-                                                                                        View
-                                                                                    </a>
-                                                                                    <a href="#" title="Remove" class="btn btn-danger m-auto disabled">
-                                                                                        <i class="bi bi-x"></i>
-                                                                                        Remove
-                                                                                    </a>
-                                                                                </td>
-                                                                            </tr>
-                                                                    <?php }
-                                                                    } ?>
-                                                                </tbody>
-                                                                <tfoot>
-                                                                    <tr>
-                                                                        <th></th>
-                                                                        <th></th>
-                                                                        <th></th>
-                                                                        <th></th>
-                                                                    </tr>
-                                                                </tfoot>
-                                                            </table>
-                                                            <script>
-                                                                $(document).ready(function() {
-                                                                    $('#dataTable_allUsers').DataTable({
-                                                                        columnDefs: [{
-                                                                            "orderable": false,
-                                                                            "targets": [0, 4]
-                                                                        }],
-                                                                        language: {
-                                                                            "paginate": {
-                                                                                previous: '<span class="bi bi-chevron-left"></span>',
-                                                                                next: '<span class="bi bi-chevron-right"></span>'
-                                                                            },
-                                                                            "lengthMenu": '<select class="form-control input-sm">' +
-                                                                                '<option value="5">5</option>' +
-                                                                                '<option value="10">10</option>' +
-                                                                                '<option value="20">20</option>' +
-                                                                                '<option value="30">30</option>' +
-                                                                                '<option value="40">40</option>' +
-                                                                                '<option value="50">50</option>' +
-                                                                                '<option value="-1">All</option>' +
-                                                                                '</select> Entries per page',
+                                                                <?php }
+                                                                } ?>
+                                                            </tbody>
+                                                            <tfoot>
+                                                                <tr>
+                                                                    <th></th>
+                                                                    <th></th>
+                                                                    <th></th>
+                                                                    <th></th>
+                                                                </tr>
+                                                            </tfoot>
+                                                        </table>
+                                                        <script>
+                                                            $(document).ready(function() {
+                                                                $('#dataTable_allUsers').DataTable({
+                                                                    columnDefs: [{
+                                                                        "orderable": false,
+                                                                        "targets": [0, 4]
+                                                                    }],
+                                                                    language: {
+                                                                        "paginate": {
+                                                                            previous: '<span class="bi bi-chevron-left"></span>',
+                                                                            next: '<span class="bi bi-chevron-right"></span>'
                                                                         },
-                                                                        initComplete: function() {
-                                                                            this.api()
-                                                                                .columns()
-                                                                                .every(function() {
-                                                                                    var column = this;
+                                                                        "lengthMenu": '<select class="form-control input-sm">' +
+                                                                            '<option value="5">5</option>' +
+                                                                            '<option value="10">10</option>' +
+                                                                            '<option value="20">20</option>' +
+                                                                            '<option value="30">30</option>' +
+                                                                            '<option value="40">40</option>' +
+                                                                            '<option value="50">50</option>' +
+                                                                            '<option value="-1">All</option>' +
+                                                                            '</select> Entries per page',
+                                                                    },
+                                                                    initComplete: function() {
+                                                                        this.api()
+                                                                            .columns()
+                                                                            .every(function() {
+                                                                                var column = this;
 
-                                                                                    // Create select element and listener
-                                                                                    var select = $('<select class="form-select"><option value=""></option></select>')
-                                                                                        .appendTo($(column.footer()).empty())
-                                                                                        .on('change', function() {
-                                                                                            var val = $.fn.dataTable.util.escapeRegex($(this).val()); // Escape regex for exact matching
-                                                                                            column
-                                                                                                .search(val ? '^' + val + '$' : '', true, false) // Exact match with regex
-                                                                                                .draw();
-                                                                                        });
+                                                                                // Create select element and listener
+                                                                                var select = $('<select class="form-select"><option value=""></option></select>')
+                                                                                    .appendTo($(column.footer()).empty())
+                                                                                    .on('change', function() {
+                                                                                        var val = $.fn.dataTable.util.escapeRegex($(this).val()); // Escape regex for exact matching
+                                                                                        column
+                                                                                            .search(val ? '^' + val + '$' : '', true, false) // Exact match with regex
+                                                                                            .draw();
+                                                                                    });
 
-                                                                                    // Add list of options
-                                                                                    column
-                                                                                        .data()
-                                                                                        .unique()
-                                                                                        .sort()
-                                                                                        .each(function(d, j) {
-                                                                                            select.append(
-                                                                                                '<option value="' + d + '">' + d + '</option>'
-                                                                                            );
-                                                                                        });
-                                                                                });
-                                                                        }
-                                                                    });
-
-                                                                    // Select All functionality
-                                                                    $('#checkbox_selectAll').on('change', function() {
-                                                                        const isChecked = $(this).is(':checked');
-                                                                        $('#dataTable_allUsers tbody input[type="checkbox"]').prop('checked', isChecked);
-                                                                    });
-
-                                                                    // Ensure "Select All" reflects individual checkbox changes
-                                                                    $('#dataTable_allUsers tbody').on('change', 'input[type="checkbox"]', function() {
-                                                                        const totalCheckboxes = $('#dataTable_allUsers tbody input[type="checkbox"]').length;
-                                                                        const checkedCheckboxes = $('#dataTable_allUsers tbody input[type="checkbox"]:checked').length;
-
-                                                                        $('#checkbox_selectAll').prop('checked', totalCheckboxes === checkedCheckboxes);
-                                                                    });
+                                                                                // Add list of options
+                                                                                column
+                                                                                    .data()
+                                                                                    .unique()
+                                                                                    .sort()
+                                                                                    .each(function(d, j) {
+                                                                                        select.append(
+                                                                                            '<option value="' + d + '">' + d + '</option>'
+                                                                                        );
+                                                                                    });
+                                                                            });
+                                                                    }
                                                                 });
-                                                            </script>
+
+                                                                // Select All functionality
+                                                                $('#checkbox_selectAll').on('change', function() {
+                                                                    const isChecked = $(this).is(':checked');
+                                                                    $('#dataTable_allUsers tbody input[type="checkbox"]').prop('checked', isChecked);
+                                                                });
+
+                                                                // Ensure "Select All" reflects individual checkbox changes
+                                                                $('#dataTable_allUsers tbody').on('change', 'input[type="checkbox"]', function() {
+                                                                    const totalCheckboxes = $('#dataTable_allUsers tbody input[type="checkbox"]').length;
+                                                                    const checkedCheckboxes = $('#dataTable_allUsers tbody input[type="checkbox"]:checked').length;
+
+                                                                    $('#checkbox_selectAll').prop('checked', totalCheckboxes === checkedCheckboxes);
+                                                                });
+                                                            });
+                                                        </script>
 
 
-                                                            <!-- END OF DATA TABLE -->
-                                                            <!-- =============================================== -->
-                                                        </section>
-                                                    </div>
+                                                        <!-- END OF DATA TABLE -->
+                                                        <!-- =============================================== -->
+                                                    </section>
                                                 </div>
-                                            </section>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
                     <?php endif; ?>
-
-
-
                 </div>
             </section>
 
@@ -498,23 +549,22 @@ if (isset($_GET['viewSection'])) {
         <!-- FOOTER -->
         <?php require_once(FILE_PATHS['Partials']['User']['Footer']) ?>
 
-        <?php
-        // Show Toast
-        if (isset($_SESSION["_ResultMessage"])) {
-            print_r($_SESSION["_ResultMessage"]);
-            makeToast([
-                'type' => $_SESSION["_ResultMessage"]["success"] ? 'success' : 'error',
-                'message' => $_SESSION["_ResultMessage"]["message"],
-            ]);
-            outputToasts(); // Execute toast on screen.
-            unset($_SESSION["_ResultMessage"]); // Dispose
-        }
 
-        ?>
     </div>
 </body>
-<script src="<?php echo asset('js/preview-handler.js') ?>"></script>
-<script src="<?php echo asset('js/toast.js') ?>"></script>
 
+<?php
+// Show Toast
+if (isset($_SESSION["_ResultMessage"])) {
+    print_r($_SESSION["_ResultMessage"]);
+    makeToast([
+        'type' => $_SESSION["_ResultMessage"]['success'] ? 'success' : 'error',
+        'message' => $_SESSION["_ResultMessage"]['message'],
+    ]);
+    outputToasts(); // Execute toast on screen.
+    unset($_SESSION["_ResultMessage"]); // Dispose
+}
+
+?>
 
 </html>

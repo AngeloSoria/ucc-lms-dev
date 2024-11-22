@@ -42,7 +42,7 @@ if (isset($_SESSION['user_id']) && isset($_SESSION['role'])) {
 
 <?php include "../partials/public/home_header.php"; ?>
 
-<body data-theme="light">
+<body>
     <!-- Navbar -->
     <?php include "../partials/public/home_navbar.php"; ?>
 

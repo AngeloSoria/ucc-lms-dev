@@ -1,4 +1,5 @@
 @import url(widths.css);
+@import url(fonts.css);
 
 :root { 
     /* COLORS */
@@ -87,6 +88,9 @@
 
     /* GRADIENTS */
     --c-brand-primary-linear-gradient: linear-gradient(to bottom, var(--c-brand-primary-a60), var(--c-brand-primary-a0));
+
+    /* FONTS */
+    --bs-font-sans-serif: Roboto;
 }
 /* General thin scrollbar style for WebKit browsers (Chrome, Safari, Edge) */
 ::-webkit-scrollbar {
@@ -147,6 +151,9 @@ body[data-theme="dark"] {
 }
 .ctxt-primary {
     color: var(--c-brand-primary-a0) !important;
+}
+.ctxt-secondary {
+    color: var(--c-brand-secondary-a0) !important;
 }
 .c-text-danger {
     color: var(--c-danger-a0);

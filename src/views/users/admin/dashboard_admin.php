@@ -43,6 +43,8 @@ $user_requirePasswordReset = $userController->userRequiresPasswordReset($_SESSIO
 
                         <!-- LIVE COUNT -->
                         <?php require_once(FILE_PATHS['Partials']['HighLevel']['LiveCount']) ?>
+
+                        <!-- ACADEMIC OVERVIEW -->
                     </div>
                 </div>
                 <!-- Load Widget Panel -->
@@ -61,7 +63,7 @@ $user_requirePasswordReset = $userController->userRequiresPasswordReset($_SESSIO
         <?php require_once(FILE_PATHS['Partials']['User']['Footer']) ?>
     </div>
 </body>
-<script src="<?php echo asset('js/admin-main.js') ?>"></script>
+
 <?php
 // Show Toast
 if (isset($_SESSION["_ResultMessage"]) && isset($_SESSION["_ResultMessage"]['success'])) {

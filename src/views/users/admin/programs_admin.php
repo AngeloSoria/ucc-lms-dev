@@ -93,12 +93,12 @@ if ($programList['success'] == false) {
                             </div>
 
                             <!-- Catalog View -->
-                            <div preview-container-name="view_catalog" preview-container-default class="d-flex justify-content-start align-items-start gap-2 flex-wrap">
+                            <div preview-container-name="view_catalog" preview-container-default class="row">
                                 <?php
                                 if ($programList['success'] && !empty($programList['data'])) {
                                     foreach ($programList['data'] as $program) {
                                         echo $widget_card->Create(
-                                            2,
+                                            3,
                                             "program_" . $program['program_id'],
                                             !empty($program['program_image']) ? 'data:image/jpeg;base64,' . base64_encode($program['program_image']) : null,
                                             [
@@ -242,23 +242,29 @@ if ($programList['success'] == false) {
                                                     </div>
                                                 </div>
                                                 <div class="row mb-3">
-                                                    <div class="col-xxl-6">
+                                                    <div class="col-sm-6 col-md-4 col-lg-5">
                                                         <h6 class="">Program Name</h6>
                                                         <input updateEnabled class="form-control" type="text" disabled value="<?= htmlspecialchars($retrieved_program_ss['data'][0]['program_name']) ?>">
                                                     </div>
-                                                    <div class="col-xxl-4">
+                                                    <div class="col-sm-6 col-md-4 col-lg-3">
                                                         <h6 class="">Program Code</h6>
                                                         <input updateEnabled class="form-control" type="text" disabled value="<?= htmlspecialchars($retrieved_program_ss['data'][0]['program_code']) ?>">
                                                     </div>
-                                                    <div class="col-xxl-2">
+                                                    <div class="col-sm-12 col-md-4 col-lg-4">
                                                         <h6 class="">Educational Level</h6>
-                                                        <input updateEnabled class="form-control" type="text" disabled value="<?= htmlspecialchars($retrieved_program_ss['data'][0]['educational_level']) ?>">
+                                                        <select name="" id="" class="form-select" disabled>
+                                                            <?php
+                                                            $option_EducationalLevel = htmlspecialchars($retrieved_program_ss['data'][0]['educational_level']) == "College" ? "SHS" : "College";
+                                                            ?>
+                                                            <option selected value="<?= htmlspecialchars($retrieved_program_ss['data'][0]['educational_level']) ?>"><?= htmlspecialchars($retrieved_program_ss['data'][0]['educational_level']) ?></option>
+                                                            <option value="<?= $option_EducationalLevel ?>"><?= $option_EducationalLevel ?></option>
+                                                        </select>
                                                     </div>
                                                 </div>
                                                 <div class="row mb-3">
                                                     <div class="col-md-12">
                                                         <h6 class="">Description</h6>
-                                                        <textarea updateEnabled class="form-control" rows="8" disabled><?= htmlspecialchars($retrieved_program_ss['data'][0]['program_description']) ?></textarea>
+                                                        <textarea updateEnabled class="form-control" rows="8" placeholder="No Description given" disabled><?= htmlspecialchars($retrieved_program_ss['data'][0]['program_description']) ?></textarea>
                                                     </div>
                                                 </div>
                                             </section>
@@ -293,8 +299,8 @@ if ($programList['success'] == false) {
 // Show Toast
 if (isset($_SESSION["_ResultMessage"])) {
     makeToast([
-        'type' => $_SESSION["_ResultMessage"]["success"] ? 'success' : 'error',
-        'message' => $_SESSION["_ResultMessage"]["message"],
+        'type' => $_SESSION["_ResultMessage"]['success'] ? 'success' : 'error',
+        'message' => $_SESSION["_ResultMessage"]['message'],
     ]);
     outputToasts(); // Execute toast on screen.
     unset($_SESSION["_ResultMessage"]); // Dispose

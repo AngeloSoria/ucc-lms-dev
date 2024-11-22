@@ -95,7 +95,7 @@ if (isset($_GET['viewRole']) && isset($_GET['user_id'])) {
                                     <button
                                         class="btn btn-primary btn-lg rounded fs-6 px-3 c-primary d-flex gap-3 align-items-center"
                                         data-bs-toggle="modal" data-bs-target="#userFormModal"
-                                        onclick="apply_section_modal(this);">
+                                        apply_section_modal>
                                         <i class="bi bi-plus-circle"></i> Add User
                                     </button>
 
@@ -116,7 +116,7 @@ if (isset($_GET['viewRole']) && isset($_GET['user_id'])) {
 
 
                             <!-- Catalog View -->
-                            <div preview-container-name="view_catalog" preview-container-default class="d-flex justify-content-start align-items-start gap-2 flex-wrap overflow-hidden">
+                            <div preview-container-name="view_catalog" preview-container-default class="row">
                                 <?php
                                 $RETRIEVED_USERS = $userController->getAllUsers(); // will return dictionary of users from database
                                 // [user_id, first_name, middle_name, last_name, role, gender, dob, status]
@@ -164,7 +164,7 @@ if (isset($_GET['viewRole']) && isset($_GET['user_id'])) {
                                                 ],
                                             ],
                                         ],
-                                        true,
+                                        false,
                                         true,
                                         updateUrlParams(['viewRole' => $role])
                                     );
@@ -196,10 +196,8 @@ if (isset($_GET['viewRole']) && isset($_GET['user_id'])) {
                                                 <th>Role</th>
                                                 <th>Username</th>
                                                 <th>Full Name</th>
-                                                <th>Birthdate</th>
                                                 <th>Gender</th>
                                                 <th>Status</th>
-                                                <th>Date Registered</th>
                                                 <th>Action</th>
                                             </tr>
                                         </thead>
@@ -218,10 +216,8 @@ if (isset($_GET['viewRole']) && isset($_GET['user_id'])) {
                                                         <td><?php echo $userData['role'] ?></td>
                                                         <td><?php echo $userData['username'] ?></td>
                                                         <td><?php echo $userData['first_name'] . ' ' . $userData['last_name'] ?></td>
-                                                        <td><?php echo $userData['dob'] ?></td>
                                                         <td><?php echo ucfirst($userData['gender']) ?></td>
                                                         <td class="fw-bold <?php echo $userData['status'] == 'active' ? 'ctxt-primary' : 'text-danger' ?>"><?php echo ucfirst($userData['status']) ?></td>
-                                                        <td><?php echo ucfirst($userData['created_at']) ?></td>
                                                         <td>
                                                             <a href="<?php echo htmlspecialchars(updateUrlParams(['viewRole' => $userData['role'], 'user_id' => $userData['user_id']])) ?>" title="Configure" class="btn btn-primary m-auto">
                                                                 <i class="bi bi-pencil-square"></i>
@@ -241,8 +237,6 @@ if (isset($_GET['viewRole']) && isset($_GET['user_id'])) {
                                                 <th></th>
                                                 <th></th>
                                                 <th></th>
-                                                <th></th>
-                                                <th></th>
                                             </tr>
                                         </tfoot>
                                     </table>
@@ -251,7 +245,7 @@ if (isset($_GET['viewRole']) && isset($_GET['user_id'])) {
                                             $('#dataTable_allUsers').DataTable({
                                                 columnDefs: [{
                                                     "orderable": false,
-                                                    "targets": [0, 9]
+                                                    "targets": [0, 7]
                                                 }],
                                                 language: {
                                                     "paginate": {
@@ -357,7 +351,7 @@ if (isset($_GET['viewRole']) && isset($_GET['user_id'])) {
                                 </div>
                             </div>
                             <hr>
-                            <section class="role_table">
+                            <section class="role_table container">
                                 <?php
                                 $getAllUsers = $userController->getAllUsersByRole(strtolower($_GET['viewRole']));
                                 if ($getAllUsers['success'] == true) { ?>
@@ -379,7 +373,6 @@ if (isset($_GET['viewRole']) && isset($_GET['user_id'])) {
                                                 <th>Role</th>
                                                 <th>Username</th>
                                                 <th>Full Name</th>
-                                                <th>Birthdate</th>
                                                 <th>Gender</th>
                                                 <th>Status</th>
                                                 <th>Action</th>
@@ -400,7 +393,6 @@ if (isset($_GET['viewRole']) && isset($_GET['user_id'])) {
                                                         <td><?php echo $userData['role'] ?></td>
                                                         <td><?php echo $userData['username'] ?></td>
                                                         <td><?php echo $userData['first_name'] . ' ' . $userData['last_name'] ?></td>
-                                                        <td><?php echo $userData['dob'] ?></td>
                                                         <td><?php echo ucfirst($userData['gender']) ?></td>
                                                         <td class="fw-bold <?php echo $userData['status'] == 'active' ? 'ctxt-primary' : 'text-danger' ?>"><?php echo ucfirst($userData['status']) ?></td>
                                                         <td>
@@ -422,7 +414,6 @@ if (isset($_GET['viewRole']) && isset($_GET['user_id'])) {
                                                 <th></th>
                                                 <th></th>
                                                 <th></th>
-                                                <th></th>
                                             </tr>
                                         </tfoot>
                                     </table>
@@ -431,7 +422,7 @@ if (isset($_GET['viewRole']) && isset($_GET['user_id'])) {
                                             $('#dataTable_allUsers').DataTable({
                                                 columnDefs: [{
                                                     "orderable": false,
-                                                    "targets": [0, 8]
+                                                    "targets": [0, 7]
                                                 }],
                                                 language: {
                                                     "paginate": {
@@ -450,7 +441,7 @@ if (isset($_GET['viewRole']) && isset($_GET['user_id'])) {
                                                 },
                                                 initComplete: function() {
                                                     this.api()
-                                                        .columns([2, 6, 7])
+                                                        .columns([5, 6])
                                                         .every(function() {
                                                             var column = this;
 
@@ -702,14 +693,13 @@ if (isset($_GET['viewRole']) && isset($_GET['user_id'])) {
 </body>
 <script src="<?php echo asset('js/preview-handler.js') ?>"></script>
 <script src="<?php echo asset('js/toast.js') ?>"></script>
-<!-- <script src="<?php echo asset('js/section-modals.js') ?>"></script> -->
 
 <?php
 // Show Toast
 if (isset($_SESSION["_ResultMessage"])) {
     makeToast([
-        'type' => $_SESSION["_ResultMessage"]["success"] ? 'success' : 'error',
-        'message' => $_SESSION["_ResultMessage"]["message"],
+        'type' => $_SESSION["_ResultMessage"]['success'] ? 'success' : 'error',
+        'message' => $_SESSION["_ResultMessage"]['message'],
     ]);
     outputToasts(); // Execute toast on screen.
     unset($_SESSION["_ResultMessage"]); // Dispose

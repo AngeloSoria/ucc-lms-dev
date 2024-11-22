@@ -1,6 +1,5 @@
 <?php
 require_once(__DIR__ . '../../config/PathsHandler.php');
-require_once(FILE_PATHS['DATABASE']);
 require_once(FILE_PATHS['Controllers']['User']);
 require_once(FILE_PATHS['Functions']['PHPLogger']);
 
@@ -9,12 +8,8 @@ class LogoutController
 {
     public function logout()
     {
-        // Create a new instance of the Database class
-        $database = new Database();
-        $db = $database->getConnection(); // Establish the database connection
-
         // Create an instance of the UserController
-        $userController = new UserController($db);
+        $userController = new UserController();
         // Update last_login from db
         $userController->updateLastLoginByUserId($_SESSION['user_id']);
 

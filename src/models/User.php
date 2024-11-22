@@ -47,7 +47,7 @@ class User
     public function addTeacher($userId, $educational_level)
     {
         try {
-            $query = "INSERT INTO teacher_educational_level (user_id, educational_level) VALUES (:user_id, :educational_level)";
+            $query = "INSERT INTO educational_level (user_id, educational_level) VALUES (:user_id, :educational_level)";
             $stmt = $this->conn->prepare($query);
             $stmt->bindParam(':user_id', $userId);
             $stmt->bindParam(':educational_level', $educational_level);
@@ -222,7 +222,7 @@ class User
     public function getAllTeachersWithEducationLevel()
     {
         try {
-            // SQL query to join teacher_educational_level and users tables
+            // SQL query to join educational_level and users tables
             $query = "
             SELECT 
                 u.user_id,
@@ -240,7 +240,7 @@ class User
                 u.requirePasswordReset,
                 tel.educational_level
             FROM 
-                teacher_educational_level tel
+                educational_level tel
             JOIN 
                 users u ON u.user_id = tel.user_id
         ";
@@ -266,7 +266,7 @@ class User
         $query = "
     SELECT u.user_id, CONCAT(u.first_name, ' ', u.last_name) AS name 
     FROM users u
-    JOIN teacher_educational_level tu ON u.user_id = tu.usi meaer_id
+    JOIN educational_level tu ON u.user_id = tu.usi meaer_id
     WHERE tu.educational_level = :educational_level 
       AND u.role = 'Teacher'
       AND (u.first_name LIKE :searchQuery OR u.last_name LIKE :searchQuery)

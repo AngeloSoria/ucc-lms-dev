@@ -2,6 +2,9 @@
 
 function makeToast($data)
 {
+    // Sanitize
+    $data['message'] = htmlspecialchars($data['message']);
+
     // Store each toast in a session array
     $_SESSION['_toasts'][] = $data;
 }

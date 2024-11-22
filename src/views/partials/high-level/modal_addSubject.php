@@ -55,7 +55,4 @@
     </div>
 </div>
 
-
-
-<!-- <script src="../../../assets/js/modal-interceptor.js"></script> -->
-<script src="../../../assets/js/root.js"></script>
+<script src="<?php echo asset("js/root.js") ?>"></script>

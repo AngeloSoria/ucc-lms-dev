@@ -3,12 +3,11 @@ require_once(__DIR__ . '../../../src/config/PathsHandler.php');
 require_once(FILE_PATHS['Models']['Program']);
 class ProgramController
 {
-    private $db;
     private $programModel;
 
-    public function __construct($db)
+    public function __construct()
     {
-        $this->programModel = new Program($db);
+        $this->programModel = new Program();
     }
 
     // Simple validation before adding a program
@@ -40,6 +39,22 @@ class ProgramController
             }
         } catch (Exception $e) {
             return ['success' => false, 'message' => $e->getMessage()];
+        }
+    }
+
+    public function getAllProgramsByEducationalLevel($educational_level)
+    {
+        try {
+            msgLog('Controller', $educational_level);
+            $retrievedPrograms = $this->programModel->getAllProgramsByEducationalLevel($educational_level);
+
+            if (!empty($retrievedPrograms['data'])) {
+                return $retrievedPrograms;
+            } else {
+                return ['success' => false, 'message' => "No programs found with educational level of ($educational_level)."];
+            }
+        } catch (Exception $e) {
+            return ['success' => false, "message" => $e->getMessage()];
         }
     }
 

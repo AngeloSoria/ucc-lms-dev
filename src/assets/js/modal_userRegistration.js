@@ -87,6 +87,11 @@ document.addEventListener("DOMContentLoaded", function () {
         // Add options to role_type dropdown
         addRoleTypeOption(["SHS", "College"]);
         break;
+      case "Student":
+        container_RoleType.classList.remove("d-none");
+        // Add options to role_type dropdown
+        addRoleTypeOption(["SHS", "College"]);
+        break;
       default:
         container_RoleType.classList.add("d-none");
         break;

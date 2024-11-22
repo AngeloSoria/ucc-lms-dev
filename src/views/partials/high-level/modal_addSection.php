@@ -56,11 +56,11 @@
                         </div>
 
                         <!-- Class Adviser -->
-                        <div class="col-md-6 d-flex flex-column">
+                        <!-- <div class="col-md-6 d-flex flex-column">
                             <label for="adviser_id" class="form-label">Class Adviser</label>
                             <select class="form-select form-control" id="adviser_id" name="adviser_id">
                             </select>
-                        </div>
+                        </div> -->
                     </div>
                 </form>
             </div>

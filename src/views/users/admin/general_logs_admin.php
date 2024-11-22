@@ -73,7 +73,7 @@ checkUserAccess(['Admin']);
         <?php require_once(FILE_PATHS['Partials']['User']['Footer']) ?>
     </div>
 </body>
-<script src="<?php echo asset('js/admin-main.js') ?>"></script>
+
 <script src="<?php echo asset('js/toast.js') ?>"></script>
 
 <?php

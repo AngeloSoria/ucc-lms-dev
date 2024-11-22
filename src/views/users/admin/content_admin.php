@@ -7,6 +7,7 @@ require_once(FILE_PATHS['DATABASE']);
 require_once(FILE_PATHS['Controllers']['Carousel']);
 require_once(FILE_PATHS['Functions']['ToastLogger']);
 require_once(FILE_PATHS['Functions']['SessionChecker']);
+require(FILE_PATHS['Partials']['HighLevel']['Dragger']["Carousel"]["Sortable"]);
 checkUserAccess(['Admin']);
 
 // Generate a CSRF token if one doesn't exist
@@ -58,6 +59,7 @@ try {
 <?php require_once(FILE_PATHS['Partials']['User']['Head']) ?>
 
 <body data-theme="light">
+    <link rel="stylesheet" href="<?php echo asset("css/sortable-main.css") ?>">
     <div class="wrapper shadow-sm border">
         <?php require_once(FILE_PATHS['Partials']['User']['Navbar']) ?>
 
@@ -96,12 +98,18 @@ try {
                             <div class="tab-pane fade show active" id="home" role="tabpanel" aria-labelledby="home-tab">
                                 <!-- Display Selected Images for Homepage -->
                                 <br>
-                                <h5>Home Carousel <i class="text-danger"
-                                        style="font-size: 0.85rem; font-weight: normal;">(Max item: 4)</i></h5>
-                                <?php
-                                $images = $selectedImagesHome;
-                                require(FILE_PATHS['Partials']['HighLevel']['Dragger']["Carousel"]["Home"]);
-                                ?>
+                                <h5>
+                                    Home Carousel
+                                    <p class="text-danger fs-7 p-2">
+                                        <i class="bi bi-info-circle-fill"></i>
+                                        (Max item: 4)
+                                    </p>
+                                </h5>
+                                <div id="sortableCarousel" class="sortable-main bg-light-3 border">
+                                    <div class="d-flex flex-wrap gap-0 p-1" role="listbox" id="sortableContentHomeCarousel">
+                                        <?php createSortable($selectedImagesHome); ?>
+                                    </div>
+                                </div>
 
                             </div>
 
@@ -109,30 +117,65 @@ try {
                             <div class="tab-pane fade" id="user-content" role="tabpanel" aria-labelledby="user-content-tab">
                                 <h5>Dashboard Carousel <i class="text-danger"
                                         style="font-size: 0.85rem; font-weight: normal;">(Max item: 4)</i></h5>
-                                <?php
-                                $images = $selectedImagesDashboard;
-                                require(FILE_PATHS['Partials']['HighLevel']['Dragger']["Carousel"]["Home"]);
-                                ?>
+                                <div id="sortableCarousel" class="sortable-main bg-light-3 border">
+                                    <div class="d-flex flex-wrap gap-0 p-1" role="listbox" id="sortableContentDashboardCarousel">
+                                        <?php createSortable($selectedImagesDashboard); ?>
+                                    </div>
+                                </div>
                             </div>
                         </section>
                     </div>
                 </div>
             </section>
         </section>
+        <!-- MODAL -->
+        <?php require_once(FILE_PATHS['Partials']['User']['FileSelect_Carousel']); ?>
 
         <!-- FOOTER -->
         <?php require_once(FILE_PATHS['Partials']['User']['Footer']) ?>
     </div>
 </body>
-<script src="<?php asset('js/admin-main.js') ?>"></script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.14.0/Sortable.min.js"></script>
+<script src="<?php echo asset('js/toast.js') ?>"></script>
+<script>
+    Sortable.create(document.querySelector('#sortableContentHomeCarousel'), {
+        group: 'home-carousel',
+        animation: 150,
+        handle: '.dragger-handle',
+        direction: 'horizontal', // Ensure horizontal dragging
+        filter: '.ignore-drag',
+        onEnd: function(evt) {
+            console.log("Element moved from position", evt.oldIndex, "to", evt.newIndex);
+        }
+    });
+    Sortable.create(document.querySelector('#sortableContentDashboardCarousel'), {
+        group: 'home-carousel',
+        animation: 150,
+        handle: '.dragger-handle',
+        direction: 'horizontal', // Ensure horizontal dragging
+        filter: '.ignore-drag',
+        onEnd: function(evt) {
+            console.log("Element moved from position", evt.oldIndex, "to", evt.newIndex);
+        }
+    });
+
+    document.querySelectorAll('.btn-remove').forEach(function(button) {
+        button.addEventListener('click', function() {
+            if (confirm('Are you sure you want to remove this item?')) {
+                this.closest('.sortable-item').remove();
+                // AJAX to delete from server
+            }
+        });
+    });
+</script>
+
 <?php
 // Show Toast
-if (isset($_SESSION["_ResultMessage"]) && $_SESSION["_ResultMessage"] != null) {
-    $type = $_SESSION["_ResultMessage"][0];
-    $text = $_SESSION["_ResultMessage"][1];
+if (isset($_SESSION["_ResultMessage"])) {
     makeToast([
-        'type' => $type,
-        'message' => $text,
+        'type' => $_SESSION["_ResultMessage"]['success'] ? 'success' : 'error',
+        'message' => $_SESSION["_ResultMessage"]['message'],
     ]);
     outputToasts(); // Execute toast on screen.
     unset($_SESSION["_ResultMessage"]); // Dispose

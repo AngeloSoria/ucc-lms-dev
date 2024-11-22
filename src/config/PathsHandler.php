@@ -82,6 +82,7 @@ define('FILE_PATHS', [
             'Courses' => __DIR__ . '../../views/partials/user/mycourses.php',
             'UpdateCardImage' => __DIR__ . '../../views/partials/public/modal_updateCardImage.php',
             'UpdatePassword' => __DIR__ . '../../views/partials/public/modal_formUpdatePassword.php',
+            'FileSelect_Carousel' => __DIR__ . '../../views/partials/public/modal_formFileSelect.php',
         ],
         'HighLevel' => [
             'LiveCount' => __DIR__ . '../../views/partials/high-level/livecount.php',
@@ -129,7 +130,7 @@ define('FILE_PATHS', [
 
             'Dragger' => [
                 'Carousel' => [
-                    'Home' => __DIR__ . '../../views/partials/high-level/draggable_homeCarousel.php',
+                    'Sortable' => __DIR__ . '../../views/partials/high-level/draggableSortableCarousel.php',
                 ],
             ],
         ],

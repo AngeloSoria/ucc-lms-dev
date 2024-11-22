@@ -13,7 +13,7 @@ if (isset($_POST['educational_level'])) {
         $stmt = $pdo->prepare("
             SELECT u.user_id, u.first_name, u.last_name
             FROM users u 
-            JOIN teacher_educational_level tu ON u.user_id = tu.user_id 
+            JOIN educational_level tu ON u.user_id = tu.user_id
             WHERE tu.educational_level = :educational_level AND u.role = 'Teacher'
         ");
         $stmt->bindParam(':educational_level', $educationalLevel);
