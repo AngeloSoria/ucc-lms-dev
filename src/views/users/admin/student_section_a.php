@@ -18,7 +18,7 @@ $studentSectionController = new StudentSectionController($db);
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (isset($_POST['action']) && $_POST['action'] === 'addStudentSection') {
         $studentSectionData = [
-            'student_ids' => $_POST['student_ids'], // Array of student IDs
+            'student_ids' => [], // Array of student IDs
             'section_id' => $_POST['section_id'],
             'enrollment_type' => $_POST['enrollment_type'],
         ];
@@ -55,6 +55,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <form id="addStudentSectionForm" method="POST" enctype="multipart/form-data">
             <input type="hidden" name="action" value="addStudentSection">
 
+            <div class="form-group">
+                <label for="educational_level_filter">Educational Type</label>
+                <select id="educational_level_filter" class="form-control">
+                    <option value="">All</option>
+                    <option value="SHS">SHS</option>
+                    <option value="College">College</option>
+                </select>
+            </div>
+
             <!-- Search and add students -->
             <div class="mb-3">
                 <label for="student_ids" class="form-label">Select Students</label>
@@ -64,7 +73,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <!-- Select one section -->
             <div class="mb-3">
                 <label for="section_id" class="form-label">Select Section</label>
-                <select class="form-control" id="section_id" name="section_id" required></select>
+                <select class="form-control" id="section_id" name="section_id" required>
+                    <?php if (isset($_POST['section_id'])) { ?>
+                        <option value="<?php echo $S_POST['section_id'] ?>">
+                            <?php echo $S_POST['section_id'] ?>
+                        </option>
+                    <?php } ?>
+                </select>
+
             </div>
 
             <!-- Enrollment type -->
@@ -93,26 +109,41 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $(document).ready(function () {
             function initializeSelect2() {
                 // Initialize select2 for student search with multiple selection enabled
-                $('#student_ids').select2({
-                    placeholder: "Search and select students",
-                    ajax: {
-                        url: "",
-                        type: "POST",
-                        dataType: "json",
-                        delay: 250,
-                        data: function (params) {
-                            return { search_type: "student", query: params.term };
-                        },
-                        processResults: function (data) {
-                            return {
-                                results: data.map(student => ({
-                                    id: student.user_id,
-                                    text: `${student.name} (${student.user_id})`
-                                }))
-                            };
+                $(document).ready(function () {
+                    // Initialize the dropdown for teacher search with educational level filtering
+                    $('#teacher_id').select2({
+                        placeholder: "Search and select a teacher",
+                        ajax: {
+                            url: "", // Replace with your endpoint
+                            type: "POST",
+                            dataType: "json",
+                            delay: 250,
+                            data: function (params) {
+                                return {
+                                    search_type: "teacher",
+                                    query: params.term,
+                                    additional_filters: {
+                                        educational_level: $('#educational_level_filter').val() // Get the selected educational type
+                                    }
+                                };
+                            },
+                            processResults: function (data) {
+                                return {
+                                    results: data.map(teacher => ({
+                                        id: teacher.user_id,
+                                        text: `${teacher.name} (${teacher.educational_level})`
+                                    }))
+                                };
+                            }
                         }
-                    }
+                    });
+
+                    // Optional: Update the teacher list dynamically when the educational type changes
+                    $('#educational_level_filter').change(function () {
+                        $('#teacher_id').val(null).trigger('change'); // Clear and reload teacher select2 options
+                    });
                 });
+
 
                 // Initialize select2 for section search with single selection only
                 $('#section_id').select2({

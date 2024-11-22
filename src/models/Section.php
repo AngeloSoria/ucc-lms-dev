@@ -133,7 +133,7 @@ class Section
 
         // Adjust the column order in the query to match your table structure
         $query = "INSERT INTO " . $this->table_name . " (section_name, program_id, year_level, semester, section_image, adviser_id, period_id) 
-                  VALUES (:section_name, :program_id, :year_level, :semester, :section_image, :adviser_id, :period_id)";
+                  VALUES (:section_name, :program_id, :year_level, :semester, :adviser_id, :period_id)";
 
         $stmt = $this->conn->prepare($query);
 
@@ -142,7 +142,6 @@ class Section
         $stmt->bindParam(':program_id', $data['program_id']);
         $stmt->bindParam(':year_level', $data['year_level']);
         $stmt->bindParam(':semester', $data['semester']);
-        $stmt->bindParam(':section_image', $data['section_image'], PDO::PARAM_LOB); // Use PDO::PARAM_LOB for large objects
         $stmt->bindParam(':adviser_id', $data['adviser_id']);
         $stmt->bindParam(':period_id', $period_id); // Bind the dynamically determined period_id
 

@@ -29,8 +29,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         'year_level' => $_POST['year_level'],
         'semester' => $_POST['semester'],
         'adviser_id' => $_POST['adviser_id'],
-        // Handle file upload for section_image if needed
-        'section_image' => $_FILES['section_image'] ?? null // Adjust as necessary for file handling
     ];
 
     // Call the method in your SectionController to handle the insert
@@ -47,7 +45,6 @@ $sql = "
         s.section_name, 
         s.year_level, 
         s.semester,
-        s.section_image, 
         u.first_name, 
         u.last_name, 
         p.program_code, 

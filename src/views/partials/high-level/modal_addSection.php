@@ -58,11 +58,10 @@
 
                         <div class="flex-grow-1">
                             <label for="adviser_id" class="form-label">Class Adviser</label>
-                            <select class="form-select" id="adviser_id" name="adviser_id">
-                                <option value="" disabled selected>Select Adviser</option>
-                                <option value="NA">N/A</option> <!-- Add N/A option -->
-                                <!-- Adviser options will be populated here -->
-                            </select>
+                            <div class="mb-3">
+                                <label for="adviser_id" class="form-label">Select Section</label>
+                                <select class="form-control" id="adviser_id" name="adviser_id" required></select>
+                            </div>
                         </div>
                     </div>
 

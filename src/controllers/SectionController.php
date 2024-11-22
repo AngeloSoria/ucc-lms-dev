@@ -27,23 +27,8 @@ class SectionController
                 'program_id' => htmlspecialchars(strip_tags($_POST['program_id'])),
                 'year_level' => htmlspecialchars(strip_tags($_POST['year_level'])),
                 'semester' => htmlspecialchars(strip_tags($_POST['semester'])),
-                'section_image' => null, // Default to null unless provided
                 'adviser_id' => htmlspecialchars(strip_tags($_POST['adviser_id']))
             ];
-
-            // Handle section image upload
-            if (isset($_FILES['section_image']) && $_FILES['section_image']['error'] === UPLOAD_ERR_OK) {
-                $sectionImage = $_FILES['section_image'];
-                $allowedTypes = ['image/jpeg', 'image/png', 'image/gif']; // Define allowed image MIME types
-
-                // Check file type
-                if (in_array($sectionImage['type'], $allowedTypes)) {
-                    $sectionData['section_image'] = file_get_contents($sectionImage['tmp_name']); // Store binary image data
-                } else {
-                    // Return error for invalid image type
-                    return ["error" => "Invalid section image type. Allowed types are: JPEG, PNG, GIF."];
-                }
-            }
 
             // Check if the section already exists
             if ($this->sectionModel->sectionExists($sectionData)) {
