@@ -266,6 +266,8 @@ class SubjectSectionModel
         $stmt->execute();
         $activePeriod = $stmt->fetch(PDO::FETCH_ASSOC);
 
+        print_r($activePeriod);
+
         // Determine the period_id and the current semester
         $activePeriodId = $activePeriod['period_id'];
         $currentSemester = $activePeriod['semester']; // 1st or 2nd semester

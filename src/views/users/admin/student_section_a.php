@@ -77,7 +77,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
             <!-- Select students -->
             <div class="mb-3">
-                <label for="subject_ids" class="form-label">Select Students</label>
+                <label for="subject_ids" class="form-label">Select Subjects</label>
                 <select class="form-control" id="subject_ids" name="subject_ids[]" multiple required></select>
             </div>
 
