@@ -6,6 +6,8 @@ require_once(FILE_PATHS['DATABASE']);
 require_once(FILE_PATHS['Controllers']['User']);
 require_once(FILE_PATHS['Functions']['SessionChecker']);
 require_once(FILE_PATHS['Functions']['UpdateURLParams']);
+require_once(FILE_PATHS['Functions']['ToastLogger']);
+
 
 checkUserAccess(['Student', 'Admin', 'Level Coordinator', 'Teacher']);
 
@@ -38,13 +40,13 @@ if (isset($_GET['viewProfile'])) {
         $profile_login = $myUserProfile['last_login'];
     } else {
         $_SESSION["_ResultMessage"] = $retrieveUserProfile;
-        header("Location: " . BASE_PATH_LINK);
+        header("Location: " . BASE_PATH_LINK . 'src/views/users/errorpage.php');
         exit();
     }
 } else {
     $viewProfileID = $_GET['viewProfile'];
     $_SESSION["_ResultMessage"] = ['success' => false, 'message' => "Invalid profile viewing of user_id ($viewProfileID)"];
-    header("Location: " . clearUrlParams());
+    header("Location: " . BASE_PATH_LINK . 'src/views/users/errorpage.php');
     exit();
 }
 

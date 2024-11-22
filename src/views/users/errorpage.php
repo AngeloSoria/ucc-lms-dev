@@ -6,6 +6,7 @@ require_once(FILE_PATHS['DATABASE']);
 require_once(FILE_PATHS['Controllers']['User']);
 require_once(FILE_PATHS['Functions']['SessionChecker']);
 require_once(FILE_PATHS['Functions']['UpdateURLParams']);
+require_once(FILE_PATHS['Functions']['ToastLogger']);
 
 checkUserAccess(['Student', 'Admin', 'Level Coordinator', 'Teacher']);
 
