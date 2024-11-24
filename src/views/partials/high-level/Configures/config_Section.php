@@ -290,16 +290,20 @@
                                 <!-- =============================================== -->
                                 <!-- DATA TABLE BY STUDENTS -->
                                 <section class="row mb-2 p-1 bg-transparent">
-                                    <div class="col-md-4 cold-md-4 col-lg-6 d-flex justify-content-start align-items-end">
+                                    <div class="col-md-4 cold-md-4 col-lg-5 d-flex justify-content-start align-items-end">
                                         <span update-enabled class="btn btn-sm btn-danger disabled">
                                             <i class="bi bi-trash"></i>
                                             Remove Selected
                                         </span>
                                     </div>
-                                    <div id="searchInput_students" class="bg-warning-subtle col-sm-12 col-md-8 col-lg-6 mt-sm-2 row shadow-sm rounded p-2 border">
-                                        <div class="col-md-12">
-                                            <span for="input_addToEnrolSubjects" class="fw-semibold">Add Subjects:</span>
-                                            <select update-enabled disabled class="form-select border-0 m-0" id="input_addToEnrollSubjects" name="input_addToEnrollSubjects[]" multiple></select>
+                                    <div class="bg-warning-subtle col-sm-12 col-md-9 col-lg-7 mt-sm-2 row shadow-sm rounded p-2 border">
+                                        <div class="col-md-6">
+                                            <span for="input_addToEnrolSubjects" class="fw-semibold">Select Teacher:</span>
+                                            <select update-enabled disabled class="form-select border-0 m-0" id="input_addTeacherToSubjectEnrollment" name="input_addTeacherToSubjectEnrollment[]"></select>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <span for="input_addToEnrolSubjects" class="fw-semibold">Add Subject:</span>
+                                            <select update-enabled disabled class="form-select border-0 m-0" id="input_addToEnrollSubjects" name="input_addToEnrollSubjects[]"></select>
                                         </div>
                                     </div>
                                 </section>

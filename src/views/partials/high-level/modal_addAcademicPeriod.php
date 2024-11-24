@@ -202,8 +202,8 @@ try {
             }
         }
 
-        if (firstStart && firstEnd && new Date(firstEnd) < new Date(firstStart)) {
-            showError('first_semester_end', 'firstSemesterEndError', 'End date cannot be earlier than start date.');
+        if (firstStart && firstEnd && new Date(firstEnd) <= new Date(firstStart)) {
+            showError('first_semester_end', 'firstSemesterEndError', 'End date cannot be equal or earlier than start date.');
         } else {
             resetError('first_semester_end', 'firstSemesterEndError');
         }
@@ -216,8 +216,8 @@ try {
                 resetError('second_semester_start', 'secondSemesterStartError');
             }
         }
-        if (secondStart && secondEnd && new Date(secondEnd) < new Date(secondStart)) {
-            showError('second_semester_end', 'secondSemesterEndError', 'End date cannot be earlier than start date.');
+        if (secondStart && secondEnd && new Date(secondEnd) <= new Date(secondStart)) {
+            showError('second_semester_end', 'secondSemesterEndError', 'End date cannot be equal or earlier than start date.');
         } else {
             resetError('second_semester_end', 'secondSemesterEndError');
         }

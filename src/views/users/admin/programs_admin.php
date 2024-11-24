@@ -207,10 +207,10 @@ if ($programList['success'] == false) {
                                     <!-- end of breadcrumbs -->
                                 </div>
                                 <div class="col-8 d-flex justify-content-end gap-2">
-                                    <button class="btn btn-success" disabled data-bs-toggle="modal" data-bs-target="#modal_updateCardModal_program">
+                                    <!-- <button class="btn btn-success" disabled data-bs-toggle="modal" data-bs-target="#modal_updateCardModal_program">
                                         <i class="bi bi-card-image"></i>
                                         Set Image
-                                    </button>
+                                    </button> -->
                                 </div>
                             </div>
 
@@ -223,7 +223,7 @@ if ($programList['success'] == false) {
                                     <div class="card shadow-sm position-relative">
                                         <div class="card-header position-relative d-flex justify-content-start align-items-center gap-3 bg-success bg-opacity-75">
                                             <div class="position-absolute top-0 end-0 mt-3 me-4">
-                                                <button class="btn cbtn-secondary px-4">
+                                                <button class="btn cbtn-secondary px-4" disabled>
                                                     Edit
                                                 </button>
                                             </div>

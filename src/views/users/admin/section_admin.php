@@ -216,7 +216,7 @@ if (isset($_GET['viewSection'])) {
                                         </div>
 
                                         <!-- Preview Type -->
-                                        <div class="btn-group" id="previewTypeContainer">
+                                        <!-- <div class="btn-group" id="previewTypeContainer">
                                             <a id="btnPreviewTypeCatalog" type="button"
                                                 preview-container-target="view_catalog"
                                                 class="btn btn-sm btn-sm btn-primary c-primary px-2 d-flex justify-content-center align-items-center">
@@ -226,7 +226,7 @@ if (isset($_GET['viewSection'])) {
                                                 class="btn btn-sm btn-sm btn-outline-primary c-primary px-2 d-flex justify-content-center align-items-center">
                                                 <i class="bi bi-table fs-6"></i>
                                             </a>
-                                        </div>
+                                        </div> -->
                                     </div>
                                 </div>
                                 <div>

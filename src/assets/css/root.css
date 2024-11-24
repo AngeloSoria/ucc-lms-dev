@@ -128,6 +128,9 @@ body[data-theme="dark"] {
     --surface-primary-color: var(--c-surface-dark-a40);
 }
 
+.text-critical {
+    color: orangered !important;
+}
 
 .transition-1 {
     transition: var(--c-transition-1);

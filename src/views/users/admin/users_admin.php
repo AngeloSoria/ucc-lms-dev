@@ -33,16 +33,24 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['action']) && $_POST['a
         'user_id' => $_POST['user_id'],
         'role' => $_POST['role'],
         'first_name' => $_POST['first_name'],
-        'middle_name' => $_POST['middle_name'] ? $_POST['middle_name'] : NULL,
+        'middle_name' => $_POST['middle_name'] ?? null,
         'last_name' => $_POST['last_name'],
         'gender' => $_POST['gender'],
         'dob' => $_POST['dob'],
         'username' => $_POST['username'],
         'password' => password_hash($_POST['password'], PASSWORD_DEFAULT), // Hash the password
-        'profile_pic' => isset($_FILES['profile_pic']) ? $_FILES['profile_pic'] : NULL,
-        'educational_level' => $_POST['educational_level'] ?? null
+        'educational_level' => $_POST['educational_level'] ?? null,
+        'profile_pic' => null, // Placeholder for the binary image
     ];
 
+    // Handle file upload
+    if (isset($_FILES['profile_pic']) && $_FILES['profile_pic']['error'] === UPLOAD_ERR_OK) {
+        $imageTmpPath = $_FILES['profile_pic']['tmp_name'];
+        $imageData = file_get_contents($imageTmpPath); // Read the binary data
+        $userData['profile_pic'] = $imageData; // Add the binary data to the user data
+    }
+
+    // Save user data to the database using a controller method
     $_SESSION["_ResultMessage"] = $userController->addUser($userData);
 
     // Redirect to the same page to prevent resubmission
@@ -344,10 +352,10 @@ if (isset($_GET['viewRole']) && isset($_GET['user_id'])) {
                                     </h5>
                                 </div>
                                 <div class="col-8 d-flex justify-content-end gap-2">
-                                    <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#modal_updateCardModal_role">
+                                    <!-- <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#modal_updateCardModal_role">
                                         <i class="bi bi-card-image"></i>
                                         Set Image
-                                    </button>
+                                    </button> -->
                                 </div>
                             </div>
                             <hr>
@@ -358,7 +366,7 @@ if (isset($_GET['viewRole']) && isset($_GET['user_id'])) {
                                     <!-- =============================================== -->
                                     <!-- DATA TABLE BY ROLES -->
                                     <div class="actionControls mb-2 p-1 bg-transparent d-flex gap-2 justify-content-end align-items-center">
-                                        <button class="btn btn-danger" onclick="javascript:alert(1)">
+                                        <button class="btn btn-danger" onclick="" disabled>
                                             <i class="bi bi-trash"></i>
                                             Remove Selection
                                         </button>
@@ -562,7 +570,7 @@ if (isset($_GET['viewRole']) && isset($_GET['user_id'])) {
                                     <div class="card shadow-sm position-relative">
                                         <div class="card-header position-relative d-flex justify-content-start align-items-center gap-3 bg-success bg-opacity-75">
                                             <div class="position-absolute top-0 end-0 mt-3 me-4">
-                                                <button class="btn cbtn-secondary px-4">
+                                                <button class="btn cbtn-secondary px-4" disabled>
                                                     Edit
                                                 </button>
                                             </div>

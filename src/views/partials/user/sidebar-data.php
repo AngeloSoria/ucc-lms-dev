@@ -50,11 +50,11 @@ $sidebar_content = [
                     'icon' => 'bi-person-check',
                     'link' => 'users_admin.php',
                 ],
-                'departments' => [
-                    'title' => 'Departments',
-                    'icon' => 'bi-building',
-                    'link' => 'departments_admin.php',
-                ],
+                // 'departments' => [
+                //     'title' => 'Departments',
+                //     'icon' => 'bi-building',
+                //     'link' => 'departments_admin.php',
+                // ],
             ],
         ],
         'settings' => [

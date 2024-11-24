@@ -85,19 +85,19 @@ if ($RETRIEVED_SUBJECTS['success'] == false) {
 
                                     <!-- Add New Button -->
                                     <button
-                                        class="btn btn-primary btn-sm rounded fs-6 px-3 c-primary d-flex gap-3 align-items-center"
+                                        class="btn btn-primary btn-lg rounded fs-6 px-3 c-primary d-flex gap-3 align-items-center"
                                         data-bs-toggle="modal" data-bs-target="#createSubjectModal">
                                         <i class="bi bi-plus-circle"></i> Add Subject
                                     </button>
 
                                     <!-- Reload Button -->
-                                    <button
+                                    <!-- <button
                                         class="btn btn-outline-primary btn-sm rounded fs-5 px-2 c-primary d-flex gap-2 align-items-center">
                                         <i class="bi bi-arrow-clockwise"></i>
-                                    </button>
+                                    </button> -->
 
                                     <!-- Preview Type -->
-                                    <div class="btn-group" id="previewTypeContainer">
+                                    <!-- <div class="btn-group" id="previewTypeContainer">
                                         <a id="btnPreviewTypeCatalog" type="button" preview-container-target="view_catalog"
                                             class="btn btn-sm btn-primary c-primary px-2 d-flex justify-content-center align-items-center">
                                             <i class="bi bi-card-heading fs-6"></i>
@@ -106,7 +106,7 @@ if ($RETRIEVED_SUBJECTS['success'] == false) {
                                             class="btn btn-sm btn-outline-primary c-primary px-2 d-flex justify-content-center align-items-center">
                                             <i class="bi bi-table fs-6"></i>
                                         </a>
-                                    </div>
+                                    </div> -->
 
                                 </div>
                             </div>
@@ -126,9 +126,9 @@ if ($RETRIEVED_SUBJECTS['success'] == false) {
                                                 "title" => $subject['subject_name'],
                                                 "others" => [
                                                     [
-                                                        'hint' => 'Total Students enroled in a subject',
-                                                        'icon' => '<i class="bi bi-person-fill"></i>',
-                                                        'data' => number_format(22213123) . " Enrolled students",
+                                                        'hint' => 'Educational Level',
+                                                        'icon' => '<i class="bi bi-person-workspace"></i>',
+                                                        'data' =>  htmlspecialchars($subject['educational_level']),
                                                     ],
                                                 ],
                                             ],

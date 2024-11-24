@@ -75,6 +75,7 @@ define('FILE_PATHS', [
             'Navbar' => __DIR__ . '../../views/partials/user/navbar.php',
             'Sidebar' => __DIR__ . '../../views/partials/user/sidebar.php',
             'SideBarData' => __DIR__ . '../../views/partials/user/sidebar-data.php',
+            'Sidebar2' => __DIR__ . '../../views/partials/user/sidebar-2.php',
             'Carousel' => __DIR__ . '../../views/partials/user/usercarousel.php',
             'Calendar' => __DIR__ . '../../views/partials/user/mycalendar.php',
             'Tasks' => __DIR__ . '../../views/partials/user/mytasks.php',
