@@ -23,14 +23,6 @@ class UserController
             return ["success" => false, "message" => "User with this username (" . $userData['username'] . ") already exists."];
         }
 
-        // Read the profile picture file directly from $_FILES
-        if (isset($_FILES['profile_pic']) && $_FILES['profile_pic']['success'] === UPLOAD_ERR_OK) {
-            // Open the file and read its contents
-            $userData['profile_pic'] = file_get_contents($_FILES['profile_pic']['tmp_name']);
-        } else {
-            $userData['profile_pic'] = null;  // Handle cases where there's no profile picture
-        }
-
         // Add the user and get the user_id (auto-incremented by MySQL)
         $MODEL_RESULT = $this->userModel->addUser($userData);
 

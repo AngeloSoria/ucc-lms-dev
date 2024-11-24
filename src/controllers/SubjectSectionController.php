@@ -128,6 +128,16 @@ class SubjectSectionController
         }
     }
 
+    public function getAllEnrolledSubjectsFromSectionByTeacherId($teacher_id)
+    {
+        try {
+            $retrievedSubjectsFromTeacher = $this->subjectSectionModel->getAllEnrolledSubjectsFromSectionByTeacherId($teacher_id);
+            return $retrievedSubjectsFromTeacher;
+        } catch (Exception $e) {
+            return ['success' => false, 'message' => $e->getMessage()];
+        }
+    }
+
     private function logOperation($subject_id, $section_id)
     {
         msgLog("CRUD", "[ADD] [SUBJECT_SECTION] Subject: {$subject_id}, Section: {$section_id}");

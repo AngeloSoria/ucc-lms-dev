@@ -12,16 +12,12 @@ RewriteCond %{REQUEST_URI} !^/ucc-lms-dev/controllers/ [NC]
 RewriteRule ^$ src/views/guest/home.php [L]
 RewriteRule ^faq$ src/views/guest/faq.php [L]
 
-# Rewrite rules for other pages
-
-
 # Custom 404 ErrorDocument that triggers /error/404 URL
-
-
-# Redirect any non-existing page (404) to /error/404
-RewriteCond %{REQUEST_FILENAME} !-f
-RewriteCond %{REQUEST_FILENAME} !-d
-RewriteRule ^error/404$ src/views/404.php [L]  # Ensure the error page exists
+ErrorDocument 404 /ucc-lms-dev/src/views/partials/special/error.php
+ErrorDocument 403 /ucc-lms-dev/src/views/partials/special/error.php
+ErrorDocument 500 /ucc-lms-dev/src/views/partials/special/error.php
+ErrorDocument 401 /ucc-lms-dev/src/views/partials/special/error.php
+ErrorDocument 400 /ucc-lms-dev/src/views/partials/special/error.php
 
 # Deny access to.env file to prevent sensitive data exposure.
 <Files .env>

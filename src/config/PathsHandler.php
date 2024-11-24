@@ -45,6 +45,8 @@ define('FILE_PATHS', [
         'SubjectSection' => __DIR__ . '../../controllers/SubjectSectionController.php',
         'GeneralLogs' => __DIR__ . '../../controllers/GeneralLogsController.php',
         'CardImages' => __DIR__ . '../../controllers/CardImagesController.php',
+        'ModuleContent' => __DIR__ . '../../controllers/ModuleContentController.php',
+        'Announcements' => __DIR__ . '../../controllers/AnnouncementsController.php',
     ],
 
     'Models' => [
@@ -60,6 +62,8 @@ define('FILE_PATHS', [
         'SubjectSection' => __DIR__ . '../../models/SubjectSection.php',
         'GeneralLogs' => __DIR__ . '../../models/GeneralLogs.php',
         'CardImages' => __DIR__ . '../../models/CardImages.php',
+        'ModuleContent' => __DIR__ . '../../models/ModuleContent.php',
+        'Announcements' => __DIR__ . '../../models/Announcements.php',
     ],
 
     'Partials' => [
@@ -75,6 +79,7 @@ define('FILE_PATHS', [
             'Navbar' => __DIR__ . '../../views/partials/user/navbar.php',
             'Sidebar' => __DIR__ . '../../views/partials/user/sidebar.php',
             'SideBarData' => __DIR__ . '../../views/partials/user/sidebar-data.php',
+            'Sidebar2' => __DIR__ . '../../views/partials/user/sidebar-2.php',
             'Carousel' => __DIR__ . '../../views/partials/user/usercarousel.php',
             'Calendar' => __DIR__ . '../../views/partials/user/mycalendar.php',
             'Tasks' => __DIR__ . '../../views/partials/user/mytasks.php',
@@ -178,5 +183,3 @@ function asset($path)
 {
     return BASE_PATH_LINK . 'src/assets/' . ltrim($path, '/');
 }
-
-function route($path) {}

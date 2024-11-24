@@ -1,7 +1,67 @@
+<?php
+$fakedata_enrolled_subjects2 = [
+    [
+        'subject_id' => 3001,
+        'subject_code' => 'ITMA1223',
+        'subject_name' => 'Data Structures & Algorithms',
+        'subject_section' => 'BSIT701P',
+        'subject_image' => 'img/client-images/program_Tech.jpg'
+    ],
+    [
+        'subject_id' => 3002,
+        'subject_code' => 'PHYS4412',
+        'subject_name' => 'Physical Education 2',
+        'subject_section' => 'BSIT701P',
+        'subject_image' => 'img/client-images/program_PE.jpg'
+    ],
+    [
+        'subject_id' => 3003,
+        'subject_code' => 'LERP1337',
+        'subject_name' => 'Information Assurance and Security (Data Privacy)',
+        'subject_section' => 'BSIT701P',
+        'subject_image' => 'img/client-images/program_Tech.jpg'
+    ],
+    [
+        'subject_id' => 3004,
+        'subject_code' => 'MATH1124',
+        'subject_name' => 'Calculus II',
+        'subject_section' => 'BSIT701P',
+        'subject_image' => 'img/client-images/program_Math.jpg'
+    ],
+    [
+        'subject_id' => 3005,
+        'subject_code' => 'CHEM2011',
+        'subject_name' => 'Organic Chemistry',
+        'subject_section' => 'BSIT701P',
+        'subject_image' => 'img/client-images/program_Chem.jpg'
+    ],
+    [
+        'subject_id' => 3006,
+        'subject_code' => 'HIST3010',
+        'subject_name' => 'World History',
+        'subject_section' => 'BSIT701P',
+        'subject_image' => 'img/client-images/program_History.jpg'
+    ],
+    [
+        'subject_id' => 3007,
+        'subject_code' => 'PSYC2210',
+        'subject_name' => 'Introduction to Psychology',
+        'subject_section' => 'BSIT701P',
+        'subject_image' => 'img/client-images/program_Psychology.jpg'
+    ],
+    [
+        'subject_id' => 3008,
+        'subject_code' => 'CSCI1101',
+        'subject_name' => 'Introduction to Computer Science',
+        'subject_section' => 'BSIT701P',
+        'subject_image' => 'img/client-images/program_Tech.jpg'
+    ],
+];
+?>
 <!-- Container -->
-<div class="bg-white shadow-sm rounded p-4 border border-box mb-sm-2 d-flex flex-column" id="main-container" style="max-height: 350px;">
+<div class="bg-white shadow-sm rounded p-3 border border-box mb-sm-2 d-flex flex-column" id="main-container" style="max-height: 350px;">
     <div class="d-flex justify-content-between align-items-center">
-        <p class="fs-4 fw-semibold text-success m-0">My Subjects</p>
+        <p class="fs-5 fw-semibold text-success m-0">My Subjects</p>
         <div class="container-controls">
             <button class="btn btn-transparent" data-bs-toggle="dropdown">
                 <i class="bi bi-three-dots-vertical fs-5"></i>
@@ -17,23 +77,23 @@
     <div class="bg-transparent h-100">
         <div id="container_listview">
             <ul class="list-group list-group-flush overflow-y-auto overflow-x-hidden" style="max-height: 240px;">
-                <?php for ($i = 0; $i < 5; $i++) { ?>
+                <?php foreach ($fakedata_enrolled_subjects2 as $subject) { ?>
                     <li class="list-group-item box border-box bg-transparent p-0 py-1">
                         <div class="row bg-transparent p-1">
-                            <div class="col-sm-8 col-md-6 col-lg-6 d-flex justify-content-start align-items-center gap-2">
-                                <div id="itemIconContainer" class="position-relative rounded" style="width: 40px; height: 40px;">
-                                    <img class="object-fit-fill position-absolute w-100 h-100 rounded" src="<?php echo asset('img/placeholder-1.jpg') ?>" alt="qq">
+                            <div class="col-sm-9 col-md-6 col-lg-6 d-flex justify-content-start align-items-center gap-2">
+                                <div id="itemIconContainer" class="position-relative rounded" style="width: 50px; height: 50px;">
+                                    <img class="object-fit-fill position-absolute w-100 h-100 rounded border border-success" src="<?php echo asset($subject['subject_image']) ?>" alt="subject image">
                                 </div>
                                 <div>
-                                    <a href="#" class="link link-underline">
-                                        <p class="title fs-6 p-0 m-0 fw-semibold">Data Structures & Algorithms III</p>
+                                    <a href="#" class="link">
+                                        <p class="fs-6 p-0 m-0"><?php echo $subject['subject_name'] . ' (' . $subject['subject_code'] . ')' ?></p>
                                     </a>
                                     <a href="#" class="link-dark">
-                                        <p class="subtitle fs-7 p-0 m-0">BSIT701P</p>
+                                        <p class="fs-7 p-0 m-0"><?php echo $subject['subject_section'] ?></p>
                                     </a>
                                 </div>
                             </div>
-                            <div class="col-sm-4 col-md-4 col-lg-6 d-flex align-items-center justify-content-end">
+                            <div class="col-sm-3 col-md-4 col-lg-6 d-flex align-items-center justify-content-end">
                                 <div class="d-flex gap-3 fw-semibold">
                                     <div class="d-flex gap-1 fs-7 align-items-center bg-primary bg-opacity-75 px-2 rounded-pill text-white" title="Grades">
                                         <p>87</p>

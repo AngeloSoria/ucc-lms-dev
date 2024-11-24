@@ -140,6 +140,34 @@ const dynamic_form_ids = {
                     }
                 }
             });
+            $("#input_addTeacherToSubjectEnrollment").select2({
+                placeholder: "Search subject teacher to add", // Optional: Provide a placeholder if no value is selected
+                ajax: {
+                    url: "", // Empty URL to use the current URL
+                    type: "POST",
+                    dataType: "json",
+                    delay: 250,
+                    data: function (params) {
+                        return {
+                            search_type: "teacher",
+                            query: params.term, // Search query from user input
+                            additional_filters: {
+                                educational_level: $($input_sectionEducationalLevel).val(), // Filter by educational level
+                            },
+                        };
+                    },
+                    processResults: function (data) {
+                        return {
+                            results: data.map(function (teacher) {
+                                return {
+                                    id: teacher.user_id,
+                                    text: `${teacher.name} (${teacher.user_id})`
+                                };
+                            })
+                        };
+                    }
+                }
+            });
 
         },
     },

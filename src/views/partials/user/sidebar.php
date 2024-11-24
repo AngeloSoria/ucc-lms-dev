@@ -2,50 +2,6 @@
 include_once(FILE_PATHS['Partials']['User']['SideBarData']);
 $user_sidebar_data = $sidebar_content[$_SESSION['role']];
 
-// Get All Enrolled Subjects from User (Level Coordinator, Teacher, Student)
-$fakedata_enrolled_subjects = [
-    [
-        'subject_id' => 3001,
-        'subject_code' => 'ITMA1223',
-        'subject_name' => 'Data Structures & Algorithms',
-    ],
-    [
-        'subject_id' => 3002,
-        'subject_code' => 'PHYS4412',
-        'subject_name' => 'Physical Education 2',
-    ],
-    [
-        'subject_id' => 3003,
-        'subject_code' => 'LERP1337',
-        'subject_name' => 'Information Assurance and Security (Data Privacy)',
-    ],
-    [
-        'subject_id' => 3004,
-        'subject_code' => 'MATH1124',
-        'subject_name' => 'Calculus II',
-    ],
-    [
-        'subject_id' => 3005,
-        'subject_code' => 'CHEM2011',
-        'subject_name' => 'Organic Chemistry',
-    ],
-    [
-        'subject_id' => 3006,
-        'subject_code' => 'HIST3010',
-        'subject_name' => 'World History',
-    ],
-    [
-        'subject_id' => 3007,
-        'subject_code' => 'PSYC2210',
-        'subject_name' => 'Introduction to Psychology',
-    ],
-    [
-        'subject_id' => 3008,
-        'subject_code' => 'CSCI1101',
-        'subject_name' => 'Introduction to Computer Science',
-    ],
-];
-
 ?>
 
 <div class="sidebar bg-white shadow-sm py-1 border z-3" id="sidebarMenu">
@@ -85,20 +41,22 @@ $fakedata_enrolled_subjects = [
                             <hr class="p-0 m-0">
                             <?php
                             // load enrolled subjects.
-                            $RETRIEVED_ENROLLED_SUBJECTS = $fakedata_enrolled_subjects;
                             if ($single_user['title'] === 'Subjects'):
-                                foreach ($RETRIEVED_ENROLLED_SUBJECTS as $subject):
+                                if ($myEnrolledSubjects['success'] && isset($myEnrolledSubjects['data']) && is_array($myEnrolledSubjects['data'])) {
+                                    foreach ($myEnrolledSubjects["data"] as $subject):
+                                        $subjectInfo = $subjectController->getSubjectFromSubjectId($subject['subject_id']);
                             ?>
-                                    <li>
-                                        <a href="<?= "enrolled_subjects.php?subject_id=" . $subject['subject_id'] ?>"
-                                            class="d-flex gap-3 py-3 pe-2 submenu-item" style="padding-left: 2rem;">
-                                            <i class="bi bi-journal-text"></i>
-                                            <span class="submenu-item-text">
-                                                <?= htmlspecialchars($subject['subject_name']) ?>
-                                            </span>
-                                        </a>
-                                    </li>
+                                        <li>
+                                            <a href="<?= "enrolled_subjects.php?subject_id=" . $subject['subject_id'] ?>"
+                                                class="d-flex gap-3 py-3 pe-2 submenu-item" style="padding-left: 2rem;">
+                                                <i class="bi bi-journal-text"></i>
+                                                <span class="submenu-item-text">
+                                                    <?= htmlspecialchars($subjectInfo['data'][0]['subject_name']) ?>
+                                                </span>
+                                            </a>
+                                        </li>
                             <?php endforeach;
+                                }
                             endif; ?>
 
 

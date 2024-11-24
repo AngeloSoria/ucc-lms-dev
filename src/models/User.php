@@ -17,9 +17,13 @@ class User
     public function addUser($userData)
     {
         try {
-            $this->conn->beginTransaction();
-            // Query to insert the user without the user_id
-            $query = "INSERT INTO {$this->table_name} (user_id, role, first_name, middle_name, last_name, gender, dob, username, password, profile_pic) VALUES (:user_id, :role, :first_name, :middle_name, :last_name, :gender, :dob, :username, :password, :profile_pic)";
+            $this->conn->beginTransaction(); // Begin transaction
+
+            $query = "INSERT INTO {$this->table_name} 
+                (user_id, role, first_name, middle_name, last_name, gender, dob, username, password, profile_pic) 
+                VALUES 
+                (:user_id, :role, :first_name, :middle_name, :last_name, :gender, :dob, :username, :password, :profile_pic)";
+
             $stmt = $this->conn->prepare($query);
 
             // Bind parameters
@@ -32,13 +36,14 @@ class User
             $stmt->bindParam(':dob', $userData['dob']);
             $stmt->bindParam(':username', $userData['username']);
             $stmt->bindParam(':password', $userData['password']);
-            $stmt->bindParam(':profile_pic', $userData['profile_pic'], PDO::PARAM_LOB);  // For binary data
+            $stmt->bindParam(':profile_pic', $userData['profile_pic'], PDO::PARAM_LOB); // Binary data
 
-            $this->conn->commit();
-            $stmt->execute();
+            $stmt->execute(); // Execute statement
+            $this->conn->commit(); // Commit transaction
+
             return ["success" => true];
         } catch (PDOException $e) {
-            $this->conn->rollBack();  // Rollback the transaction if an error occurs.
+            $this->conn->rollBack(); // Rollback transaction on error
             return ['success' => false, "message" => $e->getMessage()];
         }
     }

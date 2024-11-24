@@ -206,7 +206,7 @@ class Section
     public function getSectionById($section_id)
     {
         try {
-            $query = "SELECT * FROM $this->table_name WHERE section_id = :section_id";
+            $query = "SELECT * FROM $this->table_name WHERE section_id = :section_id LIMIT 1";
             $stmt = $this->conn->prepare($query);
             $stmt->bindParam(':section_id', $section_id);
             $stmt->execute();

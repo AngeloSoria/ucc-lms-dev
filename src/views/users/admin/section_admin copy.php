@@ -106,9 +106,9 @@ if (isset($_GET['viewSection'])) {
         exit();
     }
 
-    $enrolledProgramsOfSection = $programController->getProgramById($retrievedSection['data']['program_id']);
-    if (!$enrolledProgramsOfSection['success']) {
-        $_SESSION["_ResultMessage"] = $enrolledProgramsOfSection;
+    $enrolledProgramToSection = $programController->getProgramById($retrievedSection['data']['program_id']);
+    if (!$enrolledProgramToSection['success']) {
+        $_SESSION["_ResultMessage"] = $enrolledProgramToSection;
         header("Location: " . clearUrlParams());
         exit();
     }
@@ -336,7 +336,7 @@ if (isset($_GET['viewSection'])) {
                                                         <select update-enabled name="input_sectionEducationalLevel"
                                                             id="input_sectionEducationalLevel" class="form-select" disabled>
                                                             <?php
-                                                            $option1 = htmlspecialchars($enrolledProgramsOfSection['data'][0]['educational_level']);
+                                                            $option1 = htmlspecialchars($enrolledProgramToSection['data'][0]['educational_level']);
                                                             $option2 = $option1 == "College" ? "SHS" : "College";
                                                             ?>
                                                             <option value="<?php echo $option1 ?>"><?php echo $option1 ?>
@@ -351,12 +351,12 @@ if (isset($_GET['viewSection'])) {
                                                             id="input_sectionPrograms" class="form-select" disabled
                                                             title="Enrolled Program">
                                                             <?php if ($retrievedSection['success']): ?>
-                                                                <?php if (!empty($enrolledProgramsOfSection['data'][0])): ?>
-                                                                    <?php if ($enrolledProgramsOfSection['data'][0]['educational_level'] == "College"): ?>
+                                                                <?php if (!empty($enrolledProgramToSection['data'][0])): ?>
+                                                                    <?php if ($enrolledProgramToSection['data'][0]['educational_level'] == "College"): ?>
                                                                         <?php if ($retrievedAllPrograms['success']): ?>
                                                                             <?php foreach ($retrievedAllPrograms['data'] as $programs): ?>
-                                                                                <?php if ($programs['educational_level'] == $enrolledProgramsOfSection['data'][0]['educational_level']): ?>
-                                                                                    <option <?php echo ($enrolledProgramsOfSection['data'][0]['program_id'] == $programs['program_id']) ? "selected" : "" ?>
+                                                                                <?php if ($programs['educational_level'] == $enrolledProgramToSection['data'][0]['educational_level']): ?>
+                                                                                    <option <?php echo ($enrolledProgramToSection['data'][0]['program_id'] == $programs['program_id']) ? "selected" : "" ?>
                                                                                         value="<?php echo $programs['program_id'] ?>">
                                                                                         <?php echo htmlspecialchars($programs['program_code'] . " | " . $programs['program_name']) ?>
                                                                                     </option>
