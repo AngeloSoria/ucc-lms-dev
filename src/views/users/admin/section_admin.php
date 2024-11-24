@@ -87,7 +87,46 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
 
                 // Redirect to the same page to prevent resubmissions of forms.
-                header("Location: " . $_SERVER['REQUEST_URI'] . "?" . $sectionData['year_level']);
+                header("Location: " . $_SERVER['REQUEST_URI']);
+                exit();
+            case 'updateSectionInfo':
+
+                $sectionInfoData = [
+                    'section_id' => $_GET['viewSection'],
+                    'section_name' => $_POST['input_sectionName'],
+                    'program_id' => $_POST['input_sectionProgram'],
+                    'year_level' => $_POST['input_sectionYearLevel'],
+                    'adviser_id' => $_POST['input_sectionTeacherAdviser'],
+                ];
+
+                // Check for empty required fields.
+                $updateTestFailed = false;
+                foreach ($sectionInfoData as $inputField => $inputValue) {
+                    if (empty($inputValue) && $inputField !== 'adviser_id') {
+                        $_SESSION['_ResultMessage'] = ['success' => false, 'message' => "Update section failed, no value found for $inputField."];
+                        $updateTestFailed = true;
+                        break;
+                    }
+                }
+
+                if (!$updateTestFailed) {
+                    // Submit to Controller
+                    $_SESSION['_ResultMessage'] = $sectionController->updateSectionById($sectionInfoData['section_id'], $sectionInfoData);
+                }
+
+                // Redirect to the same page to prevent resubmissions of forms.
+                header("Location: " . $_SERVER['REQUEST_URI']);
+                exit();
+            case 'updateEnrolledStudentsFromSection':
+                $studentsEnrollmentToSectionData = [
+                    'user_ids' => $_POST['input_AddStudentsToEnrollFromSection'],
+                    'section_id' => $_GET['viewSection'],
+                    'enroll'
+                ];
+
+                // TODO:
+                // Redirect to the same page to prevent resubmissions of forms.
+                header("Location: " . $_SERVER['REQUEST_URI']);
                 exit();
         }
     } elseif (isset($_POST['search_type'])) {
@@ -137,9 +176,9 @@ if (isset($_GET['viewSection'])) {
         exit();
     }
 
-    $enrolledProgramsOfSection = $programController->getProgramById($retrievedSection['data']['program_id']);
-    if (!$enrolledProgramsOfSection['success']) {
-        $_SESSION["_ResultMessage"] = $enrolledProgramsOfSection;
+    $enrolledProgramToSection = $programController->getProgramById($retrievedSection['data']['program_id']);
+    if (!$enrolledProgramToSection['success']) {
+        $_SESSION["_ResultMessage"] = $enrolledProgramToSection;
         header("Location: " . clearUrlParams());
         exit();
     }

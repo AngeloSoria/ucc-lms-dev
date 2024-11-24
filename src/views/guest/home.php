@@ -40,21 +40,28 @@ if (isset($_SESSION['user_id']) && isset($_SESSION['role'])) {
 <!DOCTYPE html>
 <html lang="en">
 
-<?php include "../partials/public/home_header.php"; ?>
+<?php require_once "../partials/public/home_header.php"; ?>
 
 <body>
     <!-- Navbar -->
-    <?php include "../partials/public/home_navbar.php"; ?>
+    <?php require_once "../partials/public/home_navbar.php"; ?>
 
     <section class="min-vh-50">
         <!-- Carousel -->
-        <div id="carouselExampleFade" class="carousel slide carousel-fade" data-bs-ride="carousel">
+        <div id="homeCarousel" class="carousel slide carousel-fade" data-bs-ride="carousel">
             <div class="carousel-indicators">
-                <?php foreach ($images as $index => $single_user): ?>
-                    <button type="button" data-bs-target="#carouselExampleFade" data-bs-slide-to="<?= $index ?>"
-                        class="<?= $index === 0 ? 'active' : '' ?>" aria-current="<?= $index === 0 ? 'true' : 'false' ?>"
-                        aria-label="Slide <?= $index + 1 ?>"></button>
-                <?php endforeach; ?>
+                <?php if (!empty($images)): ?>
+                    <?php foreach ($images as $index => $single_user): ?>
+                        <button type="button" data-bs-target="#homeCarousel" data-bs-slide-to="<?= $index ?>"
+                            class="<?= $index === 0 ? 'active' : '' ?>" aria-current="<?= $index === 0 ? 'true' : 'false' ?>"
+                            aria-label="Slide <?= $index + 1 ?>">
+                        </button>
+                    <?php endforeach; ?>
+                <?php else: ?>
+                    <button type="button" data-bs-target="#homeCarousel" data-bs-slide-to="1" class="active" aria-current="true" aria-label="Slide 1"></button>
+                    <button type="button" data-bs-target="#homeCarousel" data-bs-slide-to="2" class="active" aria-current="true" aria-label="Slide 2"></button>
+                    <button type="button" data-bs-target="#homeCarousel" data-bs-slide-to="1" class="active" aria-current="true" aria-label="Slide 3"></button>
+                <?php endif; ?>
             </div>
             <div class="carousel-inner">
                 <?php if (!empty($images)): ?>
@@ -66,16 +73,22 @@ if (isset($_SESSION['user_id']) && isset($_SESSION['role'])) {
                     <?php endforeach; ?>
                 <?php else: ?>
                     <div class="carousel-item active">
-                        <img src="path/to/default/image.jpg" class="d-block w-100" alt="No images available" />
+                        <img src="<?php echo asset('img/placeholder-1.jpg') ?>" class="d-block w-100" alt="No images available" />
+                    </div>
+                    <div class="carousel-item">
+                        <img src="<?php echo asset('img/placeholder-2.jpg') ?>" class="d-block w-100" alt="No images available" />
+                    </div>
+                    <div class="carousel-item">
+                        <img src="<?php echo asset('img/placeholder-3.jpg') ?>" class="d-block w-100" alt="No images available" />
                     </div>
                 <?php endif; ?>
             </div>
-            <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleFade"
+            <button class="carousel-control-prev" type="button" data-bs-target="#homeCarousel"
                 data-bs-slide="prev">
                 <span class="carousel-control-prev-icon" aria-hidden="true"></span>
                 <span class="visually-hidden">Previous</span>
             </button>
-            <button class="carousel-control-next" type="button" data-bs-target="#carouselExampleFade"
+            <button class="carousel-control-next" type="button" data-bs-target="#homeCarousel"
                 data-bs-slide="next">
                 <span class="carousel-control-next-icon" aria-hidden="true"></span>
                 <span class="visually-hidden">Next</span>

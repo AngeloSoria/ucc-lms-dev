@@ -25,8 +25,8 @@ try {
         $newStartYear = $activeTermEndYear;  // The next academic year starts after the current term ends
         $newEndYear = $newStartYear + 1;     // The next year's end year (one year after the new start year)
 
-        // Output the next academic year (optional)
-        echo "Next academic year: $newStartYear - $newEndYear";
+        // // Output the next academic year (optional)
+        // echo "Next academic year: $newStartYear - $newEndYear";
     } else {
         // If no active academic year exists, default to the current year (2024)
         $activeTermStartYear = date("Y");  // Current year as start year (e.g. 2024)
@@ -164,7 +164,10 @@ try {
         input.addEventListener('input', validateInputs);
     });
 
-    function validateInputs() {
+    // Function to validate the inputs
+    function validateInputs(event) {
+        let isValid = true; // Flag to track the overall validity of the form
+
         const startYear = document.getElementById('start_year').value;
         const endYear = document.getElementById('end_year').value;
         const firstStart = document.getElementById('first_semester_start').value;
@@ -173,55 +176,95 @@ try {
         const secondEnd = document.getElementById('second_semester_end').value;
 
         // Start Year Validation
-        if (startYear && parseInt(startYear) < currentYear) {
+        if (!startYear) {
+            showError('start_year', 'startYearError', 'Start year is required.');
+            isValid = false;
+        } else if (parseInt(startYear) < new Date().getFullYear()) {
             showError('start_year', 'startYearError', 'Start year cannot be in the past.');
-        } else if (startYear && parseInt(startYear) < parseInt(activeTermEndYear) && activeTermEndYear > 0) {
-            // If there is a previous record and the user enters a start year that is less than the next expected year
-            showError('start_year', 'startYearError', `Start year must be greater than or equal to ${parseInt(activeTermEndYear) + 1}.`);
+            isValid = false;
         } else {
             resetError('start_year', 'startYearError');
         }
 
         // End Year Validation
-        if (startYear && endYear && parseInt(endYear) <= parseInt(startYear)) {
+        if (!endYear) {
+            showError('end_year', 'endYearError', 'End year is required.');
+            isValid = false;
+        } else if (startYear && parseInt(endYear) <= parseInt(startYear)) {
             showError('end_year', 'endYearError', 'End year must be later than start year.');
+            isValid = false;
         } else {
             resetError('end_year', 'endYearError');
         }
 
-        // First Semester Validation
-        if (firstStart) {
-            const firstStartDate = new Date(firstStart);
-            const startDateYear = firstStartDate.getFullYear();
-
-            // Ensure first semester start date is within the academic year
-            if (startDateYear < startYear || startDateYear > endYear) {
+        // First Semester Start Validation
+        if (!firstStart) {
+            showError('first_semester_start', 'firstSemesterStartError', 'Start date is required for the first semester.');
+            isValid = false;
+        } else if (firstStart) {
+            const firstStartYear = new Date(firstStart).getFullYear();
+            if (firstStartYear < startYear || firstStartYear > endYear) {
                 showError('first_semester_start', 'firstSemesterStartError', 'Start date must be within the academic year.');
+                isValid = false;
             } else {
                 resetError('first_semester_start', 'firstSemesterStartError');
             }
         }
 
-        if (firstStart && firstEnd && new Date(firstEnd) <= new Date(firstStart)) {
-            showError('first_semester_end', 'firstSemesterEndError', 'End date cannot be equal or earlier than start date.');
+        // First Semester End Validation
+        if (!firstEnd) {
+            showError('first_semester_end', 'firstSemesterEndError', 'End date is required for the first semester.');
+            isValid = false;
+        } else if (firstStart && new Date(firstEnd) <= new Date(firstStart)) {
+            showError('first_semester_end', 'firstSemesterEndError', 'End date cannot be earlier than or equal to start date.');
+            isValid = false;
+        } else if (firstEnd && new Date(firstEnd) > new Date(endYear + '-12-31')) {
+            showError('first_semester_end', 'firstSemesterEndError', 'End date cannot be later than the academic year\'s end date.');
+            isValid = false;
         } else {
             resetError('first_semester_end', 'firstSemesterEndError');
         }
 
-        // Second Semester Validation
-        if (secondStart) {
-            if (!firstEnd || new Date(secondStart) <= new Date(firstEnd)) {
+        // Second Semester Start Validation
+        if (!secondStart) {
+            showError('second_semester_start', 'secondSemesterStartError', 'Start date is required for the second semester.');
+            isValid = false;
+        } else if (secondStart) {
+            const firstSemesterEndDate = new Date(firstEnd);
+            const secondSemesterStartDate = new Date(secondStart);
+            if (secondSemesterStartDate <= firstSemesterEndDate) {
                 showError('second_semester_start', 'secondSemesterStartError', 'Start date must be after the end date of the first semester.');
+                isValid = false;
+            } else if (new Date(secondStart).getFullYear() < startYear || new Date(secondStart).getFullYear() > endYear) {
+                showError('second_semester_start', 'secondSemesterStartError', 'Start date must be within the academic year.');
+                isValid = false;
             } else {
                 resetError('second_semester_start', 'secondSemesterStartError');
             }
         }
-        if (secondStart && secondEnd && new Date(secondEnd) <= new Date(secondStart)) {
-            showError('second_semester_end', 'secondSemesterEndError', 'End date cannot be equal or earlier than start date.');
+
+        // Second Semester End Validation
+        if (!secondEnd) {
+            showError('second_semester_end', 'secondSemesterEndError', 'End date is required for the second semester.');
+            isValid = false;
+        } else if (secondStart && new Date(secondEnd) <= new Date(secondStart)) {
+            showError('second_semester_end', 'secondSemesterEndError', 'End date cannot be earlier than or equal to start date.');
+            isValid = false;
+        } else if (secondEnd && new Date(secondEnd) > new Date(endYear + '-12-31')) {
+            showError('second_semester_end', 'secondSemesterEndError', 'End date cannot be later than the academic year\'s end date.');
+            isValid = false;
         } else {
             resetError('second_semester_end', 'secondSemesterEndError');
         }
+
+        // Prevent form submission if validation fails
+        if (!isValid) {
+            event.preventDefault();
+        }
     }
+
+    // Attach validation to the form submit event
+    document.getElementById('addAcademicForm').addEventListener('submit', validateInputs);
 
     // Show error message
     function showError(fieldId, errorId, message) {

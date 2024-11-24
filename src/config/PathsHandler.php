@@ -45,6 +45,8 @@ define('FILE_PATHS', [
         'SubjectSection' => __DIR__ . '../../controllers/SubjectSectionController.php',
         'GeneralLogs' => __DIR__ . '../../controllers/GeneralLogsController.php',
         'CardImages' => __DIR__ . '../../controllers/CardImagesController.php',
+        'ModuleContent' => __DIR__ . '../../controllers/ModuleContentController.php',
+        'Announcements' => __DIR__ . '../../controllers/AnnouncementsController.php',
     ],
 
     'Models' => [
@@ -60,6 +62,8 @@ define('FILE_PATHS', [
         'SubjectSection' => __DIR__ . '../../models/SubjectSection.php',
         'GeneralLogs' => __DIR__ . '../../models/GeneralLogs.php',
         'CardImages' => __DIR__ . '../../models/CardImages.php',
+        'ModuleContent' => __DIR__ . '../../models/ModuleContent.php',
+        'Announcements' => __DIR__ . '../../models/Announcements.php',
     ],
 
     'Partials' => [
@@ -179,5 +183,3 @@ function asset($path)
 {
     return BASE_PATH_LINK . 'src/assets/' . ltrim($path, '/');
 }
-
-function route($path) {}

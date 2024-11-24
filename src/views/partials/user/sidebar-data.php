@@ -96,7 +96,7 @@ $sidebar_content = [
 
     'Student' => [
         'dashboard' => [
-            'title' => 'Dashboard',
+            'title' => 'Overview',
             'icon' => 'bi-columns-gap',
             'link' => 'dashboard_student.php',
         ],
@@ -132,9 +132,9 @@ $sidebar_content = [
     ],
     'Teacher' => [
         'dashboard' => [
-            'title' => 'Dashboard',
+            'title' => 'Overview',
             'icon' => 'bi-columns-gap',
-            'link' => 'dashboard_student.php',
+            'link' => 'dashboard_teacher.php',
         ],
         // 'enrolled-subjectss' => [
         //     'title' => 'Enrolled Subjects',

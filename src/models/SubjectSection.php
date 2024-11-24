@@ -385,4 +385,21 @@ class SubjectSectionModel
             throw new Exception($e->getMessage());
         }
     }
+
+    public function getAllEnrolledSubjectsFromSectionByTeacherId($teacher_id)
+    {
+        try {
+            $query = "SELECT * FROM $this->table_name WHERE teacher_id = :teacher_id";
+            $stmt = $this->conn->prepare($query);
+            $stmt->bindParam(":teacher_id", $teacher_id);
+            $stmt->execute();
+
+            // Get All subject_section data.
+            $retrievedSubjects = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+            return ['success' => true, 'data' => $retrievedSubjects];
+        } catch (Exception $e) {
+            throw new Exception($e->getMessage());
+        }
+    }
 }

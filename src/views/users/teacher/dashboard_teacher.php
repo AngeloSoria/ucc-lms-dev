@@ -5,6 +5,9 @@ $CURRENT_PAGE = "dashboard";
 require_once(__DIR__ . '../../../../config/PathsHandler.php');
 require_once(FILE_PATHS['DATABASE']);
 require_once(FILE_PATHS['Controllers']['User']);
+require_once(FILE_PATHS['Controllers']['SubjectSection']);
+require_once(FILE_PATHS['Controllers']['Subject']);
+require_once(FILE_PATHS['Controllers']['Section']);
 require_once(FILE_PATHS['Functions']['SessionChecker']);
 checkUserAccess(['Teacher']);
 
@@ -14,6 +17,11 @@ $db = $database->getConnection(); // Establish the database connection
 
 // Create an instance of the UserController
 $userController = new UserController();
+$subjectSectionController = new SubjectSectionController($db);
+$subjectController = new SubjectController();
+$sectionController = new SectionController();
+
+$myEnrolledSubjects = $subjectSectionController->getAllEnrolledSubjectsFromSectionByTeacherId($_SESSION['user_id']);
 
 ?>
 

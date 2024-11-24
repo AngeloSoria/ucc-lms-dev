@@ -55,6 +55,17 @@
                     <i class="bi bi-folder2" aria-hidden="true"></i>
                 </div>
                 <div class="sidebar-item-title">
+                    Overview
+                </div>
+            </a>
+        </li>
+        <li class="border border-top-0">
+            <a href="#"
+                class="sidebar-item">
+                <div class="sidebar-item-icon">
+                    <i class="bi bi-folder2" aria-hidden="true"></i>
+                </div>
+                <div class="sidebar-item-title">
                     Subject Modules
                 </div>
             </a>

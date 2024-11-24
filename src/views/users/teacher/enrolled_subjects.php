@@ -5,8 +5,10 @@ $CURRENT_PAGE = "enrolled-subjects";
 require_once(__DIR__ . '../../../../config/PathsHandler.php');
 require_once(FILE_PATHS['DATABASE']);
 require_once(FILE_PATHS['Controllers']['User']);
+require_once(FILE_PATHS['Controllers']['SubjectSection']);
+require_once(FILE_PATHS['Controllers']['Subject']);
+require_once(FILE_PATHS['Controllers']['Section']);
 require_once(FILE_PATHS['Functions']['SessionChecker']);
-require_once(FILE_PATHS['Functions']['ToastLogger']);
 checkUserAccess(['Teacher']);
 
 // Create a new instance of the Database class
@@ -15,64 +17,12 @@ $db = $database->getConnection(); // Establish the database connection
 
 // Create an instance of the UserController
 $userController = new UserController();
-$fakedata_enrolled_subjects2 = [
-    [
-        'subject_id' => 3001,
-        'subject_code' => 'ITMA1223',
-        'subject_name' => 'Data Structures & Algorithms',
-        'subject_section' => 'BSIT701P',
-        'subject_image' => 'img/client-images/program_Tech.jpg'
-    ],
-    [
-        'subject_id' => 3002,
-        'subject_code' => 'PHYS4412',
-        'subject_name' => 'Physical Education 2',
-        'subject_section' => 'BSIT701P',
-        'subject_image' => 'img/client-images/program_PE.jpg'
-    ],
-    [
-        'subject_id' => 3003,
-        'subject_code' => 'LERP1337',
-        'subject_name' => 'Information Assurance and Security (Data Privacy)',
-        'subject_section' => 'BSIT701P',
-        'subject_image' => 'img/client-images/program_Tech.jpg'
-    ],
-    [
-        'subject_id' => 3004,
-        'subject_code' => 'MATH1124',
-        'subject_name' => 'Calculus II',
-        'subject_section' => 'BSIT701P',
-        'subject_image' => 'img/client-images/program_Math.jpg'
-    ],
-    [
-        'subject_id' => 3005,
-        'subject_code' => 'CHEM2011',
-        'subject_name' => 'Organic Chemistry',
-        'subject_section' => 'BSIT701P',
-        'subject_image' => 'img/client-images/program_Chem.jpg'
-    ],
-    [
-        'subject_id' => 3006,
-        'subject_code' => 'HIST3010',
-        'subject_name' => 'World History',
-        'subject_section' => 'BSIT701P',
-        'subject_image' => 'img/client-images/program_History.jpg'
-    ],
-    [
-        'subject_id' => 3007,
-        'subject_code' => 'PSYC2210',
-        'subject_name' => 'Introduction to Psychology',
-        'subject_section' => 'BSIT701P',
-        'subject_image' => 'img/client-images/program_Psychology.jpg'
-    ],
-    [
-        'subject_id' => 3008,
-        'subject_code' => 'CSCI1101',
-        'subject_name' => 'Introduction to Computer Science',
-        'subject_section' => 'BSIT701P',
-        'subject_image' => 'img/client-images/program_Tech.jpg'
-    ],
-];
+$subjectSectionController = new SubjectSectionController($db);
+$subjectController = new SubjectController();
+$sectionController = new SectionController();
+
+$myEnrolledSubjects = $subjectSectionController->getAllEnrolledSubjectsFromSectionByTeacherId($_SESSION['user_id']);
+
 ?>
 
 <!DOCTYPE html>
@@ -111,19 +61,26 @@ $fakedata_enrolled_subjects2 = [
                             <!-- Inner Content -->
                             <div class="bg-transparent h-100">
                                 <div id="container_tileview" class="h-100 row d-flex overflow-y-auto" style="max-height: 1000px;">
-                                    <?php foreach ($fakedata_enrolled_subjects2 as $subject) { ?>
+                                    <?php foreach ($myEnrolledSubjects['data'] as $subject) {
+                                        $subjectInfo = $subjectController->getSubjectFromSubjectId($subject['subject_id']);
+                                        $sectionInfo = $sectionController->getSectionById($subject['section_id']);
+                                    ?>
                                         <div class="col-md-6 col-lg-4 p-1" style="height: 250px;">
                                             <a href="subject_view.php">
                                                 <div id="item_card" class="h-100 w-100 bg-success bg-opacity-75 shadow-sm border rounded overflow-hidden d-flex flex-column">
                                                     <div>
-                                                        <img src="<?php echo asset($subject['subject_image']) ?>" class="w-100 object-fit-cover" style="height: 120px;">
+                                                        <?php if (!empty($subject['subject_section_image'])): ?>
+                                                            <img src="<?php echo "data:image/jpeg;base64," . base64_encode($subject['subject_section_image']) ?>" class="w-100 object-fit-cover" style="height: 120px;">
+                                                        <?php else: ?>
+                                                            <img src="<?php echo asset('img/placeholder-1.jpg') ?>" class="w-100 object-fit-cover" style="height: 120px;">
+                                                        <?php endif; ?>
                                                     </div>
                                                     <div class="px-2 flex-grow-1 position-relative">
                                                         <p class="fs-6 text-white pt-2 fw-semibold">
-                                                            <?php echo $subject['subject_name'] . ' (' . $subject['subject_code'] . ')' ?>
+                                                            <?php echo $subjectInfo['data']['0']['subject_name'] . ' (' . $subjectInfo['data']['0']['subject_code'] . ')' ?>
                                                         </p>
                                                         <p class="fs-7 text-white position-absolute bottom-0 start-0 ms-2 mb-2">
-                                                            <?php echo $subject['subject_section'] ?>
+                                                            <?php echo $sectionInfo['data']['section_name'] ?>
                                                         </p>
                                                         <div class="d-flex position-absolute bottom-0 end-0 me-2 mb-2">
                                                             <div class="d-flex gap-1 fs-7 align-items-center bg-primary bg-opacity-75 px-2 rounded-pill text-white" title="Grades">

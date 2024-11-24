@@ -524,7 +524,7 @@ if (isset($_GET['viewRole']) && isset($_GET['user_id'])) {
                                             <?php if (!empty($retrieved_user['data'])) { ?>
                                                 <span><i class="bi bi-caret-right-fill"></i></span>
                                                 <a class="ctxt-primary" href="<?= updateUrlParams(['viewRole' => $_GET['viewRole'], 'user_id' => $_GET['user_id']]) ?>">
-                                                    <?php ucfirst(print_r($retrieved_user['data']['user_id'])) ?>
+                                                    <?php echo $retrieved_user['data']['first_name'] . ' ' . $retrieved_user['data']['middle_name'] . ' ' . $retrieved_user['data']['last_name'] . ' (' . $retrieved_user['data']['user_id'] . ')' ?>
                                                 </a>
                                             <?php } else {
                                                 $_SESSION["_ResultMessage"] = ['success' => false, 'message' => 'No user_id with a value (' . $_GET['user_id'] . ') found.'];
