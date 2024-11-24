@@ -25,6 +25,8 @@ define('FILE_PATHS', [
         'PHPLogger' => __DIR__ . '../../functions/PHPLogger.php',
         'SessionChecker' => __DIR__ . '../../functions/sessionChecker.php',
         'UpdateURLParams' => __DIR__ . '../../functions/updateURLParams.php',
+        'CalculateElapsedTime' => __DIR__ . '../../functions/CalculateElapsedTime.php',
+        'UpdatePassword' => __DIR__ . '../../functions/updatePasswordRequest.php',
     ],
 
 
@@ -39,7 +41,10 @@ define('FILE_PATHS', [
         'User' => __DIR__ . '../../controllers/UserController.php',
         'AcademicPeriod' => __DIR__ . '../../controllers/AcademicPeriodController.php',
         'StudentSection' => __DIR__ . '../../controllers/StudentSectionController.php',
+        'StudentEnrollment' => __DIR__ . '../../controllers/StudentEnrollmentController.php',
+        'SubjectSection' => __DIR__ . '../../controllers/SubjectSectionController.php',
         'GeneralLogs' => __DIR__ . '../../controllers/GeneralLogsController.php',
+        'CardImages' => __DIR__ . '../../controllers/CardImagesController.php',
     ],
 
     'Models' => [
@@ -51,7 +56,10 @@ define('FILE_PATHS', [
         'User' => __DIR__ . '../../models/User.php',
         'AcademicPeriod' => __DIR__ . '../../models/AcademicPeriod.php',
         'StudentSection' => __DIR__ . '../../models/StudentSection.php',
+        'StudentEnrollment' => __DIR__ . '../../models/StudentEnrollment.php',
+        'SubjectSection' => __DIR__ . '../../models/SubjectSection.php',
         'GeneralLogs' => __DIR__ . '../../models/GeneralLogs.php',
+        'CardImages' => __DIR__ . '../../models/CardImages.php',
     ],
 
     'Partials' => [
@@ -73,6 +81,9 @@ define('FILE_PATHS', [
             'Announcements' => __DIR__ . '../../views/partials/user/announcements.php',
             'WidgetPanel' => __DIR__ . '../../views/partials/user/widgetpanel.php',
             'Courses' => __DIR__ . '../../views/partials/user/mycourses.php',
+            'UpdateCardImage' => __DIR__ . '../../views/partials/public/modal_updateCardImage.php',
+            'UpdatePassword' => __DIR__ . '../../views/partials/public/modal_formUpdatePassword.php',
+            'FileSelect_Carousel' => __DIR__ . '../../views/partials/public/modal_formFileSelect.php',
         ],
         'HighLevel' => [
             'LiveCount' => __DIR__ . '../../views/partials/high-level/livecount.php',
@@ -91,7 +102,9 @@ define('FILE_PATHS', [
                 ],
                 'Section' => [
                     'Add' => __DIR__ . '../../views/partials/high-level/modal_addSection.php',
-                    'Config' => __DIR__ . '../../views/partials/high-level/modal_configSection.php',
+                    'Config' => [
+                        'addStudent' => __DIR__ . '../../views/partials/high-level/modal_addStudents.php',
+                    ],
                     'Details' => __DIR__ . '../../views/partials/high-level/modal_detailsSection.php',
                 ],
                 'Subject' => [
@@ -113,6 +126,8 @@ define('FILE_PATHS', [
 
             ],
 
+            'Configures' => __DIR__ . '../../views/partials/high-level/configures/',
+
             'Fetcher' => [
                 'Program' => 'src/views/partials/high-level/fetch_programs.php',
             ],
@@ -120,7 +135,7 @@ define('FILE_PATHS', [
 
             'Dragger' => [
                 'Carousel' => [
-                    'Home' => __DIR__ . '../../views/partials/high-level/draggable_homeCarousel.php',
+                    'Sortable' => __DIR__ . '../../views/partials/high-level/draggableSortableCarousel.php',
                 ],
             ],
         ],
@@ -142,6 +157,7 @@ define('FILE_PATHS', [
             'Content' => __DIR__ . '../../views/users/admin/content_admin.php',
             'AcademicTerm' => __DIR__ . '../../views/users/admin/academic_calendar_admin.php',
             'GeneralLogs' => __DIR__ . '../../views/users/admin/general_logs_admin.php',
+            'StudentSections' => __DIR__ . '../../views/users/admin/student_section_a.php',
         ],
         'Level Coordinator' => [
             'Dashboard' => __DIR__ . '../../views/users/level_coordinator/dashboard_level_coordinator.php',
@@ -151,6 +167,9 @@ define('FILE_PATHS', [
         ],
         'Teacher' => [
             'Dashboard' => __DIR__ . '../../views/users/teachers/dashboard_teacher.php',
+        ],
+        'All' => [
+            'Profile' => __DIR__ . '../../views/users/myprofile.php',
         ],
     ],
 ]);

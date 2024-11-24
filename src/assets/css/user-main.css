@@ -3,7 +3,17 @@
 @import url('widgetpanel.css');
 
 body {
+    background: var(--bs-blue-200);
+    margin: 0;
+    padding: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+.wrapper {
     background: var(--bs-gray-200);
+    width: 2000px;
+    max-width: 100%;
 }
 
 p {
@@ -261,7 +271,6 @@ p {
     height: 100%;
     height: 100%;
     overflow: hidden;
-    background-color: red;
 }
 
 .carousel-item {
@@ -274,7 +283,7 @@ p {
 .carousel-item img {
     width: 100%;
     height: 100%;
-    object-fit: fill;
+    object-fit: cover;
 }
 
 
@@ -296,7 +305,7 @@ p {
     min-height: 130px;
     max-height: 130px;
     overflow: hidden;
-    max-width: 49.5%;
+    /* max-width: 49.5%; */
 
     cursor: pointer;
     transition: border 0.05s ease-in-out;
@@ -304,18 +313,12 @@ p {
 .c-card:hover {
     border: 2px solid var(--c-brand-secondary-a0) !important;
 }
-.c-card.c-card-small {
-    min-width: 49.5%;
-    max-width: 49.5%;
-}
-.c-card.c-card-long {
-    max-width: auto;
-}
 
 .c-card .card-title {
     color: white;
-    font-size: 1.15rem;
+    /* font-size: 1.15rem; */
 }
+
 .c-card .card-text {
     font-size: 1rem;
 }
@@ -334,15 +337,20 @@ p {
 .c-card .card-preview img {
     width: 100%;
     height: 100%;
-    object-fit: fill;
+    object-fit: cover;
     margin: auto;
 }
-@media only screen and (max-width: 1280px) {
+@media only screen and (max-width: 600px) {
     .c-card {
-        max-width: none;
+        flex: 1 1 50%;
     }
-    .c-card.c-card-small {
-        max-width: none;
+    .c-card.c-cards-row-2 {
+        min-width: 100%;
+        max-width: 100%;
+    }
+    .c-card.c-cards-row-3 {
+        min-width: calc(50% - 0.5rem);
+        max-width: calc(50% - 0.5rem);
     }
 }
 

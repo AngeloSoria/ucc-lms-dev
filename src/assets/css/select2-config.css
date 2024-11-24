@@ -1,0 +1,40 @@
+/* Match the Select2 container to Bootstrap's input styles */
+.select2-container .select2-selection--single {
+    height: calc(2.25rem + 2px);
+    /* Match Bootstrap's input height */
+    border: 1px solid #ced4da;
+    /* Match Bootstrap's border */
+    border-radius: 0.25rem;
+    /* Match Bootstrap's border-radius */
+    padding: 0.375rem 0.75rem;
+    /* Match Bootstrap's padding */
+}
+
+/* Style the placeholder */
+.select2-container--default .select2-selection--single .select2-selection__placeholder {
+    color: #6c757d;
+}
+
+/* Dropdown styling */
+.select2-container .select2-dropdown {
+    border-radius: 0.25rem;
+    /* Match Bootstrap's border-radius */
+    border: 1px solid #ced4da;
+    /* Match Bootstrap's border */
+}
+
+/* Hover effect for dropdown items */
+.select2-container--default .select2-results__option--highlighted {
+    background-color: #e9ecef;
+    /* Bootstrap light hover */
+    color: #495057;
+    /* Bootstrap text color */
+}
+
+.select2-container--default .select2-selection--single .select2-selection__arrow {
+    position: absolute;
+    top: 50%;
+    right: 2%;
+    transform: translateY(-50%);
+    height: 60px;
+}

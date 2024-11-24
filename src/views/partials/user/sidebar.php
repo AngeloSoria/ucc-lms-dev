@@ -2,7 +2,7 @@
 include_once(FILE_PATHS['Partials']['User']['SideBarData']);
 $user_sidebar_data = $sidebar_content[$_SESSION['role']];
 
-// Get All Enrolled Subjects from User (Teacher, Student)
+// Get All Enrolled Subjects from User (Level Coordinator, Teacher, Student)
 $fakedata_enrolled_subjects = [
     [
         'subject_id' => 3001,
@@ -48,7 +48,7 @@ $fakedata_enrolled_subjects = [
 
 ?>
 
-<div class="sidebar bg-light shadow-sm py-1 border z-3" id="sidebarMenu">
+<div class="sidebar bg-white shadow-sm py-1 border z-3" id="sidebarMenu">
     <div class="sidebar-controls">
         <div class="controls">
             <button class="btn btn-close" id="btnSideBarMenu2" onclick="toggleSidebar();"></button>
@@ -73,7 +73,7 @@ $fakedata_enrolled_subjects = [
                         <ul class="ul_no-design">
                             <?php foreach ($single_user['sublinks'] as $sublinks => $sublink): ?>
                                 <li>
-                                    <a href="<?= isset($sublink['link']) ? $sublink['link'] : '#' ?>"
+                                    <a href="<?= isset($sublink['link']) ? BASE_PATH_LINK . 'src/views/users/' . strtolower(str_replace(' ', '_', $_SESSION['role'])) . '/' . $sublink['link'] : '#' ?>"
                                         class="d-flex gap-3 py-3 pe-2 submenu-item <?= $CURRENT_PAGE == $sublinks ? 'active' : '' ?>" style="padding-left: 2rem;">
                                         <i class="bi <?= htmlspecialchars($sublink['icon']) ?>"></i>
                                         <span class="submenu-item-text">
@@ -107,7 +107,7 @@ $fakedata_enrolled_subjects = [
                 </li>
             <?php else: ?>
                 <li class="border border-top-0">
-                    <a href="<?= isset($single_user['link']) ? $single_user['link'] : '#' ?>"
+                    <a href="<?= isset($single_user['link']) ? BASE_PATH_LINK . 'src/views/users/' . strtolower(str_replace(' ', '_', $_SESSION['role'])) . '/' . $single_user['link'] : '#' ?>"
                         class="sidebar-item <?= $CURRENT_PAGE == $key ? 'active' : '' ?>">
                         <div class="sidebar-item-icon">
                             <i class="bi <?= htmlspecialchars($single_user['icon']) ?>" aria-hidden="true"></i>
@@ -126,7 +126,7 @@ $fakedata_enrolled_subjects = [
         <h6 class="px-3">Others</h6>
         <ul class="p-0 ul_no-design">
             <li class="border border-top-0">
-                <a href="#" class="sidebar-item <?= $CURRENT_PAGE == $key ? 'active' : '' ?>">
+                <a href="<?php echo BASE_PATH_LINK . 'src/views/users/viewprofile.php?viewProfile=' . $_SESSION['user_id'] ?>" class="sidebar-item <?= $CURRENT_PAGE == $key ? 'active' : '' ?>">
                     <div class="sidebar-item-icon">
                         <i class="bi bi-person" aria-hidden="true"></i>
                     </div>

@@ -1,0 +1,61 @@
+.sortable-main {
+    background-color: var(--c-surface-a80);
+}
+
+.sortable-main .sortable-item {
+    /* background-color: white; */
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    min-width: calc(100% / 4);
+    max-width: calc(100% / 4);
+    min-height: auto;
+    aspect-ratio: 1 / 1;
+}
+
+.sortable-main .sortable-item .sortable-img {
+    /* min-width: 100%;
+    min-height: 140px; */
+    aspect-ratio: 1 / 1;
+
+    position: relative;
+    box-sizing: border-box;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.sortable-main .sortable-item .sortable-img img {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.sortable-main .sortable-item .image-preview {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    z-index: 1;
+    background-color: rgba(0, 0, 0, 0.25);
+}
+
+/* Image fullscreen preview */
+.sortable-main .sortable-item .image-preview .bi {
+    color: white;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 3rem;
+}
+
+.sortable-main .sortable-item .image-preview {
+    cursor: zoom-in;
+    transition: 0.1s ease;
+    opacity: 0%;
+}
+
+.sortable-main .sortable-item .image-preview:hover {
+    opacity: 100%;
+}

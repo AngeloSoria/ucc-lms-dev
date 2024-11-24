@@ -43,6 +43,12 @@ try {
             <div class="carousel-item active">
                 <img src="<?php echo UPLOAD_PATH['System'] . "/img/placeholder-1.jpg" ?>" class="d-block" alt="No images available" />
             </div>
+            <div class="carousel-item">
+                <img src="<?php echo UPLOAD_PATH['System'] . "/img/placeholder-2.jpg" ?>" class="d-block" alt="No images available" />
+            </div>
+            <div class="carousel-item">
+                <img src="<?php echo UPLOAD_PATH['System'] . "/img/placeholder-3.jpg" ?>" class="d-block" alt="No images available" />
+            </div>
         <?php endif; ?>
     </div>
     <!-- left & right controls -->

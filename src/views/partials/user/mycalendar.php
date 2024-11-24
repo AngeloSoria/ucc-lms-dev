@@ -1,11 +1,10 @@
-<!-- Inserted via PHP -->
 <div class="widget-card p-3 shadow-sm rounded border" id="myCalendar">
     <div class="d-flex justify-content-between align-items-center">
-        <p class="fs-5 fw-semibold text-success m-0">September</p>
-        <a href="#" class="opacity-50" style="font-size: 0.8rem; color: var(--text-color);">View All</a>
+        <button id="prevMonth" class="btn btn-sm">&lt;</button>
+        <p class="fs-6 fw-semibold text-success m-0" id="calendarMonth"></p>
+        <button id="nextMonth" class="btn btn-sm">&gt;</button>
     </div>
     <hr class="opacity-90 mx-0 my-1">
-    <!-- Calendar table -->
     <div class="p-0">
         <table class="w-100">
             <thead>
@@ -19,53 +18,92 @@
                     <th>S</th>
                 </tr>
             </thead>
-            <tbody>
-                <tr>
-                    <td>1</td>
-                    <td>2</td>
-                    <td>3</td>
-                    <td>4</td>
-                    <td>5</td>
-                    <td>6</td>
-                    <td>7</td>
-                </tr>
-                <tr>
-                    <td>8</td>
-                    <td>9</td>
-                    <td>10</td>
-                    <td class="active-day">11</td>
-                    <td>12</td>
-                    <td>13</td>
-                    <td>14</td>
-                </tr>
-                <tr>
-                    <td>15</td>
-                    <td>16</td>
-                    <td>17</td>
-                    <td>18</td>
-                    <td>19</td>
-                    <td>20</td>
-                    <td>21</td>
-                </tr>
-                <tr>
-                    <td>22</td>
-                    <td>23</td>
-                    <td>24</td>
-                    <td>25</td>
-                    <td>26</td>
-                    <td>27</td>
-                    <td>28</td>
-                </tr>
-                <tr>
-                    <td>29</td>
-                    <td>30</td>
-                    <td class="opacity-50">1</td>
-                    <td class="opacity-50">2</td>
-                    <td class="opacity-50">3</td>
-                    <td class="opacity-50">4</td>
-                    <td class="opacity-50">5</td>
-                </tr>
-            </tbody>
+            <tbody id="calendarBody"></tbody>
         </table>
     </div>
 </div>
+
+<script>
+    $(document).ready(function() {
+        const today = new Date();
+        let currentMonth = today.getMonth();
+        let currentYear = today.getFullYear();
+
+        function generateCalendar(month, year) {
+            const calendarBody = $("#calendarBody");
+            calendarBody.empty(); // Clear previous calendar
+
+            const firstDay = new Date(year, month, 1).getDay();
+            const daysInMonth = new Date(year, month + 1, 0).getDate();
+
+            let date = 1;
+            for (let i = 0; i < 6; i++) {
+                const row = $("<tr></tr>");
+
+                for (let j = 0; j < 7; j++) {
+                    const cell = $("<td></td>");
+
+                    if (i === 0 && j < firstDay) {
+                        cell.addClass("opacity-50"); // Empty cells before the first day
+                    } else if (date > daysInMonth) {
+                        cell.addClass("opacity-50"); // Empty cells after the last day
+                    } else {
+                        cell.text(date);
+
+                        // Highlight today
+                        if (
+                            date === today.getDate() &&
+                            month === today.getMonth() &&
+                            year === today.getFullYear()
+                        ) {
+                            cell.addClass("active-day");
+                        }
+
+                        date++;
+                    }
+
+                    row.append(cell);
+                }
+
+                calendarBody.append(row);
+
+                if (date > daysInMonth) {
+                    break;
+                }
+            }
+
+            $("#calendarMonth").text(
+                `${new Intl.DateTimeFormat("en-US", { month: "short" }).format(
+                new Date(year, month)
+            )} ${year}`
+            );
+        }
+
+        function changeMonth(step) {
+            currentMonth += step;
+
+            // Handle year change
+            if (currentMonth < 0) {
+                currentMonth = 11;
+                currentYear--;
+            } else if (currentMonth > 11) {
+                currentMonth = 0;
+                currentYear++;
+            }
+
+            generateCalendar(currentMonth, currentYear);
+        }
+
+        // Initial render
+        generateCalendar(currentMonth, currentYear);
+
+        // Event listeners for navigation
+        $("#prevMonth").on("click", function() {
+            changeMonth(-1);
+        });
+
+        $("#nextMonth").on("click", function() {
+            changeMonth(1);
+        });
+    });
+</script>

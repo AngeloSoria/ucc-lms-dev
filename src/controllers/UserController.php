@@ -1,15 +1,18 @@
 <?php
 require_once(__DIR__ . '../../../src/config/PathsHandler.php');
 require_once(FILE_PATHS['Models']['User']);
+require_once(FILE_PATHS['Controllers']['GeneralLogs']);
 require_once(FILE_PATHS['Functions']['PHPLogger']);
 
 class UserController
 {
     private $userModel;
+    private $generalLogsController;
 
-    public function __construct($db)
+    public function __construct()
     {
-        $this->userModel = new User($db);
+        $this->userModel = new User();
+        $this->generalLogsController = new GeneralLogsController();
     }
 
     // ADD DATA
@@ -36,8 +39,13 @@ class UserController
             // If the user is a teacher, add them to the teacher_level table
             if ($userData['role'] == 'Teacher') {
                 $addTeacherResult = $this->userModel->addTeacher($userData['user_id'], $userData['educational_level']);
-                if ($addTeacherResult !== true) {
-                    return ["error", "Error adding teacher to teacher_level table."];
+                if (!$addTeacherResult['success']) {
+                    return ["success" => false, "message" => "Error adding teacher to teacher_level table."];
+                }
+            } else if ($userData['role'] == 'Student') {
+                $addTeacherResult = $this->userModel->addStudent($userData['user_id'], $userData['educational_level']);
+                if (!$addTeacherResult['success']) {
+                    return ["success" => false, "message" => "Error adding teacher to teacher_level table."];
                 }
             }
 
@@ -60,11 +68,17 @@ class UserController
     {
         try {
             $userData = $this->userModel->getUserById($userId);
-            return [
-                "success" => true,
-                "message" => "User retrieved successfully.",
-                "data" => $userData
-            ];
+            if (!empty($userData)) {
+                return [
+                    "success" => true,
+                    "data" => $userData
+                ];
+            } else {
+                return [
+                    "success" => false,
+                    "message" => "No user with ($userId) found."
+                ];
+            }
         } catch (Exception $e) {
             return ['success' => false, 'message' => $e->getMessage()];
         }
@@ -73,6 +87,20 @@ class UserController
     // REMOVE DATA
 
     // UPDATE DATA
+    public function updateUserPassword($user_id, $role, $unhashed_password)
+    {
+        try {
+            $updateRequest = $this->userModel->updateUserPassword($user_id, $unhashed_password);
+            if ($updateRequest['success']) {
+                $this->generalLogsController->addLog_UPDATEPASS($user_id, $role);
+                msgLog("UPDATE PASS", "new pass: $unhashed_password");
+                return ['success' => true, 'message' => 'Password successfully updated. good!'];
+            }
+        } catch (Exception $e) {
+            return ['success' => false, 'message' => $e->getMessage()];
+        }
+    }
+
     public function updateLastLoginByUserId($userId)
     {
         try {
@@ -155,6 +183,24 @@ class UserController
                 "success" => false,
                 "message" => "No teachers found."
             ];
+        }
+    }
+
+    public function fetchSearchTeacher($searchByTableName, $query, $educationalLevel)
+    {
+        if ($searchByTableName === 'teacher') {
+            return $this->userModel->searchTeacherByRoleAndEducationalLevel($query, $educationalLevel);
+        }
+        return [];
+    }
+
+    public function userRequiresPasswordReset($user_id)
+    {
+        try {
+            $result = $this->userModel->userRequiresPasswordReset($user_id);
+            return $result ? ['success' => true, 'data' => $result] : ['success' => true, 'data' => $result];
+        } catch (Exception $e) {
+            return ['success' => false, 'data' => $e->getMessage()];
         }
     }
 }

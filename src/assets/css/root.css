@@ -1,4 +1,6 @@
 @import url(widths.css);
+@import url(fonts.css);
+@import url(select2-config.css);
 
 :root { 
     /* COLORS */
@@ -67,6 +69,8 @@
     --c-brand-primary-a60:      #639573;
     --c-brand-primary-a80:      #7ca689;
     --c-brand-primary-a100:     #96b7a0;
+
+    --c-brand-secondary-rgb-a0:       200, 177, 45;
     
     --c-brand-secondary-a0:       #c8b12d;
     --c-brand-secondary-a20:      #d0b949;
@@ -87,6 +91,9 @@
 
     /* GRADIENTS */
     --c-brand-primary-linear-gradient: linear-gradient(to bottom, var(--c-brand-primary-a60), var(--c-brand-primary-a0));
+
+    /* FONTS */
+    --bs-font-sans-serif: Roboto, system-ui, -apple-system, "Segoe UI", "Helvetica Neue", "Noto Sans", "Liberation Sans", Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
 }
 /* General thin scrollbar style for WebKit browsers (Chrome, Safari, Edge) */
 ::-webkit-scrollbar {
@@ -132,14 +139,45 @@ body[data-theme="dark"] {
 .cbg-primary-a50 {
     background-color: rgba(var(--c-brand-primary-a0), 0.5) !important;
 }
+
+.cbtn-secondary {
+    background-color: var(--c-brand-secondary-a0) !important;
+    color: white !important;
+}
+.cbtn-secondary:hover {
+    background-color: var(--c-brand-secondary-a40) !important;
+    color: white !important;
+}
+
 .c-border {
     border-color: var(--c-brand-primary-a0);
 }
 .ctxt-primary {
     color: var(--c-brand-primary-a0) !important;
 }
+.ctxt-secondary {
+    color: var(--c-brand-secondary-a0) !important;
+}
 .c-text-danger {
     color: var(--c-danger-a0);
+}
+
+.bg-brand-secondary {
+    background-color: rgba(var(--c-brand-secondary-rgb-a0), var(--bs-bg-opacity)) !important;
+}
+
+.table-brand-secondary {
+    --bs-table-color: #fff;
+    --bs-table-bg: var(--c-brand-primary-a60);
+    --bs-table-border-color: var(--c-brand-primary-a60);
+    --bs-table-striped-bg: #2c3034;
+    --bs-table-striped-color: #fff;
+    --bs-table-active-bg: #373b3e;
+    --bs-table-active-color: #fff;
+    --bs-table-hover-bg: #323539;
+    --bs-table-hover-color: #fff;
+    color: var(--bs-table-color);
+    border-color: var(--bs-table-border-color);
 }
 
 /* CUSTOM BOOTSTRAP */

@@ -71,7 +71,7 @@ class LoginController
                         header('Location: src/views/users/students/dashboard_student.php');
                         break;
                     default:
-                        msgLog('ERROR', 'Something went wrong when trying to identify the user role.');
+                        msgLog('[ERROR]', 'Something went wrong when trying to identify the user role.');
                         return false;
                 }
             } else {

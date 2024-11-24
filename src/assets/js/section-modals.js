@@ -88,16 +88,12 @@ function apply_section_modal(element) {
                     let minDate = new Date(min);
                     let valueDate = new Date(value);
                     if (valueDate < minDate) {
-                        console.log("WOO");
-
                         incomplete = true;
                         input.addClass('is-invalid');
                         input.next('.invalid-feedback').text(`Date must be on or after ${min}.`).show();
                         makeToast("warning", `Date must be on or after ${min}.`);
                     }
                 } else if (parseFloat(value) < parseFloat(min)) {
-                    console.log("WAA");
-
                     incomplete = true;
                     input.addClass('is-invalid');
                     input.next('.invalid-feedback').text(`Value must be greater than or equal to ${min}.`).show();
@@ -111,16 +107,12 @@ function apply_section_modal(element) {
                     let maxDate = new Date(max);
                     let valueDate = new Date(value);
                     if (valueDate > maxDate) {
-                        console.log("FOO");
-
                         incomplete = true;
                         input.addClass('is-invalid');
                         input.next('.invalid-feedback').text(`Date must be on or before ${max}.`).show();
                         makeToast("warning", `Date must be on or before ${max}.`);
                     }
                 } else if (parseFloat(value) > parseFloat(max)) {
-                    console.log("BAR");
-
                     incomplete = true;
                     input.addClass('is-invalid');
                     input.next('.invalid-feedback').text(`Value must be less than or equal to ${max}.`).show();
@@ -164,3 +156,8 @@ function apply_section_modal(element) {
         input.next('.invalid-feedback').hide();
     });
 }
+$(document).ready(function () {
+    let sectioning = $('[apply_section_modal]');
+    apply_section_modal(sectioning);
+})
+

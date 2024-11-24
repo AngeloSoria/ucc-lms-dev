@@ -40,7 +40,7 @@ if (isset($_SESSION['user_id']) && isset($_SESSION['role'])) {
 
     <!-- CONTENT -->
 
-    <section class="p-5 content-100vh">
+    <section class="p-5 min-vh-50">
         <h3>Frequently Asked Question (FAQ)</h3>
         <hr>
         <!-- Accordion -->
