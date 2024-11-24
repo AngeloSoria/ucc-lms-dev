@@ -74,10 +74,10 @@ class StudentSectionController
         msgLog("CRUD", "[ADD] [STUDENT_SECTION] Student: {$student_id}, Section: {$section_id}");
     }
 
-    public function getAllEnrolledStudentIdBySectionId($section_id)
+    public function getAllEnrolledStudentsBySectionId($section_id)
     {
         try {
-            $result = $this->studentSectionModel->getAllEnrolledStudentIdBySectionId($section_id);
+            $result = $this->studentSectionModel->getAllEnrolledStudentsBySectionId($section_id);
             if (!empty($result)) {
                 return ['success' => true, 'data' => $result];
             } else {

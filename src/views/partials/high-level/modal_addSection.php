@@ -8,7 +8,7 @@
 
             <div class="modal-body">
                 <form id="sectionForm" method="POST" enctype="multipart/form-data">
-                    <input type="hidden" action="addSection">
+                    <input type="hidden" name="action" value="addSection">
                     <!-- Section Name and Academic Level -->
                     <div class="row mb-3">
                         <div class="col-md-6">
@@ -67,7 +67,7 @@
 
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                <button type="submit" class="btn btn-primary c-primary" form="sectionForm">Add Section</button>
+                <button type="submit" class="btn btn-primary c-primary" form="sectionForm">Add</button>
             </div>
         </div>
     </div>

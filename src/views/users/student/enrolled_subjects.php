@@ -100,7 +100,7 @@ $userController = new UserController();
 <?php
 // Show Toast
 if (isset($_SESSION["_ResultMessage"])) {
-    print_r($_SESSION["_ResultMessage"]);
+
     makeToast([
         'type' => $_SESSION["_ResultMessage"]['success'] ? 'success' : 'error',
         'message' => $_SESSION["_ResultMessage"]['message'],

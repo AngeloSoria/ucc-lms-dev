@@ -17,8 +17,6 @@ $db = $database->getConnection(); // Establish the database connection
 // Create an instance of the UserController
 $userController = new UserController();
 
-$user_requirePasswordReset = $userController->userRequiresPasswordReset($_SESSION['user_id']);
-
 ?>
 
 <!DOCTYPE html>
@@ -53,9 +51,10 @@ $user_requirePasswordReset = $userController->userRequiresPasswordReset($_SESSIO
         </section>
 
         <?php
+        $user_requirePasswordReset = $userController->userRequiresPasswordReset($_SESSION['user_id']);
         // Password reset alert modal.
         if ($user_requirePasswordReset['data'] == true) {
-            include_once(FILE_PATHS['Partials']['User']['UpdatePassword']);
+            require_once(FILE_PATHS['Partials']['User']['UpdatePassword']); // Modal
         }
         ?>
 
@@ -67,7 +66,7 @@ $user_requirePasswordReset = $userController->userRequiresPasswordReset($_SESSIO
 <?php
 // Show Toast
 if (isset($_SESSION["_ResultMessage"]) && isset($_SESSION["_ResultMessage"]['success'])) {
-    $type = $_SESSION["_ResultMessage"]['success'] ? 'success' : 'danger';
+    $type = $_SESSION["_ResultMessage"]['success'] ? 'success' : 'error';
     $text = isset($_SESSION["_ResultMessage"]['message']) ? $_SESSION["_ResultMessage"]['message'] : 'No message passed.';
     makeToast([
         'type' => $type,

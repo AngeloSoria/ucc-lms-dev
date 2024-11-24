@@ -211,7 +211,7 @@ if ($allTermsResponse != null) {
 <?php
 // Show Toast
 if (isset($_SESSION["_ResultMessage"]) && isset($_SESSION["_ResultMessage"]['success'])) {
-    $type = $_SESSION["_ResultMessage"]['success'] ? 'success' : 'danger';
+    $type = $_SESSION["_ResultMessage"]['success'] ? 'success' : 'error';
     $text = isset($_SESSION["_ResultMessage"]['message']) ? $_SESSION["_ResultMessage"]['message'] : 'No message passed.';
     makeToast([
         'type' => $type,

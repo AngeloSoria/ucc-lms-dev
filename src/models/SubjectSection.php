@@ -75,7 +75,7 @@ class SubjectSectionModel
             }
 
             // Query to insert subject section
-            $query = "INSERT INTO {$this->table_name} 
+            $query = "INSERT INTO $this->table_name
                        (section_id, subject_id, subject_section_image, teacher_id, period_id) 
                        VALUES 
                        (:section_id, :subject_id, :subject_section_image, :teacher_id, :period_id)";
@@ -218,8 +218,7 @@ class SubjectSectionModel
         }
     }
 
-    // Search teachers
-    public function searchTeacher($query, $educationalLevel = null)
+    public function searchTeacher($query, $educationalLevel)
     {
         $searchQuery = "%{$query}%";
         $query = "
@@ -230,7 +229,7 @@ class SubjectSectionModel
         FROM 
             users u
         INNER JOIN 
-            teacher_educational_level t ON u.user_id = t.user_id
+            educational_level t ON u.user_id = t.user_id
         WHERE 
             u.role = 'Teacher'
             AND (u.first_name LIKE :query OR u.last_name LIKE :query)
@@ -251,61 +250,85 @@ class SubjectSectionModel
         $stmt->execute();
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
-
-    // Search sections by query
-    public function searchSections($query)
+    public function searchStudent($query, $educationalLevel)
     {
-        // Fetch the active period_id and semester from academic_period where is_active = 1
-        $activePeriodQuery = "
-            SELECT period_id, semester
-            FROM academic_period
-            WHERE is_active = 1
-            LIMIT 1
-        ";
-        $stmt = $this->conn->prepare($activePeriodQuery);
-        $stmt->execute();
-        $activePeriod = $stmt->fetch(PDO::FETCH_ASSOC);
+        $searchQuery = "%{$query}%";
+        $query = "
+        SELECT
+            u.user_id, 
+            CONCAT(u.first_name, ' ', middle_name, ' ', u.last_name) AS name, 
+            t.educational_level
+        FROM
+            users u
+        INNER JOIN 
+            educational_level t ON u.user_id = t.user_id
+        WHERE 
+            u.role = 'Student'
+            AND (u.first_name LIKE :query OR u.last_name LIKE :query)";
 
-        print_r($activePeriod);
-
-        // Determine the period_id and the current semester
-        $activePeriodId = $activePeriod['period_id'];
-        $currentSemester = $activePeriod['semester']; // 1st or 2nd semester
-
-        // If it’s the 2nd semester, fetch sections from the 1st semester of the new academic period
-        if ($currentSemester == '2nd') {
-            // Fetch the new period_id for the next academic period
-            $nextActivePeriodQuery = "
-                SELECT period_id 
-                FROM academic_period
-                WHERE semester = '1st'
-                AND is_active = 1
-                LIMIT 1
-            ";
-            $stmt = $this->conn->prepare($nextActivePeriodQuery);
-            $stmt->execute();
-            $nextActivePeriodId = $stmt->fetchColumn();
-
-            // Update period_id to the new academic period if 2nd semester
-            $activePeriodId = $nextActivePeriodId;
+        // If an educational level filter is provided, include it in the query.
+        if ($educationalLevel) {
+            $query .= " AND t.educational_level = :educational_level";
         }
 
-        // Prepare the main search query based on section details and active period
-        $query = "
-            SELECT section_id, section_name
-            FROM section
-            WHERE section_name LIKE :query
-            AND period_id = :activePeriodId
-        ";
-
         $stmt = $this->conn->prepare($query);
-        $stmt->bindValue(":query", "%{$query}%");
-        $stmt->bindValue(":activePeriodId", $activePeriodId);
+        $stmt->bindParam(':query', $searchQuery);
+
+        if ($educationalLevel) {
+            $stmt->bindParam(':educational_level', $educationalLevel);
+        }
 
         $stmt->execute();
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
+    public function searchSections($query)
+    {
+        try {
+            // Fetch the active period_id and semester from the academic_period where is_active = 1
+            $activePeriodQuery = "
+                SELECT period_id, semester
+                FROM academic_period
+                WHERE is_active = 1
+                LIMIT 1
+            ";
+            $stmt = $this->conn->prepare($activePeriodQuery);
+            $stmt->execute();
+            $activePeriod = $stmt->fetch(PDO::FETCH_ASSOC);
 
+            if (!$activePeriod) {
+                // Log an error if no active academic period is found
+                error_log("No active academic period found.");
+                return []; // Return an empty array if no active period is found
+            }
+
+            $activePeriodId = $activePeriod['period_id'];
+
+            // Search sections based on the active period ID
+            $sectionQuery = "
+                SELECT 
+                    section_id, 
+                    section_name AS name
+                FROM 
+                    section
+                WHERE 
+                    section_name LIKE :query
+                    AND period_id = :activePeriodId
+            ";
+            $stmt = $this->conn->prepare($sectionQuery);
+            $stmt->bindValue(":query", "%{$query}%", PDO::PARAM_STR);  // Use parameterized query
+            $stmt->bindValue(":activePeriodId", $activePeriodId, PDO::PARAM_INT);
+
+            $stmt->execute();
+            $sections = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+            // Return sections or an empty array if none are found
+            return $sections;
+        } catch (Exception $e) {
+            // Log the exception and return an empty array
+            error_log("Error in searchSections: " . $e->getMessage());
+            return [];
+        }
+    }
     public function searchSubject($query, $educationalLevel = null)
     {
         // Search for subjects that match the query term
@@ -344,5 +367,22 @@ class SubjectSectionModel
 
         // Return data in the format that select2 expects
         return $subjects;
+    }
+
+    public function getAllEnrolledSubjectsFromSectionBySectionId($section_id)
+    {
+        try {
+            $query = "SELECT * FROM $this->table_name WHERE section_id = :section_id";
+            $stmt = $this->conn->prepare($query);
+            $stmt->bindParam(":section_id", $section_id);
+            $stmt->execute();
+
+            // Get All subject_section data.
+            $retrievedSubjects = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+            return ['success' => true, 'data' => $retrievedSubjects];
+        } catch (Exception $e) {
+            throw new Exception($e->getMessage());
+        }
     }
 }

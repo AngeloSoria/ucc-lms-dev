@@ -6,6 +6,7 @@ require_once(__DIR__ . '../../../../config/PathsHandler.php');
 require_once(FILE_PATHS['DATABASE']);
 require_once(FILE_PATHS['Controllers']['User']);
 require_once(FILE_PATHS['Functions']['SessionChecker']);
+require_once(FILE_PATHS['Functions']['ToastLogger']);
 checkUserAccess(['Student']);
 
 // Create a new instance of the Database class
@@ -50,7 +51,7 @@ $userController = new UserController();
         $user_requirePasswordReset = $userController->userRequiresPasswordReset($_SESSION['user_id']);
         // Password reset alert modal.
         if ($user_requirePasswordReset['data'] == true) {
-            include_once(FILE_PATHS['Partials']['User']['UpdatePassword']);
+            require_once(FILE_PATHS['Partials']['User']['UpdatePassword']); // Modal
         }
         ?>
 
@@ -61,7 +62,6 @@ $userController = new UserController();
 <?php
 // Show Toast
 if (isset($_SESSION["_ResultMessage"])) {
-    print_r($_SESSION["_ResultMessage"]);
     makeToast([
         'type' => $_SESSION["_ResultMessage"]['success'] ? 'success' : 'error',
         'message' => $_SESSION["_ResultMessage"]['message'],

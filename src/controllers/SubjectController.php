@@ -55,4 +55,18 @@ class SubjectController
             return ["success" => false, "message" => $e->getMessage()];
         }
     }
+
+    public function getSubjectFromSubjectId($subject_id)
+    {
+        try {
+            $result = $this->subjectModel->getSubjectFromSubjectId($subject_id);
+            if ($result) {
+                return ['success' => true, 'data' => $result['data']];
+            } else {
+                return ['success' => false, 'message' => "No subject found with subject_id of ($subject_id)."];
+            }
+        } catch (Exception $e) {
+            return ['success' => false, 'message' => $e->getMessage()];
+        }
+    }
 }

@@ -106,12 +106,27 @@ class SubjectSectionController
                 $educationalLevel = $additionalFilters['educational_level'] ?? null;
                 return $this->subjectSectionModel->searchTeacher($query, $educationalLevel);
 
+            case 'student':
+                // Handle search for teacher with optional educational level filter
+                $educationalLevel = $additionalFilters['educational_level'] ?? null;
+                return $this->subjectSectionModel->searchStudent($query, $educationalLevel);
+
             default:
                 return [];
         }
     }
 
-
+    public function getAllEnrolledSubjectsFromSectionBySectionId($section_id)
+    {
+        try {
+            $retrievedEnrolledSubjects = $this->subjectSectionModel->getAllEnrolledSubjectsFromSectionBySectionId($section_id);
+            if ($retrievedEnrolledSubjects['success']) {
+                return ['success' => true, 'data' => $retrievedEnrolledSubjects['data']];
+            }
+        } catch (Exception $e) {
+            return ['success' => false, 'message' => $e->getMessage()];
+        }
+    }
 
     private function logOperation($subject_id, $section_id)
     {

@@ -40,16 +40,17 @@ if (isset($_GET['viewProfile'])) {
         $profile_login = $myUserProfile['last_login'];
     } else {
         $_SESSION["_ResultMessage"] = $retrieveUserProfile;
-        header("Location: " . BASE_PATH_LINK . 'src/views/users/errorpage.php');
+        header("Location: " . BASE_PATH_LINK);
         exit();
     }
 } else {
     $viewProfileID = $_GET['viewProfile'];
     $_SESSION["_ResultMessage"] = ['success' => false, 'message' => "Invalid profile viewing of user_id ($viewProfileID)"];
-    header("Location: " . BASE_PATH_LINK . 'src/views/users/errorpage.php');
+    header("Location: " . BASE_PATH_LINK);
     exit();
 }
 
+$CURRENT_PAGE = 'profile';
 ?>
 
 <!DOCTYPE html>
@@ -96,7 +97,6 @@ if (isset($_GET['viewProfile'])) {
 <?php
 // Show Toast
 if (isset($_SESSION["_ResultMessage"])) {
-    // print_r($_SESSION["_ResultMessage"]);
     makeToast([
         'type' => $_SESSION["_ResultMessage"]['success'] ? 'success' : 'error',
         'message' => $_SESSION["_ResultMessage"]['message'],

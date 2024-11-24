@@ -18,49 +18,15 @@ class SectionController
     /**
      * Handles adding a section via POST request.
      */
-    public function addSection()
+    public function addSection($sectionData)
     {
-        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-            // Sanitize and assign section data
-            $sectionData = [
-                'section_name' => htmlspecialchars(strip_tags($_POST['section_name'])),
-                'program_id' => htmlspecialchars(strip_tags($_POST['program_id'])),
-                'year_level' => htmlspecialchars(strip_tags($_POST['year_level'])),
-                'semester' => htmlspecialchars(strip_tags($_POST['semester'])),
-                'section_image' => null, // Default to null unless provided
-                'adviser_id' => htmlspecialchars(strip_tags($_POST['adviser_id']))
-            ];
+        try {
+            $addResult = $this->sectionModel->addSection($sectionData);
 
-            // Handle section image upload
-            if (isset($_FILES['section_image']) && $_FILES['section_image']['error'] === UPLOAD_ERR_OK) {
-                $sectionImage = $_FILES['section_image'];
-                $allowedTypes = ['image/jpeg', 'image/png', 'image/gif']; // Define allowed image MIME types
-
-                // Check file type
-                if (in_array($sectionImage['type'], $allowedTypes)) {
-                    $sectionData['section_image'] = file_get_contents($sectionImage['tmp_name']); // Store binary image data
-                } else {
-                    // Return error for invalid image type
-                    return ["error" => "Invalid section image type. Allowed types are: JPEG, PNG, GIF."];
-                }
-            }
-
-            // Check if the section already exists
-            if ($this->sectionModel->sectionExists($sectionData)) {
-                return ["error" => "The section already exists. Please verify the information."];
-            }
-
-            // Add the section using the model
-            if ($this->sectionModel->addSection($sectionData)) {
-                // Redirect to the section admin page on success
-                header('Location: ../section_admin.php?success=1');
-                exit;
-            } else {
-                // Return error if the addition fails
-                return ["error" => "Failed to add section. Please try again."];
-            }
+            return $addResult['success'] == true ? $addResult : ['success' => false, 'message' => 'Something went wrong while adding Program.'];
+        } catch (Exception $e) {
+            return ['success' => false, 'message' => $e->getMessage()];
         }
-        return ["error" => "Invalid request method."];
     }
 
     /**
@@ -84,6 +50,22 @@ class SectionController
                 return ['success' => true, 'data' => $getSectionResult];
             } else {
                 return ['success' => false, 'message' => "No section found with id of ($section_id)"];
+            }
+        } catch (Exception $e) {
+            return ['success' => false, 'message' => $e->getMessage()];
+        }
+    }
+
+    public function updateSectionById($section_id, $data)
+    {
+        try {
+            if (empty($data)) {
+                throw new Exception("No data passed when trying to update section");
+            };
+
+            $updateResult = $this->sectionModel->updateSectionById($section_id, $data);
+            if ($updateResult['success']) {
+                return ['success' => true, 'message' => "Section has been updated."];
             }
         } catch (Exception $e) {
             return ['success' => false, 'message' => $e->getMessage()];

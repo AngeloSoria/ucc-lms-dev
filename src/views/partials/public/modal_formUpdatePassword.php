@@ -5,7 +5,8 @@
             <div class="modal-header">
                 <h1 class="modal-title fs-5" id="updatePasswordModalLabel">Update Password</h1>
             </div>
-            <form id="updatePasswordForm">
+            <form id="updatePasswordForm" method="POST" action="<?php echo BASE_PATH_LINK . 'src/functions/updatePasswordRequest.php' ?>">
+                <input type="hidden" name="action" value="updatePassword">
                 <div class="modal-body">
                     <div class="">
                         Welcome <code class="fs-5"><?php echo $_SESSION['first_name'] ?>,</code><br>For security purposes, please update your password to proceed
@@ -67,8 +68,6 @@
         });
 
         $('#btnSubmit').on('click', function(e) {
-            e.preventDefault(); // Prevent default form submission
-
             let pass1 = inputPass1.val();
             let pass2 = inputPass2.val();
             let hasErrors = false;
@@ -94,41 +93,7 @@
 
             // Change button text to 'Submitting...'
             let submitButton = $('#btnSubmit');
-            submitButton.prop('disabled', true).text('Submitting...'); // Disable button and change text
-
-            // Trigger AJAX request
-            $.ajax({
-                url: "<?php echo BASE_PATH_LINK ?>/src/functions/updatePasswordRequest.php",
-                method: "POST",
-                data: {
-                    session_userID: <?php echo $_SESSION['user_id'] ?>,
-                    session_userRole: "<?php echo ($_SESSION['role']) ?>",
-                    password: pass1,
-                    confirmPassword: pass2
-                },
-                dataType: "json",
-                success: function(response) {
-                    // Reset button text after successful submission
-                    submitButton.prop('disabled', false).text('Save changes');
-                    $('#updatePasswordModal').modal('hide');
-                    alert('Password updated successfully');
-                    makeToast("success", response.data);
-                },
-                error: function(xhr, status, error) {
-                    // Reset button text if there is an error
-                    submitButton.prop('disabled', false).text('Save changes');
-                    let response = null;
-                    try {
-                        response = JSON.parse(xhr.responseText);
-                        if (response.error) {
-                            alert(`Error: ${response.error}`);
-                        }
-                    } catch (e) {
-                        console.error("Failed to parse response:", xhr.responseText);
-                        alert('An unexpected error occurred');
-                    }
-                }
-            });
+            submitButton.prop('disabled', false).text('Submitting...'); // Disable button and change text
         });
     });
 </script>

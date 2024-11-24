@@ -39,8 +39,13 @@ class UserController
             // If the user is a teacher, add them to the teacher_level table
             if ($userData['role'] == 'Teacher') {
                 $addTeacherResult = $this->userModel->addTeacher($userData['user_id'], $userData['educational_level']);
-                if ($addTeacherResult !== true) {
-                    return ["error", "Error adding teacher to teacher_level table."];
+                if (!$addTeacherResult['success']) {
+                    return ["success" => false, "message" => "Error adding teacher to teacher_level table."];
+                }
+            } else if ($userData['role'] == 'Student') {
+                $addTeacherResult = $this->userModel->addStudent($userData['user_id'], $userData['educational_level']);
+                if (!$addTeacherResult['success']) {
+                    return ["success" => false, "message" => "Error adding teacher to teacher_level table."];
                 }
             }
 

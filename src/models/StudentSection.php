@@ -115,10 +115,10 @@ class StudentSectionModel
     }
 
 
-    public function getAllEnrolledStudentIdBySectionId($section_id)
+    public function getAllEnrolledStudentsBySectionId($section_id)
     {
         try {
-            $query = "SELECT student_id FROM  $this->table_name WHERE section_id = :section_id";
+            $query = "SELECT * FROM  $this->table_name WHERE section_id = :section_id";
             $stmt = $this->conn->prepare($query);
             $stmt->bindParam(':section_id', $section_id);
             $stmt->execute();

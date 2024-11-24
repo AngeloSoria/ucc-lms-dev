@@ -26,6 +26,7 @@ define('FILE_PATHS', [
         'SessionChecker' => __DIR__ . '../../functions/sessionChecker.php',
         'UpdateURLParams' => __DIR__ . '../../functions/updateURLParams.php',
         'CalculateElapsedTime' => __DIR__ . '../../functions/CalculateElapsedTime.php',
+        'UpdatePassword' => __DIR__ . '../../functions/updatePasswordRequest.php',
     ],
 
 
@@ -101,7 +102,9 @@ define('FILE_PATHS', [
                 ],
                 'Section' => [
                     'Add' => __DIR__ . '../../views/partials/high-level/modal_addSection.php',
-                    'Config' => __DIR__ . '../../views/partials/high-level/modal_configSection.php',
+                    'Config' => [
+                        'addStudent' => __DIR__ . '../../views/partials/high-level/modal_addStudents.php',
+                    ],
                     'Details' => __DIR__ . '../../views/partials/high-level/modal_detailsSection.php',
                 ],
                 'Subject' => [
@@ -122,6 +125,8 @@ define('FILE_PATHS', [
                 ],
 
             ],
+
+            'Configures' => __DIR__ . '../../views/partials/high-level/configures/',
 
             'Fetcher' => [
                 'Program' => 'src/views/partials/high-level/fetch_programs.php',

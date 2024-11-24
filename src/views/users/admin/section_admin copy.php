@@ -114,10 +114,10 @@ if (isset($_GET['viewSection'])) {
     }
 
     $enrolledAdviserToSection = $userController->getUserById($retrievedSection['data']['adviser_id']);
-    $enrolledStudentIdsFromSection = $studentSectionController->getAllEnrolledStudentIdBySectionId($_GET['viewSection']); // [student id ...]
+    $enrolledStudentsFromSection = $studentSectionController->getAllEnrolledStudentIdBySectionId($_GET['viewSection']); // [student id ...]
     $enrolledStudentInfoFromSection = [];
-    if ($enrolledStudentIdsFromSection['success']) {
-        foreach ($enrolledStudentIdsFromSection['data'] as $student_info) {
+    if ($enrolledStudentsFromSection['success']) {
+        foreach ($enrolledStudentsFromSection['data'] as $student_info) {
             $getUserInfoResult = $userController->getUserById($student_info['student_id']); // it was student_id all along...
             if ($getUserInfoResult['success']) {
                 $enrolledStudentInfoFromSection[] = $getUserInfoResult['data'];
@@ -633,7 +633,7 @@ if (isset($_GET['viewSection'])) {
 <?php
 // Show Toast
 if (isset($_SESSION["_ResultMessage"])) {
-    print_r($_SESSION["_ResultMessage"]);
+
     makeToast([
         'type' => $_SESSION["_ResultMessage"]['success'] ? 'success' : 'error',
         'message' => $_SESSION["_ResultMessage"]['message'],

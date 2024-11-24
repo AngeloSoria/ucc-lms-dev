@@ -58,6 +58,20 @@ class User
             return ["success" => false, 'message' => $e->getMessage()];
         }
     }
+    public function addStudent($userId, $educational_level)
+    {
+        try {
+            $query = "INSERT INTO educational_level (user_id, educational_level) VALUES (:user_id, :educational_level)";
+            $stmt = $this->conn->prepare($query);
+            $stmt->bindParam(':user_id', $userId);
+            $stmt->bindParam(':educational_level', $educational_level);
+            $stmt->execute();
+
+            return ['success' => true, 'message' => 'User added successfully.'];
+        } catch (PDOException $e) {
+            return ["success" => false, 'message' => $e->getMessage()];
+        }
+    }
 
     public function getAllUsersByRole($role)
     {

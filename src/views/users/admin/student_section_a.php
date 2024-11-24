@@ -17,13 +17,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (isset($_POST['action']) && $_POST['action'] === 'addSubjectSection') {
         $subjectSectionData = [
             'section_id' => $_POST['section_id'],
-            'subject_ids' => $_POST['subject_ids'], // Array of student IDs
+            'subject_ids' => $_POST['subject_ids'], // Array of subject IDs
             'teacher_id' => $_POST['teacher_id'], // Added teacher ID
         ];
 
         // Handle file upload for subject_section_image
         if (!empty($_FILES['subject_section_image']['tmp_name'])) {
-            $studentSectionData['image'] = file_get_contents($_FILES['subject_section_image']['tmp_name']);
+            $sectionData['image'] = file_get_contents($_FILES['subject_section_image']['tmp_name']);
         }
 
         $_SESSION["_ResultMessage"] = $subjectSectionController->addSubjectSection($subjectSectionData);
@@ -75,7 +75,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 <select class="form-control" id="section_id" name="section_id" required></select>
             </div>
 
-            <!-- Select students -->
+            <!-- Select subj -->
             <div class="mb-3">
                 <label for="subject_ids" class="form-label">Select Subjects</label>
                 <select class="form-control" id="subject_ids" name="subject_ids[]" multiple required></select>

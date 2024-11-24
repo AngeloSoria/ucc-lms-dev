@@ -15,8 +15,6 @@ $db = $database->getConnection(); // Establish the database connection
 // Create an instance of the UserController
 $userController = new UserController();
 
-$user_requirePasswordReset = $userController->userRequiresPasswordReset($_SESSION['user_id']);
-
 ?>
 
 <!DOCTYPE html>
@@ -50,9 +48,10 @@ $user_requirePasswordReset = $userController->userRequiresPasswordReset($_SESSIO
         </section>
 
         <?php
+        $user_requirePasswordReset = $userController->userRequiresPasswordReset($_SESSION['user_id']);
         // Password reset alert modal.
         if ($user_requirePasswordReset['data'] == true) {
-            include_once(FILE_PATHS['Partials']['User']['UpdatePassword']);
+            require_once(FILE_PATHS['Partials']['User']['UpdatePassword']); // Modal
         }
         ?>
 

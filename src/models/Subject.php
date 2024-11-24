@@ -60,4 +60,20 @@ class Subject
         $stmt->execute();
         return $stmt->fetchColumn() > 0;
     }
+
+    public function getSubjectFromSubjectId($subject_id)
+    {
+        try {
+            $query = "SELECT * FROM $this->table_name WHERE subject_id = :subject_id LIMIT 1";
+            $stmt = $this->conn->prepare($query);
+            $stmt->bindParam(":subject_id", $subject_id);
+            $stmt->execute();
+
+            $queryResult = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+            return ['success' => true, 'data' => $queryResult];
+        } catch (Exception $e) {
+            throw new ($e->getMessage());
+        }
+    }
 }
