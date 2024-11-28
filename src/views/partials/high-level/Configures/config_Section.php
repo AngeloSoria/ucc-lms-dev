@@ -177,11 +177,15 @@
                         </div>
                     </div>
                     <hr>
-                    <div class="">
-                        <button type="submit" class="btn btn-success d-flex gap-2">
+                    <div class="float-end d-flex gap-2">
+                        <button type="submit" class="btn btn-success d-flex gap-2" id="btnUpdate">
                             <i class="bi bi-floppy-fill"></i>
                             Update
                         </button>
+                        <span type="button" class="btn btn-danger d-flex gap-2" id="btnDelete">
+                            <i class="bi bi-trash-fill"></i>
+                            Delete
+                        </span>
                     </div>
                 </div>
             </form>
@@ -434,10 +438,10 @@
                                                 <td class="text-center"><input type="checkbox" title="selectAll" class="form-check-input" value="<?php htmlspecialchars($subjectData['subject_id'] ?? '') ?>"></td>
                                                 <td class="align-center text-center">
                                                     <a title="View Subject" class="btn btn-sm bg-primary bg-opacity-25 text-primary fw-semibold rounded-pill" href="users_admin.php<?php echo htmlspecialchars('?viewSubject=' . $subjectData['subject_id']) ?>">
-                                                        <?php echo $subjectInfo['data'][0]['subject_id'] ?>
+                                                        <?php echo $subjectInfo['data']['subject_id'] ?>
                                                     </a>
                                                 </td>
-                                                <td class=""><?php echo $subjectInfo['data'][0]['subject_name'] ?></td>
+                                                <td class=""><?php echo $subjectInfo['data']['subject_name'] ?></td>
                                                 <td class="text-center">
                                                     <a href="javascript:alert('work in progress')" title="Remove"
                                                         class="btn btn-sm btn-danger m-auto disabled">

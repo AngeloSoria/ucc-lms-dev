@@ -47,11 +47,11 @@ $user_sidebar_data = $sidebar_content[$_SESSION['role']];
                                         $subjectInfo = $subjectController->getSubjectFromSubjectId($subject['subject_id']);
                             ?>
                                         <li>
-                                            <a href="<?= "enrolled_subjects.php?subject_id=" . $subject['subject_id'] ?>"
+                                            <a href="<?= "subject_view.php?subject_section_id=" . $subject['subject_section_id'] ?>"
                                                 class="d-flex gap-3 py-3 pe-2 submenu-item" style="padding-left: 2rem;">
                                                 <i class="bi bi-journal-text"></i>
                                                 <span class="submenu-item-text">
-                                                    <?= htmlspecialchars($subjectInfo['data'][0]['subject_name']) ?>
+                                                    <?= htmlspecialchars($subjectInfo['data']['subject_name']) ?>
                                                 </span>
                                             </a>
                                         </li>

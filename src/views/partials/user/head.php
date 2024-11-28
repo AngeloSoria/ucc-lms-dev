@@ -25,5 +25,6 @@
     <script src="<?php echo asset("js/tinymce/tinymce.min.js") ?>"></script>
     <script defer src="<?php echo asset("js/tinymce.js") ?>"></script>
 
+
     <title>LMS | Unida Christian College - Cavite</title>
 </head>

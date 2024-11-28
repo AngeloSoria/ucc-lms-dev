@@ -35,6 +35,7 @@
                 </div>
                 <div class="modal-footer">
                     <button type="submit" class="btn btn-success" id="btnSubmit">Save changes</button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Later</button>
                 </div>
             </form>
         </div>

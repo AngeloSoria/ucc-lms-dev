@@ -20,7 +20,7 @@ $widget_card = new Card();
 $database = new Database();
 $db = $database->getConnection(); // Establish the database connection
 
-$programController = new ProgramController($db); // Create UserController instance
+$programController = new ProgramController(); // Create UserController instance
 
 
 // Handle user addition request
@@ -45,6 +45,42 @@ $programList = $programController->getAllPrograms();  // This will return the pr
 
 if ($programList['success'] == false) {
     $_SESSION["_ResultMessage"] = $programList;
+}
+
+if ($_SERVER['REQUEST_METHOD'] == 'POST'  && isset($_POST['action'])) {
+    switch ($_POST['action']) {
+        case 'updateProgram':
+            $updateProgramData = [
+                "program_id" => $_POST['program_id'],
+                "program_name" => $_POST['input_programName'],
+                "program_code" => $_POST['input_programCode'],
+                "program_description" => $_POST['input_programDescription'],
+                "program_image" => null,
+            ];
+
+            $updateResult = $programController->updateProgram($updateProgramData);
+
+            $_SESSION["_ResultMessage"] = $updateResult;
+            // Redirect to the same page to prevent resubmission
+            header("Location: " . clearUrlParams());
+            exit();
+        case 'deleteProgram':
+            $deleteProgramData = [
+                "program_id" => $_POST['program_id']
+            ];
+            $deleteResult = $programController->deleteProgramById($deleteProgramData['program_id']);
+
+            $_SESSION["_ResultMessage"] = $deleteResult;
+
+            break;
+        default:
+            # code...
+            break;
+    }
+
+    // Redirect to the same page to prevent resubmission
+    header("Location: " . $_SERVER['REQUEST_URI']);
+    exit();
 }
 ?>
 
@@ -214,64 +250,8 @@ if ($programList['success'] == false) {
                                 </div>
                             </div>
 
-                            <!-- Headers -->
-                            <div class="mb-3 row align-items-start">
-                                <hr>
-                                <!-- generated -->
-                                <div class="container my-4">
-                                    <h4 class="fw-bolder text-success"></h4>
-                                    <div class="card shadow-sm position-relative">
-                                        <div class="card-header position-relative d-flex justify-content-start align-items-center gap-3 bg-success bg-opacity-75">
-                                            <div class="position-absolute top-0 end-0 mt-3 me-4">
-                                                <button class="btn cbtn-secondary px-4" disabled>
-                                                    Edit
-                                                </button>
-                                            </div>
-                                        </div>
-                                        <div class="card-body">
-                                            <section class="mb-4">
-                                                <div class="row mb-3">
-                                                    <h5>Program Information</h5>
-                                                </div>
-                                                <div class="row mb-3">
-                                                    <div class="col-md-6">
-                                                        <h6 class="">Program Image</h6>
-                                                        <div class="">
-                                                            <img style="width: 200px;" src="<?= !empty($retrieved_program_ss['data'][0]['program_image']) ? 'data:image/jpeg;base64,' . base64_encode($retrieved_program_ss['data'][0]['program_image']) : 'https://via.placeholder.com/200?text=No+Image' ?>" alt="">
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                                <div class="row mb-3">
-                                                    <div class="col-sm-6 col-md-4 col-lg-5">
-                                                        <h6 class="">Program Name</h6>
-                                                        <input updateEnabled class="form-control" type="text" disabled value="<?= htmlspecialchars($retrieved_program_ss['data'][0]['program_name']) ?>">
-                                                    </div>
-                                                    <div class="col-sm-6 col-md-4 col-lg-3">
-                                                        <h6 class="">Program Code</h6>
-                                                        <input updateEnabled class="form-control" type="text" disabled value="<?= htmlspecialchars($retrieved_program_ss['data'][0]['program_code']) ?>">
-                                                    </div>
-                                                    <div class="col-sm-12 col-md-4 col-lg-4">
-                                                        <h6 class="">Educational Level</h6>
-                                                        <select name="" id="" class="form-select" disabled>
-                                                            <?php
-                                                            $option_EducationalLevel = htmlspecialchars($retrieved_program_ss['data'][0]['educational_level']) == "College" ? "SHS" : "College";
-                                                            ?>
-                                                            <option selected value="<?= htmlspecialchars($retrieved_program_ss['data'][0]['educational_level']) ?>"><?= htmlspecialchars($retrieved_program_ss['data'][0]['educational_level']) ?></option>
-                                                            <option value="<?= $option_EducationalLevel ?>"><?= $option_EducationalLevel ?></option>
-                                                        </select>
-                                                    </div>
-                                                </div>
-                                                <div class="row mb-3">
-                                                    <div class="col-md-12">
-                                                        <h6 class="">Description</h6>
-                                                        <textarea updateEnabled class="form-control" rows="8" placeholder="No Description given" disabled><?= htmlspecialchars($retrieved_program_ss['data'][0]['program_description']) ?></textarea>
-                                                    </div>
-                                                </div>
-                                            </section>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
+                            <!-- Configure View -->
+                            <?php require_once(FILE_PATHS['Partials']['HighLevel']['Configures'] . 'config_Program.php') ?>
                         </div>
                     <?php endif; ?>
                 </div>

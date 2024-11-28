@@ -69,4 +69,50 @@ class SubjectController
             return ['success' => false, 'message' => $e->getMessage()];
         }
     }
+
+    public function deleteSubject($subject_id)
+    {
+        try {
+            $MODEL_RESULT = $this->subjectModel->deleteSubject($subject_id);
+
+            if ($MODEL_RESULT["success"] === true) {
+                msgLog("CRUD", "[DELETE] [SUBJECT] [ID: $subject_id] | [" . $_SESSION["username"] . "] [" . $_SESSION["role"] . "]");
+
+                return [
+                    "success" => true,
+                    "message" => "Subject deleted successfully."
+                ];
+            } else {
+                return [
+                    "success" => false,
+                    "message" => "Failed to delete subject. (" . $MODEL_RESULT["message"] . ")"
+                ];
+            }
+        } catch (Exception $e) {
+            return ["success" => false, "message" => $e->getMessage()];
+        }
+    }
+
+    public function updateSubject($subject_id, $subjectData)
+    {
+        try {
+            $MODEL_RESULT = $this->subjectModel->updateSubject($subject_id, $subjectData);
+
+            if ($MODEL_RESULT["success"] === true) {
+                msgLog("CRUD", "[UPDATE] [SUBJECT] [ID: $subject_id] [NEW CODE: " . $subjectData["subject_code"] . "] [NEW NAME: " . $subjectData["subject_name"] . "] | [" . $_SESSION["username"] . "] [" . $_SESSION["role"] . "]");
+
+                return [
+                    "success" => true,
+                    "message" => "Subject updated successfully."
+                ];
+            } else {
+                return [
+                    "success" => false,
+                    "message" => "Failed to update subject. (" . $MODEL_RESULT["message"] . ")"
+                ];
+            }
+        } catch (Exception $e) {
+            return ["success" => false, "message" => $e->getMessage()];
+        }
+    }
 }

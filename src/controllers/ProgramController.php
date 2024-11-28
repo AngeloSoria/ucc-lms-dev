@@ -71,4 +71,23 @@ class ProgramController
             return ['success' => false, 'message' => $e->getMessage()];
         }
     }
+
+    public function updateProgram($program_data)
+    {
+        try {
+            return $this->programModel->updateProgram($program_data);
+        } catch (Exception $e) {
+            return ['success' => false, "message" => $e->getMessage()];
+        }
+    }
+
+    public function deleteProgramById($program_id)
+    {
+        try {
+            $deleteResult = $this->programModel->deleteProgramById($program_id);
+            return $deleteResult;
+        } catch (Exception $e) {
+            return ['success' => false, 'message' => $e->getMessage()];
+        }
+    }
 }

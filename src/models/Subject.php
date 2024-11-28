@@ -69,11 +69,48 @@ class Subject
             $stmt->bindParam(":subject_id", $subject_id);
             $stmt->execute();
 
-            $queryResult = $stmt->fetchAll(PDO::FETCH_ASSOC);
+            $queryResult = $stmt->fetch(PDO::FETCH_ASSOC);
 
             return ['success' => true, 'data' => $queryResult];
         } catch (Exception $e) {
             throw new ($e->getMessage());
+        }
+    }
+
+    public function deleteSubject($subject_id)
+    {
+        try {
+            $query = "DELETE FROM {$this->table_name} WHERE subject_id = :subject_id";
+            $stmt = $this->conn->prepare($query);
+
+            $stmt->bindParam(':subject_id', $subject_id);
+            $stmt->execute();
+
+            return ['success' => true];
+        } catch (PDOException $e) {
+            return ['success' => false, 'message' => $e->getMessage()];
+        }
+    }
+
+    public function updateSubject($subject_id, $subjectData)
+    {
+        try {
+            $query = "UPDATE {$this->table_name} 
+                      SET subject_code = :subject_code, 
+                          subject_name = :subject_name
+                      WHERE subject_id = :subject_id";
+
+            $stmt = $this->conn->prepare($query);
+
+            $stmt->bindParam(':subject_id', $subject_id);
+            $stmt->bindParam(':subject_code', $subjectData['subject_code']);
+            $stmt->bindParam(':subject_name', $subjectData['subject_name']);
+
+            $stmt->execute();
+
+            return ['success' => true];
+        } catch (PDOException $e) {
+            return ['success' => false, 'message' => $e->getMessage()];
         }
     }
 }

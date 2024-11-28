@@ -27,35 +27,56 @@ $db = $database->getConnection(); // Establish the database connection
 // Create an instance of the UserController
 $userController = new UserController();
 
-if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['action']) && $_POST['action'] == 'addUser') {
-    // Collect user data from form inputs
-    $userData = [
-        'user_id' => $_POST['user_id'],
-        'role' => $_POST['role'],
-        'first_name' => $_POST['first_name'],
-        'middle_name' => $_POST['middle_name'] ?? null,
-        'last_name' => $_POST['last_name'],
-        'gender' => $_POST['gender'],
-        'dob' => $_POST['dob'],
-        'username' => $_POST['username'],
-        'password' => password_hash($_POST['password'], PASSWORD_DEFAULT), // Hash the password
-        'educational_level' => $_POST['educational_level'] ?? null,
-        'profile_pic' => null, // Placeholder for the binary image
-    ];
+if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+    if (isset($_POST['action'])) {
+        switch ($_POST['action']) {
+            case 'addUser':
+                // Collect user data from form inputs
+                $userData = [
+                    'user_id' => $_POST['user_id'],
+                    'role' => $_POST['role'],
+                    'first_name' => $_POST['first_name'],
+                    'middle_name' => $_POST['middle_name'] ?? null,
+                    'last_name' => $_POST['last_name'],
+                    'gender' => $_POST['gender'],
+                    'dob' => $_POST['dob'],
+                    'username' => $_POST['username'],
+                    'password' => password_hash($_POST['password'], PASSWORD_DEFAULT), // Hash the password
+                    'educational_level' => $_POST['educational_level'] ?? null,
+                    'profile_pic' => null, // Placeholder for the binary image
+                ];
 
-    // Handle file upload
-    if (isset($_FILES['profile_pic']) && $_FILES['profile_pic']['error'] === UPLOAD_ERR_OK) {
-        $imageTmpPath = $_FILES['profile_pic']['tmp_name'];
-        $imageData = file_get_contents($imageTmpPath); // Read the binary data
-        $userData['profile_pic'] = $imageData; // Add the binary data to the user data
+                // Handle file upload
+                if (isset($_FILES['profile_pic']) && $_FILES['profile_pic']['error'] === UPLOAD_ERR_OK) {
+                    $imageTmpPath = $_FILES['profile_pic']['tmp_name'];
+                    $imageData = file_get_contents($imageTmpPath); // Read the binary data
+                    $userData['profile_pic'] = $imageData; // Add the binary data to the user data
+                }
+
+                // Save user data to the database using a controller method
+                $_SESSION["_ResultMessage"] = $userController->addUser($userData);
+
+                // Redirect to the same page to prevent resubmission
+                header("Location: " . $_SERVER['REQUEST_URI']);
+                exit();
+
+            case "updateUserInfo":
+                $userData = [
+                    'user_id' => $_GET['user_id'],
+                    'first_name' => $_POST['first_name'],
+                    'middle_name' => $_POST['middle_name'] ?? null,
+                    'last_name' => $_POST['last_name'],
+                    'gender' => $_POST['gender'],
+                    'dob' => $_POST['dob'],
+                    'password' => $_POST['password'],
+                    'requirePasswordReset' => $_POST['requirePasswordReset'],
+                ];
+
+                $_SESSION["_ResultMessage"] = $userController->updateUserProfile($userData['user_id'], $userData);
+                header("Location: " . $_SERVER['REQUEST_URI']);
+                exit();
+        }
     }
-
-    // Save user data to the database using a controller method
-    $_SESSION["_ResultMessage"] = $userController->addUser($userData);
-
-    // Redirect to the same page to prevent resubmission
-    header("Location: " . $_SERVER['REQUEST_URI']);
-    exit();
 }
 
 // Check if the requested view is valid
@@ -87,10 +108,10 @@ if (isset($_GET['viewRole']) && isset($_GET['user_id'])) {
             <?php require_once(FILE_PATHS['Partials']['User']['Sidebar']) ?>
 
             <!-- content here -->
-            <section id="contentSection">
-                <div class="col box-sizing-border-box flex-grow-1">
+            <section class="container-fluid mt-2">
+                <div class="box-sizing-border-box flex-grow-1">
                     <?php if (!isset($_GET['viewRole'])): ?>
-                        <div class="bg-white rounded p-3 shadow-sm border">
+                        <div class="container-fluid bg-white rounded p-3 shadow-sm border">
                             <!-- Headers -->
                             <div class="mb-3 row align-items-start">
                                 <div class="col-4 d-flex gap-3">
@@ -102,8 +123,7 @@ if (isset($_GET['viewRole']) && isset($_GET['user_id'])) {
                                     <!-- Add New Button -->
                                     <button
                                         class="btn btn-primary btn-lg rounded fs-6 px-3 c-primary d-flex gap-3 align-items-center"
-                                        data-bs-toggle="modal" data-bs-target="#userFormModal"
-                                        apply_section_modal>
+                                        data-bs-toggle="modal" data-bs-target="#userFormModal" apply_section_modal>
                                         <i class="bi bi-plus-circle"></i> Add User
                                     </button>
 
@@ -182,7 +202,7 @@ if (isset($_GET['viewRole']) && isset($_GET['user_id'])) {
                                 ?>
                             </div>
                             <!-- Table View -->
-                            <div preview-container-name="view_table" class="d-none">
+                            <div preview-container-name="view_table" class="d-none container-fluid table-responsive">
                                 <?php
                                 $getAllUsers = $userController->getAllUsers();
                                 if ($getAllUsers['success'] == true) { ?>
@@ -194,11 +214,44 @@ if (isset($_GET['viewRole']) && isset($_GET['user_id'])) {
                                             Remove Selection
                                         </button>
                                     </div>
-                                    <table id="dataTable_allUsers" class="table table-responsive-sm border display compact" style="width: 100%">
+
+                                    <!-- Custom Filters Above the Table -->
+                                    <div class="filter-controls mb-3">
+                                        <div class="row">
+                                            <div class="col-sm-3">
+                                                <label for="filterRole">Role</label>
+                                                <select class="form-select" id="filterRole">
+                                                    <option value="">Select Role</option>
+                                                    <?php foreach (array_unique(array_column($getAllUsers['data'], 'role')) as $role) { ?>
+                                                        <option value="<?php echo $role; ?>"><?php echo $role; ?></option>
+                                                    <?php } ?>
+                                                </select>
+                                            </div>
+                                            <div class="col-sm-3">
+                                                <label for="filterGender">Gender</label>
+                                                <select class="form-select" id="filterGender">
+                                                    <option value="">Select Gender</option>
+                                                    <option value="male">Male</option>
+                                                    <option value="female">Female</option>
+                                                </select>
+                                            </div>
+                                            <div class="col-sm-3">
+                                                <label for="filterStatus">Status</label>
+                                                <select class="form-select" id="filterStatus">
+                                                    <option value="">Select Status</option>
+                                                    <option value="active">Active</option>
+                                                    <option value="inactive">Inactive</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- DataTable -->
+                                    <table id="userTable" class="table table-bordered table-hover">
                                         <thead style="background-color: var(--c-brand-primary-a0) !important;">
                                             <tr>
                                                 <th>
-                                                    <input type="checkbox" class="form-check-input" value="<?php htmlspecialchars($row[$uniqueIDTarget] ?? '') ?>">
+                                                    <input type="checkbox" id="checkbox_selectAll" class="form-check-input">
                                                 </th>
                                                 <th>User Id</th>
                                                 <th>Role</th>
@@ -210,24 +263,28 @@ if (isset($_GET['viewRole']) && isset($_GET['user_id'])) {
                                             </tr>
                                         </thead>
                                         <tbody>
-                                            <?php foreach ($getAllUsers['data'] as $userData) { ?>
-                                                <?php if (empty($getAllUsers['data'])) { ?>
-                                                    <tr>
-                                                        <td colspan="9">No data available</td>
-                                                    </tr>
-                                                <?php } else { ?>
+                                            <?php if (empty($getAllUsers['data'])) { ?>
+                                                <tr>
+                                                    <td colspan="8" class="text-center">No data available</td>
+                                                </tr>
+                                                <?php } else {
+                                                foreach ($getAllUsers['data'] as $userData) { ?>
                                                     <tr>
                                                         <td>
-                                                            <input type="checkbox" class="form-check-input" value="<?php htmlspecialchars($userData['user_id'] ?? '') ?>">
+                                                            <input type="checkbox" class="form-check-input"
+                                                                value="<?php echo htmlspecialchars($userData['user_id'] ?? '') ?>">
                                                         </td>
                                                         <td><?php echo $userData['user_id'] ?></td>
                                                         <td><?php echo $userData['role'] ?></td>
                                                         <td><?php echo $userData['username'] ?></td>
                                                         <td><?php echo $userData['first_name'] . ' ' . $userData['last_name'] ?></td>
                                                         <td><?php echo ucfirst($userData['gender']) ?></td>
-                                                        <td class="fw-bold <?php echo $userData['status'] == 'active' ? 'ctxt-primary' : 'text-danger' ?>"><?php echo ucfirst($userData['status']) ?></td>
+                                                        <td class="fw-bold <?php echo $userData['status'] == 'active' ? 'text-primary' : 'text-danger' ?>">
+                                                            <?php echo ucfirst($userData['status']) ?>
+                                                        </td>
                                                         <td>
-                                                            <a href="<?php echo htmlspecialchars(updateUrlParams(['viewRole' => $userData['role'], 'user_id' => $userData['user_id']])) ?>" title="Configure" class="btn btn-primary m-auto">
+                                                            <a href="<?php echo htmlspecialchars(updateUrlParams(['viewRole' => $userData['role'], 'user_id' => $userData['user_id']])) ?>"
+                                                                title="Configure" class="btn btn-primary btn-sm">
                                                                 <i class="bi bi-pencil-square"></i>
                                                             </a>
                                                         </td>
@@ -235,105 +292,90 @@ if (isset($_GET['viewRole']) && isset($_GET['user_id'])) {
                                             <?php }
                                             } ?>
                                         </tbody>
-                                        <tfoot>
-                                            <tr>
-                                                <th></th>
-                                                <th></th>
-                                                <th></th>
-                                                <th></th>
-                                                <th></th>
-                                                <th></th>
-                                                <th></th>
-                                                <th></th>
-                                            </tr>
-                                        </tfoot>
                                     </table>
                                     <script>
                                         $(document).ready(function() {
-                                            $('#dataTable_allUsers').DataTable({
-                                                columnDefs: [{
-                                                    "orderable": false,
-                                                    "targets": [0, 7]
-                                                }],
-                                                language: {
-                                                    "paginate": {
-                                                        previous: '<span class="bi bi-chevron-left"></span>',
-                                                        next: '<span class="bi bi-chevron-right"></span>'
-                                                    },
-                                                    "lengthMenu": '<select class="form-control input-sm">' +
-                                                        '<option value="5">5</option>' +
-                                                        '<option value="10">10</option>' +
-                                                        '<option value="20">20</option>' +
-                                                        '<option value="30">30</option>' +
-                                                        '<option value="40">40</option>' +
-                                                        '<option value="50">50</option>' +
-                                                        '<option value="-1">All</option>' +
-                                                        '</select> Entries per page',
-                                                },
-                                                initComplete: function() {
-                                                    this.api()
-                                                        .columns([2, 6, 7])
-                                                        .every(function() {
-                                                            var column = this;
+                                            // Initialize DataTable with no sorting by default
+                                            var table = $('#userTable').DataTable({
+                                                paging: true,
+                                                searching: true,
+                                                ordering: true,
+                                                order: [],
+                                            });
 
-                                                            // Create select element and listener
-                                                            var select = $('<select class="form-select"><option value=""></option></select>')
-                                                                .appendTo($(column.footer()).empty())
-                                                                .on('change', function() {
-                                                                    var val = $.fn.dataTable.util.escapeRegex($(this).val()); // Escape regex for exact matching
-                                                                    column
-                                                                        .search(val ? '^' + val + '$' : '', true, false) // Exact match with regex
-                                                                        .draw();
-                                                                });
+                                            // Filter by Role
+                                            $('#filterRole').on('change', function() {
+                                                var selectedValue = $(this).val();
+                                                if (selectedValue) {
+                                                    table.column(2) // Role column (index 2)
+                                                        .search(selectedValue)
+                                                        .draw();
+                                                } else {
+                                                    table.column(2).search('').draw(); // Clear filter
+                                                }
+                                            });
 
-                                                            // Add list of options
-                                                            column
-                                                                .data()
-                                                                .unique()
-                                                                .sort()
-                                                                .each(function(d, j) {
-                                                                    select.append(
-                                                                        '<option value="' + d + '">' + d + '</option>'
-                                                                    );
-                                                                });
-                                                        });
+                                            // Filter by Gender
+                                            $('#filterGender').on('change', function() {
+                                                var selectedValue = $(this).val();
+                                                if (selectedValue) {
+                                                    table.column(5) // Gender column (index 5)
+                                                        .search('^' + selectedValue + '$', true, false) // Use regular expression for exact match
+                                                        .draw();
+                                                } else {
+                                                    table.column(5).search('').draw(); // Clear filter
+                                                }
+                                            });
+
+                                            // Filter by Status
+                                            $('#filterStatus').on('change', function() {
+                                                var selectedValue = $(this).val();
+                                                if (selectedValue) {
+                                                    table.column(6) // Status column (index 6)
+                                                        .search(selectedValue)
+                                                        .draw();
+                                                } else {
+                                                    table.column(6).search('').draw(); // Clear filter
                                                 }
                                             });
 
                                             // Select All functionality
                                             $('#checkbox_selectAll').on('change', function() {
                                                 const isChecked = $(this).is(':checked');
-                                                $('#dataTable_allUsers tbody input[type="checkbox"]').prop('checked', isChecked);
+                                                $('#userTable tbody input[type="checkbox"]').prop('checked', isChecked);
                                             });
 
                                             // Ensure "Select All" reflects individual checkbox changes
-                                            $('#dataTable_allUsers tbody').on('change', 'input[type="checkbox"]', function() {
-                                                const totalCheckboxes = $('#dataTable_allUsers tbody input[type="checkbox"]').length;
-                                                const checkedCheckboxes = $('#dataTable_allUsers tbody input[type="checkbox"]:checked').length;
+                                            $('#userTable tbody').on('change', 'input[type="checkbox"]', function() {
+                                                const totalCheckboxes = $('#userTable tbody input[type="checkbox"]').length;
+                                                const checkedCheckboxes = $('#userTable tbody input[type="checkbox"]:checked').length;
 
                                                 $('#checkbox_selectAll').prop('checked', totalCheckboxes === checkedCheckboxes);
                                             });
                                         });
                                     </script>
-
-
                                     <!-- END OF DATA TABLE -->
                                     <!-- =============================================== -->
                                 <?php } else {
                                     $_SESSION["_ResultMessage"] = $getAllUsers['message'];
                                 } ?>
                             </div>
+
+
+
                         </div>
                     <?php elseif (isset($_GET['viewRole']) && !isset($_GET['user_id'])): ?>
                         <div class="bg-white rounded p-3 shadow-sm border">
                             <div class="mb-3 row align-items-start bg-transparent box-sizing-border-box">
-                                <div class="col-4 d-flex gap-2 justify-content-start align-items-center box-sizing-border-box">
+                                <div
+                                    class="col-4 d-flex gap-2 justify-content-start align-items-center box-sizing-border-box">
                                     <!-- breadcrumbs -->
                                     <h5 class="ctxt-primary p-0 m-0">
                                         <a class="ctxt-primary" href="<?= clearUrlParams(); ?>">Users</a>
                                         <?php if (isset($_GET['viewRole'])) { ?>
                                             <span><i class="bi bi-caret-right-fill"></i></span>
-                                            <a class="ctxt-primary" href="<?= updateUrlParams(['viewRole' => $_GET['viewRole']]) ?>"><?= ucfirst($_GET['viewRole']) ?></a>
+                                            <a class="ctxt-primary"
+                                                href="<?= updateUrlParams(['viewRole' => $_GET['viewRole']]) ?>"><?= ucfirst($_GET['viewRole']) ?></a>
                                         <?php } ?>
                                         <?php if (isset($_GET['viewRole']) && isset($_GET['user_id'])) { ?>
                                             <?php
@@ -345,7 +387,8 @@ if (isset($_GET['viewRole']) && isset($_GET['user_id'])) {
                                             }
                                             ?>
                                             <span><i class="bi bi-caret-right-fill"></i></span>
-                                            <a class="ctxt-primary" href="<?= updateUrlParams(['viewRole' => $_GET['viewRole'], 'user_id' => $_GET['user_id']]) ?>">
+                                            <a class="ctxt-primary"
+                                                href="<?= updateUrlParams(['viewRole' => $_GET['viewRole'], 'user_id' => $_GET['user_id']]) ?>">
                                                 <?php ucfirst($retrieved_user['data']['user_id']) ?>
                                             </a>
                                         <?php } ?>
@@ -365,130 +408,113 @@ if (isset($_GET['viewRole']) && isset($_GET['user_id'])) {
                                 if ($getAllUsers['success'] == true) { ?>
                                     <!-- =============================================== -->
                                     <!-- DATA TABLE BY ROLES -->
-                                    <div class="actionControls mb-2 p-1 bg-transparent d-flex gap-2 justify-content-end align-items-center">
-                                        <button class="btn btn-danger" onclick="" disabled>
+                                    <div
+                                        class="actionControls mb-2 p-1 bg-transparent d-flex gap-2 justify-content-end align-items-center">
+                                        <button class="btn btn-danger" onclick="">
                                             <i class="bi bi-trash"></i>
                                             Remove Selection
                                         </button>
                                     </div>
-                                    <table id="dataTable_allUsers" class="table table-responsive-sm border display compact" style="width: 100%">
-                                        <thead style="background-color: var(--c-brand-primary-a0) !important;">
-                                            <tr>
-                                                <th>
-                                                    <input type="checkbox" id="checkbox_selectAll" class="form-check-input" value="<?php htmlspecialchars($row[$uniqueIDTarget] ?? '') ?>">
-                                                </th>
-                                                <th>User Id</th>
-                                                <th>Role</th>
-                                                <th>Username</th>
-                                                <th>Full Name</th>
-                                                <th>Gender</th>
-                                                <th>Status</th>
-                                                <th>Action</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            <?php foreach ($getAllUsers['data'] as $userData) { ?>
-                                                <?php if (empty($getAllUsers['data'])) { ?>
+
+                                    <div class="container mt-4">
+                                        <!-- Filters -->
+                                        <div class="filters mb-3">
+                                            <select id="filterRole" class="form-select d-inline w-auto">
+                                                <option value="">Select Role</option>
+                                                <option value="Admin">Admin</option>
+                                                <option value="Level Coordinator">Level Coordinator</option>
+                                                <option value="Teacher">Teacher</option>
+                                                <option value="Student">Student</option>
+                                            </select>
+
+                                            <select id="filterGender" class="form-select d-inline w-auto">
+                                                <option value="">Select Gender</option>
+                                                <option value="Male">Male</option>
+                                                <option value="Female">Female</option>
+                                            </select>
+
+                                            <select id="filterStatus" class="form-select d-inline w-auto">
+                                                <option value="">Select Status</option>
+                                                <option value="Active">Active</option>
+                                                <option value="Inactive">Inactive</option>
+                                            </select>
+                                        </div>
+
+                                        <!-- Table -->
+                                        <table id="userTable" class="table table-striped table-bordered">
+                                            <thead>
+                                                <tr>
+                                                    <th><input class="form-check-input" type="checkbox" id="checkAll"></th>
+                                                    <th>User Id</th>
+                                                    <th>Role</th>
+                                                    <th>Username</th>
+                                                    <th>Full Name</th>
+                                                    <th>Gender</th>
+                                                    <th>Status</th>
+                                                    <th>Action</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <?php foreach ($getAllUsers['data'] as $user): ?>
                                                     <tr>
-                                                        <td colspan="9">No data available</td>
+                                                        <td><input type="checkbox" class="form-check-input"></td>
+                                                        <td><?php echo htmlspecialchars($user['user_id']); ?></td>
+                                                        <td><?php echo htmlspecialchars($user['role']); ?></td>
+                                                        <td><?php echo htmlspecialchars($user['username']); ?></td>
+                                                        <td><?php echo htmlspecialchars($user['first_name'] . ' ' . $user['middle_name'] . ' ' . $user['last_name']); ?></td>
+                                                        <td><?php echo htmlspecialchars($user['gender']); ?></td>
+                                                        <td><?php echo htmlspecialchars($user['status']); ?></td>
+                                                        <td><a href="<?php echo updateUrlParams(['viewRole' => $_GET['viewRole'], 'user_id' => $user['user_id']]) ?>"><button class="btn btn-primary">Edit</button></a></td>
                                                     </tr>
-                                                <?php } else { ?>
-                                                    <tr>
-                                                        <td>
-                                                            <input type="checkbox" class="form-check-input" value="<?php htmlspecialchars($userData['user_id'] ?? '') ?>">
-                                                        </td>
-                                                        <td><?php echo $userData['user_id'] ?></td>
-                                                        <td><?php echo $userData['role'] ?></td>
-                                                        <td><?php echo $userData['username'] ?></td>
-                                                        <td><?php echo $userData['first_name'] . ' ' . $userData['last_name'] ?></td>
-                                                        <td><?php echo ucfirst($userData['gender']) ?></td>
-                                                        <td class="fw-bold <?php echo $userData['status'] == 'active' ? 'ctxt-primary' : 'text-danger' ?>"><?php echo ucfirst($userData['status']) ?></td>
-                                                        <td>
-                                                            <a href="<?php echo htmlspecialchars(updateUrlParams(['viewRole' => $userData['role'], 'user_id' => $userData['user_id']])) ?>" title="Configure" class="btn btn-primary m-auto">
-                                                                <i class="bi bi-pencil-square"></i>
-                                                            </a>
-                                                        </td>
-                                                    </tr>
-                                            <?php }
-                                            } ?>
-                                        </tbody>
-                                        <tfoot>
-                                            <tr>
-                                                <th></th>
-                                                <th></th>
-                                                <th></th>
-                                                <th></th>
-                                                <th></th>
-                                                <th></th>
-                                                <th></th>
-                                                <th></th>
-                                            </tr>
-                                        </tfoot>
-                                    </table>
+                                                <?php endforeach; ?>
+                                            </tbody>
+                                        </table>
+                                    </div>
+
                                     <script>
                                         $(document).ready(function() {
-                                            $('#dataTable_allUsers').DataTable({
-                                                columnDefs: [{
-                                                    "orderable": false,
-                                                    "targets": [0, 7]
-                                                }],
-                                                language: {
-                                                    "paginate": {
-                                                        previous: '<span class="bi bi-chevron-left"></span>',
-                                                        next: '<span class="bi bi-chevron-right"></span>'
-                                                    },
-                                                    "lengthMenu": '<select class="form-control input-sm">' +
-                                                        '<option value="5">5</option>' +
-                                                        '<option value="10">10</option>' +
-                                                        '<option value="20">20</option>' +
-                                                        '<option value="30">30</option>' +
-                                                        '<option value="40">40</option>' +
-                                                        '<option value="50">50</option>' +
-                                                        '<option value="-1">All</option>' +
-                                                        '</select> Entries per page',
-                                                },
-                                                initComplete: function() {
-                                                    this.api()
-                                                        .columns([5, 6])
-                                                        .every(function() {
-                                                            var column = this;
+                                            // Initialize DataTable with no sorting by default
+                                            var table = $('#userTable').DataTable({
+                                                paging: true,
+                                                searching: true, // Disable global searching by default
+                                                ordering: true, // Enable ordering but set default order to none
+                                                order: [], // Prevent default ordering (no initial sort)
+                                            });
 
-                                                            // Create select element and listener
-                                                            var select = $('<select class="form-select"><option value=""></option></select>')
-                                                                .appendTo($(column.footer()).empty())
-                                                                .on('change', function() {
-                                                                    var val = $.fn.dataTable.util.escapeRegex($(this).val()); // Escape regex for exact matching
-                                                                    column
-                                                                        .search(val ? '^' + val + '$' : '', true, false) // Exact match with regex
-                                                                        .draw();
-                                                                });
-
-                                                            // Add list of options
-                                                            column
-                                                                .data()
-                                                                .unique()
-                                                                .sort()
-                                                                .each(function(d, j) {
-                                                                    select.append(
-                                                                        '<option value="' + d + '">' + d + '</option>'
-                                                                    );
-                                                                });
-                                                        });
+                                            // Filter by Role
+                                            $('#filterRole').on('change', function() {
+                                                var selectedValue = $(this).val();
+                                                if (selectedValue) {
+                                                    table.column(2) // Role column (index 2)
+                                                        .search(selectedValue)
+                                                        .draw();
+                                                } else {
+                                                    table.column(2).search('').draw(); // Clear filter
                                                 }
                                             });
 
-                                            // Select All functionality
-                                            $('#checkbox_selectAll').on('change', function() {
-                                                const isChecked = $(this).is(':checked');
-                                                $('#dataTable_allUsers tbody input[type="checkbox"]').prop('checked', isChecked);
+                                            // Filter by Gender
+                                            $('#filterGender').on('change', function() {
+                                                var selectedValue = $(this).val();
+                                                if (selectedValue) {
+                                                    table.column(5) // Gender column (index 5)
+                                                        .search(selectedValue)
+                                                        .draw();
+                                                } else {
+                                                    table.column(5).search('').draw(); // Clear filter
+                                                }
                                             });
 
-                                            // Ensure "Select All" reflects individual checkbox changes
-                                            $('#dataTable_allUsers tbody').on('change', 'input[type="checkbox"]', function() {
-                                                const totalCheckboxes = $('#dataTable_allUsers tbody input[type="checkbox"]').length;
-                                                const checkedCheckboxes = $('#dataTable_allUsers tbody input[type="checkbox"]:checked').length;
-
-                                                $('#checkbox_selectAll').prop('checked', totalCheckboxes === checkedCheckboxes);
+                                            // Filter by Status
+                                            $('#filterStatus').on('change', function() {
+                                                var selectedValue = $(this).val();
+                                                if (selectedValue) {
+                                                    table.column(6) // Status column (index 6)
+                                                        .search(selectedValue)
+                                                        .draw();
+                                                } else {
+                                                    table.column(6).search('').draw(); // Clear filter
+                                                }
                                             });
                                         });
                                     </script>
@@ -504,13 +530,15 @@ if (isset($_GET['viewRole']) && isset($_GET['user_id'])) {
                     <?php elseif (isset($_GET['viewRole']) && isset($_GET['user_id'])): ?>
                         <div class="bg-white rounded p-3 shadow-sm border">
                             <div class="mb-3 row align-items-start bg-transparent box-sizing-border-box">
-                                <div class="col-md-8 d-flex gap-2 justify-content-start align-items-center box-sizing-border-box">
+                                <div
+                                    class="col-md-8 d-flex gap-2 justify-content-start align-items-center box-sizing-border-box">
                                     <!-- breadcrumbs -->
                                     <h5 class="ctxt-primary p-0 m-0">
                                         <a class="ctxt-primary" href="<?= clearUrlParams(); ?>">Users</a>
                                         <?php if (isset($_GET['viewRole'])) { ?>
                                             <span><i class="bi bi-caret-right-fill"></i></span>
-                                            <a class="ctxt-primary" href="<?= updateUrlParams(['viewRole' => $_GET['viewRole']]) ?>"><?= ucfirst($_GET['viewRole']) ?></a>
+                                            <a class="ctxt-primary"
+                                                href="<?= updateUrlParams(['viewRole' => $_GET['viewRole']]) ?>"><?= ucfirst($_GET['viewRole']) ?></a>
                                         <?php } ?>
                                         <?php if (isset($_GET['viewRole']) && isset($_GET['user_id'])) { ?>
                                             <?php
@@ -523,7 +551,8 @@ if (isset($_GET['viewRole']) && isset($_GET['user_id'])) {
                                             ?>
                                             <?php if (!empty($retrieved_user['data'])) { ?>
                                                 <span><i class="bi bi-caret-right-fill"></i></span>
-                                                <a class="ctxt-primary" href="<?= updateUrlParams(['viewRole' => $_GET['viewRole'], 'user_id' => $_GET['user_id']]) ?>">
+                                                <a class="ctxt-primary"
+                                                    href="<?= updateUrlParams(['viewRole' => $_GET['viewRole'], 'user_id' => $_GET['user_id']]) ?>">
                                                     <?php echo $retrieved_user['data']['first_name'] . ' ' . $retrieved_user['data']['middle_name'] . ' ' . $retrieved_user['data']['last_name'] . ' (' . $retrieved_user['data']['user_id'] . ')' ?>
                                                 </a>
                                             <?php } else {
@@ -546,157 +575,26 @@ if (isset($_GET['viewRole']) && isset($_GET['user_id'])) {
                                 <!-- <div class="col-8 d-flex justify-content-end gap-2"></div> -->
                             </div>
                             <!-- Content View -->
-                            <?php if (!empty($retrieved_user['data'])):
-                                // prepare the data.
-                                $user_profileImage = base64_encode($retrieved_user['data']['profile_pic']);
-                                $user_userid = $retrieved_user['data']['user_id'];
-                                $user_firstName = $retrieved_user['data']['first_name'];
-                                $user_middleName = $retrieved_user['data']['middle_name'];
-                                $user_lastName = $retrieved_user['data']['last_name'];
-                                $user_fullName = $retrieved_user['data']['first_name'] . ' ' . $retrieved_user['data']['middle_name'] . ' ' . $retrieved_user['data']['last_name'];
-                                $user_dob = $retrieved_user['data']['dob'];
-                                $user_gender = $retrieved_user['data']['gender'];
-                                $user_username = $retrieved_user['data']['username'];
-                                $user_status = $retrieved_user['data']['status'];
-                                $user_createdDate = $retrieved_user['data']['created_at'];
-                                $user_lastUpdate = $retrieved_user['data']['updated_at'];
-                                $user_requirePasswordReset = $retrieved_user['data']['requirePasswordReset'];
-                                $user_lastLogin = timeElapsedSince($retrieved_user['data']['last_login']);
-                            ?>
-                                <hr>
-                                <!-- generated -->
-                                <div class="container my-4">
-                                    <h4 class="fw-bolder text-success">Edit Profile</h4>
-                                    <div class="card shadow-sm position-relative">
-                                        <div class="card-header position-relative d-flex justify-content-start align-items-center gap-3 bg-success bg-opacity-75">
-                                            <div class="position-absolute top-0 end-0 mt-3 me-4">
-                                                <button class="btn cbtn-secondary px-4" disabled>
-                                                    Edit
-                                                </button>
-                                            </div>
-                                            <img src="<?= isset($user_profileImage) && !empty($user_profileImage)
-                                                            ? 'data:image/jpeg;base64,' . $user_profileImage
-                                                            : 'https://via.placeholder.com/200?text=No+Image' ?>"
-                                                alt="Profile Picture"
-                                                class="rounded-circle img-fluid border border-3 border-success"
-                                                style="width: 120px; height: 120px; object-fit: cover;">
-                                            <div class="text-white p-0">
-                                                <h3 class="mt-3 p-0 m-0"><?= htmlspecialchars($user_fullName) ?></h3>
-                                                <p class="text-white p-0 m-0">@<?= htmlspecialchars($user_username) ?></p>
-                                            </div>
-                                        </div>
-                                        <div class="card-body">
-                                            <section class="mb-4">
-                                                <div class="row mb-3">
-                                                    <h5>Account Information</h5>
-                                                </div>
-                                                <div class="row mb-3">
-                                                    <div class="col-md-4">
-                                                        <h6 class="">User Name</h6>
-                                                        <input updateEnabled class="form-control" type="text" disabled value="<?= htmlspecialchars($user_username) ?>">
-                                                    </div>
-                                                    <div class="col-md-4">
-                                                        <h6 class="">Password</h6>
-                                                        <input updateEnabled class="form-control" type="password" disabled value="<?= htmlspecialchars($user_username) ?>">
-                                                    </div>
-                                                    <div class="col-md-4">
-                                                        <h6 class="">Requires Password Change</h6>
-                                                        <select class="form-select" disabled>
-                                                            <?php if ($user_requirePasswordReset) { ?>
-                                                                <option value="1" selected>Yes</option>
-                                                            <?php } else { ?>
-                                                                <option value="0" selected>No</option>
-                                                            <?php } ?>
-                                                        </select>
-                                                    </div>
-                                                </div>
-                                            </section>
-
-                                            <hr>
-
-                                            <section class="mb-4">
-                                                <div class="row mb-3">
-                                                    <h5>Personal Information</h5>
-                                                </div>
-                                                <div class="row mb-3">
-                                                    <div class="col-md-4">
-                                                        <h6 class="">First Name</h6>
-                                                        <input updateEnabled class="form-control" type="text" disabled value="<?= htmlspecialchars($user_firstName) ?>">
-                                                    </div>
-                                                    <div class="col-md-4">
-                                                        <h6 class="">Middle Name</h6>
-                                                        <input updateEnabled class="form-control" type="text" disabled value="<?= htmlspecialchars($user_middleName) ?>">
-                                                    </div>
-                                                    <div class="col-md-4">
-                                                        <h6 class="">Last Name</h6>
-                                                        <input updateEnabled class="form-control" type="text" disabled value="<?= htmlspecialchars($user_lastName) ?>">
-                                                    </div>
-                                                </div>
-                                                <div class="row mb-3">
-                                                    <div class="col-md-4">
-                                                        <h6 class="">Date of Birth</h6>
-                                                        <input updateEnabled class="form-control" type="date" disabled value="<?= htmlspecialchars($user_dob) ?>">
-                                                    </div>
-                                                    <div class="col-md-4">
-                                                        <h6 class="">Gender</h6>
-                                                        <select class="form-select" disabled>
-                                                            <?php if ($user_gender == 'male') { ?>
-                                                                <option value="male" selected>Male</option>
-                                                            <?php } else { ?>
-                                                                <option value="female" selected>Female</option>
-                                                            <?php } ?>
-                                                        </select>
-                                                    </div>
-                                                </div>
-                                            </section>
-
-                                            <hr>
-
-                                            <section class="mb-4">
-                                                <div class="row mb-3">
-                                                    <h5>Miscellaneous</h5>
-                                                </div>
-                                                <div class="row mb-3">
-                                                    <div class="col-md-4">
-                                                        <h6 class="">Created Date</h6>
-                                                        <span class=""><?= htmlspecialchars($user_createdDate) ?></span>
-                                                    </div>
-                                                    <div class="col-md-4">
-                                                        <h6 class="">Last Update Date</h6>
-                                                        <span class=""><?= htmlspecialchars($user_lastUpdate) ?></span>
-                                                    </div>
-                                                </div>
-                                                <div class="row mb-3">
-                                                    <div class="col-md-6">
-                                                        <h6 class="">Last Login:</h6>
-                                                        <span class=""><?= !empty($user_lastLogin) ? htmlspecialchars($user_lastLogin) : 'No activity yet.' ?></span>
-                                                    </div>
-                                                </div>
-                                            </section>
-
-                                        </div>
-                                    </div>
-                                </div>
-                            <?php else: ?>
-                                <h3 class="text-danger">No Information Shown.</h3>
-                            <?php endif; ?>
+                            <hr>
+                            <?php require_once(FILE_PATHS['Partials']['HighLevel']['Configures'] . "config_User.php") ?>
                         </div>
-                    <?php endif; ?>
                 </div>
-            </section>
-        </section>
+            <?php endif; ?>
+    </div>
+    </section>
+    </section>
 
-        <?php
-        require_once(FILE_PATHS['Partials']['User']['UpdateCardImage']);
-        if (isset($_GET['viewRole'])) {
-            echo create_UpdateCardImage('roles', $_GET['viewRole']);
-        }
-        ?>
+    <?php
+    require_once(FILE_PATHS['Partials']['User']['UpdateCardImage']);
+    if (isset($_GET['viewRole'])) {
+        echo create_UpdateCardImage('roles', $_GET['viewRole']);
+    }
+    ?>
 
-        <?php require_once(FILE_PATHS['Partials']['HighLevel']['Modals']['User']['Add']) ?>
+    <?php require_once(FILE_PATHS['Partials']['HighLevel']['Modals']['User']['Add']) ?>
 
-        <!-- FOOTER -->
-        <?php require_once(FILE_PATHS['Partials']['User']['Footer']) ?>
+    <!-- FOOTER -->
+    <?php require_once(FILE_PATHS['Partials']['User']['Footer']) ?>
     </div>
 </body>
 <script src="<?php echo asset('js/preview-handler.js') ?>"></script>

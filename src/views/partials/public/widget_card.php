@@ -31,7 +31,7 @@ class Card
         if ($hasImage) {
             $DOM_IMAGE = <<<HTML
                 <div class="card-preview">
-                    <img src="$imageSrc" alt="No Image Available" class="img-fluid">
+                    <img src="$imageSrc" alt="No Image Available" class="img-fluid lazy-image" loading="lazy">
                 </div>
             HTML;
         }
