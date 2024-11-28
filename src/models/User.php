@@ -341,4 +341,61 @@ class User
 
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
+
+    public function updateUserInfo($userId, $userData)
+    {
+        try {
+            // Begin transaction
+            $this->conn->beginTransaction();
+
+            // Prepare the SQL query with only the fields that need to be updated
+            $query = "
+            UPDATE {$this->table_name} 
+            SET 
+                first_name = :first_name,
+                middle_name = :middle_name,
+                last_name = :last_name,
+                gender = :gender,
+                dob = :dob,
+                requirePasswordReset = :requirePasswordReset,
+                updated_at = NOW()";
+
+            // Add password to query if provided in $userData
+            if (!empty($userData['password'])) {
+                $query .= ", password = :password";
+            }
+
+            $query .= " WHERE user_id = :user_id";
+
+            // Prepare statement
+            $stmt = $this->conn->prepare($query);
+
+            // Bind parameters
+            $stmt->bindParam(':first_name', $userData['first_name']);
+            $stmt->bindParam(':middle_name', $userData['middle_name']);
+            $stmt->bindParam(':last_name', $userData['last_name']);
+            $stmt->bindParam(':gender', $userData['gender']);
+            $stmt->bindParam(':dob', $userData['dob']);
+            $stmt->bindParam(':requirePasswordReset', $userData['requirePasswordReset'], PDO::PARAM_INT);
+            $stmt->bindParam(':user_id', $userId, PDO::PARAM_INT);
+
+            // Bind password if it's provided in $userData
+            if (!empty($userData['password'])) {
+                $hashedPassword = password_hash($userData['password'], PASSWORD_DEFAULT);
+                $stmt->bindParam(':password', $hashedPassword);
+            }
+
+            // Execute the statement
+            $stmt->execute();
+
+            // Commit the transaction
+            $this->conn->commit();
+
+            return ['success' => true, 'message' => 'User information updated successfully.'];
+        } catch (PDOException $e) {
+            // Rollback transaction on error
+            $this->conn->rollBack();
+            return ['success' => false, 'message' => 'Failed to update user information: ' . $e->getMessage()];
+        }
+    }
 }

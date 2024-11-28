@@ -15,6 +15,23 @@ class UserController
         $this->generalLogsController = new GeneralLogsController();
     }
 
+    // UPDATE USER PROFILE
+    public function updateUserProfile($userId, $newData)
+    {
+        try {
+            $updateResult = $this->userModel->updateUserInfo($userId, $newData);
+
+            if ($updateResult['success']) {
+                msgLog("UPDATE PROFILE", "[UPDATE] [USER ID: " . $userId . "] | Updated user profile.");
+                return ["success" => true, "message" => "User profile updated successfully."];
+            } else {
+                return ["success" => false, "message" => "Failed to update user profile."];
+            }
+        } catch (Exception $e) {
+            return ["success" => false, "message" => $e->getMessage()];
+        }
+    }
+
     // ADD DATA
     public function addUser($userData)
     {

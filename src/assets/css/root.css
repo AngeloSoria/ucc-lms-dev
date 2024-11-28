@@ -143,6 +143,23 @@ body[data-theme="dark"] {
     background-color: rgba(var(--c-brand-primary-a0), 0.5) !important;
 }
 
+.btn-primary {
+    --bs-btn-color: #fff;
+    --bs-btn-bg: var(--c-brand-secondary-a0);
+    --bs-btn-border-color: var(--c-brand-secondary-a0);
+    --bs-btn-hover-color: #fff;
+    --bs-btn-hover-bg: var(--c-brand-secondary-a20);
+    --bs-btn-hover-border-color: var(--c-brand-secondary-a40);
+    --bs-btn-focus-shadow-rgb: 49, 132, 253;
+    --bs-btn-active-color: #fff;
+    --bs-btn-active-bg: var(--c-brand-secondary-a0);
+    --bs-btn-active-border-color: var(--c-brand-secondary-a0);
+    --bs-btn-active-shadow: inset 0 3px 5px rgba(0, 0, 0, 0.125);
+    --bs-btn-disabled-color: #fff;
+    --bs-btn-disabled-bg: var(--c-brand-secondary-a0);
+    --bs-btn-disabled-border-color: var(--c-brand-secondary-a0);
+}
+
 .cbtn-secondary {
     background-color: var(--c-brand-secondary-a0) !important;
     color: white !important;
@@ -288,4 +305,46 @@ a {
 
 .no-scroll {
     overflow: hidden;
+}
+
+/* BADGES */
+/* Styling for log type badges */
+.badge {
+    font-size: 0.9rem;
+    padding: 5px 10px;
+    border-radius: 0.5rem;
+    color: #fff;
+}
+
+.badge-primary {
+    background-color: #007bff;
+}
+
+.badge-success {
+    background-color: #28a745;
+}
+
+.badge-secondary {
+    background-color: #6c757d;
+}
+
+.badge-warning {
+    background-color: #ffc107;
+    color: #212529;
+}
+
+.badge-danger {
+    background-color: #dc3545;
+}
+
+/* Styling for user_id hyperlink */
+.user-link {
+    color: #007bff;
+    text-decoration: underline;
+    cursor: pointer;
+}
+
+.user-link:hover {
+    text-decoration: none;
+    color: #0056b3;
 }

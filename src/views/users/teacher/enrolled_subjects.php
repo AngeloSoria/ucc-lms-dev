@@ -66,7 +66,7 @@ $myEnrolledSubjects = $subjectSectionController->getAllEnrolledSubjectsFromSecti
                                         $sectionInfo = $sectionController->getSectionById($subject['section_id']);
                                     ?>
                                         <div class="col-md-6 col-lg-4 p-1" style="height: 250px;">
-                                            <a href="subject_view.php">
+                                            <a href="subject_view.php?subject_section_id=<?php echo $subject['subject_section_id'] ?>">
                                                 <div id="item_card" class="h-100 w-100 bg-success bg-opacity-75 shadow-sm border rounded overflow-hidden d-flex flex-column">
                                                     <div>
                                                         <?php if (!empty($subject['subject_section_image'])): ?>
@@ -77,7 +77,7 @@ $myEnrolledSubjects = $subjectSectionController->getAllEnrolledSubjectsFromSecti
                                                     </div>
                                                     <div class="px-2 flex-grow-1 position-relative">
                                                         <p class="fs-6 text-white pt-2 fw-semibold">
-                                                            <?php echo $subjectInfo['data']['0']['subject_name'] . ' (' . $subjectInfo['data']['0']['subject_code'] . ')' ?>
+                                                            <?php echo $subjectInfo['data']['subject_name'] . ' (' . $subjectInfo['data']['subject_code'] . ')' ?>
                                                         </p>
                                                         <p class="fs-7 text-white position-absolute bottom-0 start-0 ms-2 mb-2">
                                                             <?php echo $sectionInfo['data']['section_name'] ?>

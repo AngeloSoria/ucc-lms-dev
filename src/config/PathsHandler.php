@@ -10,9 +10,12 @@ define('BASE_URL', $_SERVER['DOCUMENT_ROOT'] . BASE_PATH_LINK);
 define('VENDOR_AUTO_LOAD', BASE_PATH . 'vendor/autoload.php');
 
 
+define('ERROR_PATH', BASE_PATH_LINK . 'src/views/partials/special/error.php');
+
+
 define('UPLOAD_PATH', [
     'System' => BASE_PATH_LINK . 'src/uploads/system',
-    'User' => BASE_PATH_LINK . 'src/uploads/user',
+    'User' => BASE_PATH_LINK . 'src/uploads/users',
 ]);
 
 define('FILE_PATHS', [
@@ -131,7 +134,7 @@ define('FILE_PATHS', [
 
             ],
 
-            'Configures' => __DIR__ . '../../views/partials/high-level/configures/',
+            'Configures' => __DIR__ . '../../views/partials/high-level/Configures/',
 
             'Fetcher' => [
                 'Program' => 'src/views/partials/high-level/fetch_programs.php',

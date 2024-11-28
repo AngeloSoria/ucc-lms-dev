@@ -77,36 +77,47 @@ $fakedata_enrolled_subjects2 = [
     <div class="bg-transparent h-100">
         <div id="container_listview">
             <ul class="list-group list-group-flush overflow-y-auto overflow-x-hidden" style="max-height: 240px;">
-                <?php foreach ($fakedata_enrolled_subjects2 as $subject) { ?>
-                    <li class="list-group-item box border-box bg-transparent p-0 py-1">
-                        <div class="row bg-transparent p-1">
-                            <div class="col-sm-9 col-md-6 col-lg-6 d-flex justify-content-start align-items-center gap-2">
-                                <div id="itemIconContainer" class="position-relative rounded" style="width: 50px; height: 50px;">
-                                    <img class="object-fit-fill position-absolute w-100 h-100 rounded border border-success" src="<?php echo asset($subject['subject_image']) ?>" alt="subject image">
-                                </div>
-                                <div>
-                                    <a href="#" class="link">
-                                        <p class="fs-6 p-0 m-0"><?php echo $subject['subject_name'] . ' (' . $subject['subject_code'] . ')' ?></p>
-                                    </a>
-                                    <a href="#" class="link-dark">
-                                        <p class="fs-7 p-0 m-0"><?php echo $subject['subject_section'] ?></p>
-                                    </a>
-                                </div>
-                            </div>
-                            <div class="col-sm-3 col-md-4 col-lg-6 d-flex align-items-center justify-content-end">
-                                <div class="d-flex gap-3 fw-semibold">
-                                    <div class="d-flex gap-1 fs-7 align-items-center bg-primary bg-opacity-75 px-2 rounded-pill text-white" title="Grades">
-                                        <p>87</p>
-                                        <div class="icon"><i class="bi bi-percent"></i></div>
+                <?php if (!empty($myEnrolledSubjects['data'])) { ?>
+                    <?php foreach ($myEnrolledSubjects['data'] as $subject) {
+                        $subjectInfo = $subjectController->getSubjectFromSubjectId($subject['subject_id']);
+                        $sectionInfo = $sectionController->getSectionById($subject['section_id']);
+                    ?>
+                        <li class="list-group-item box border-box bg-transparent p-0 py-1">
+                            <div class="row bg-transparent p-1">
+                                <div class="col-sm-9 col-md-6 col-lg-6 d-flex justify-content-start align-items-center gap-2">
+                                    <div id="itemIconContainer" class="position-relative rounded" style="width: 50px; height: 50px;">
+                                        <?php if (!empty($subject['subject_section_image'])): ?>
+                                            <img src="<?php echo "data:image/jpeg;base64," . base64_encode($subject['subject_section_image']) ?>" class="object-fit-fill position-absolute w-100 h-100 rounded border border-success" style="height: 120px;">
+                                        <?php else: ?>
+                                            <img src="<?php echo asset('img/placeholder-1.jpg') ?>" class="object-fit-fill position-absolute w-100 h-100 rounded border border-success" style="height: 120px;">
+                                        <?php endif; ?>
                                     </div>
-                                    <div class="d-flex gap-1 fs-7 align-items-center bg-danger bg-opacity-75 px-2 rounded-pill text-white" title="Number of Modules">
-                                        <p>1</p>
-                                        <div class="icon"><i class="bi bi-file-earmark-text-fill"></i></div>
+                                    <div>
+                                        <a href="<?= "subject_view.php?subject_section_id=" . $subject['subject_section_id'] ?>" class="link link-body-emphasis">
+                                            <p class="fs-6 p-0 m-0"><?php echo $subjectInfo['data']['subject_name'] . ' (' . $subjectInfo['data']['subject_code'] . ')' ?></p>
+                                        </a>
+                                        <a href="#" class="link-dark">
+                                            <p class="fs-7 p-0 m-0"><?php echo $sectionInfo['data']['section_name'] ?></p>
+                                        </a>
                                     </div>
                                 </div>
+                                <div class="col-sm-3 col-md-4 col-lg-6 d-flex align-items-center justify-content-end">
+                                    <div class="d-flex gap-3 fw-semibold">
+                                        <div class="d-flex gap-1 fs-7 align-items-center bg-primary bg-opacity-75 px-2 rounded-pill text-white" title="Grades">
+                                            <p>87</p>
+                                            <div class="icon"><i class="bi bi-percent"></i></div>
+                                        </div>
+                                        <div class="d-flex gap-1 fs-7 align-items-center bg-danger bg-opacity-75 px-2 rounded-pill text-white" title="Number of Modules">
+                                            <p>1</p>
+                                            <div class="icon"><i class="bi bi-file-earmark-text-fill"></i></div>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
-                        </div>
-                    </li>
+                        </li>
+                    <?php } ?>
+                <?php } else { ?>
+                    <p class="fs-6 m-auto p-4">No enrolled subjects...</p>
                 <?php } ?>
             </ul>
         </div>

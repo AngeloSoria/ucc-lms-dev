@@ -105,10 +105,16 @@ try {
                                         (Max item: 4)
                                     </p>
                                 </h5>
-                                <div id="sortableCarousel" class="sortable-main bg-light-3 border">
-                                    <div class="d-flex flex-wrap gap-0 p-1" role="listbox" id="sortableContentHomeCarousel">
+                                <div id="sortableCarousel" class="sortable-main border bg-white">
+                                    <div class="d-flex flex-wrap gap-0 p-1 bg-light-3" role="listbox" id="sortableContentHomeCarousel">
                                         <?php createSortable($selectedImagesHome); ?>
                                     </div>
+                                    <form method="POST" class="p-2 d-flex justify-content-end align-items-start">
+                                        <button type="submit" class="btn btn-success d-flex gap-2" id="btnUpdate">
+                                            <i class="bi bi-floppy-fill"></i>
+                                            Update
+                                        </button>
+                                    </form>
                                 </div>
 
                             </div>

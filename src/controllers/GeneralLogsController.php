@@ -40,11 +40,30 @@ class GeneralLogsController
     {
         try {
             $generalLogsModelResult = $this->generalLogsModel->addLog_UPDATEPASS($user_id, $user_role, "User updated their password.");
-            if ($generalLogsModelResult['success'] == false) {
-                return ['success' => false, 'message' => 'Password update success.'];
-            }
+            // if ($generalLogsModelResult['success'] == false) {
+            //     return ['success' => false, 'message' => 'Password update success.'];
+            // }
         } catch (Exception $e) {
-            return ['success' => false, 'message' => 'Password update failed.'];
+            return ['success' => false, 'message' => 'Failed to log: ' . $e->getMessage()];
+        }
+    }
+
+    public function addLog_DELETE($user_id, $user_role, $description)
+    {
+        try {
+            $this->generalLogsModel->addLog_DELETE($user_id, $user_role, $description);
+        } catch (Exception $e) {
+            return ['success' => false, 'message' => 'Failed to log: ' . $e->getMessage()];
+        }
+    }
+
+    public function getAllLatestLogs($limit = 100)
+    {
+        try {
+            $logsResult = $this->generalLogsModel->getAllLatestLogs($limit);
+            return ['success' => true, 'data' => $logsResult];
+        } catch (Exception $e) {
+            return ['success' => false, 'message' => $e->getMessage()];
         }
     }
 }

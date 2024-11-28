@@ -11,7 +11,7 @@
     <div>
         <ul class="list-group list-group-flush bg-transparent gap-2 overflow-y-auto" style="max-height: 160px;">
             <?php
-            $testAnnouncementCount = 0;
+            $testAnnouncementCount = 1;
             ?>
             <?php if ($testAnnouncementCount > 0): ?>
                 <?php for ($i = 0; $i < 8; $i++): ?>
@@ -25,7 +25,6 @@
             <?php else: ?>
                 <p class="fs-7 opacity-50 text-center p-2">No Announcements yet</p>
             <?php endif; ?>
-
         </ul>
     </div>
 </div>

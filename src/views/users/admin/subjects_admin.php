@@ -19,20 +19,46 @@ $widget_card = new Card();
 
 $subjectController = new SubjectController();
 
-if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['action']) && $_POST['action'] == 'addSubject') {
-    // Collect user data from form inputs
-    $subjectData = [
-        'subject_code' => $_POST['subject_code'],
-        'subject_name' => $_POST['subject_name'],
-        'semester' => $_POST['semester'],
-        'educational_level' => $_POST['educational_level']
-    ];
+if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+    if (isset($_POST['action'])) {
+        switch ($_POST['action']) {
+            case "addSubject":
+                // Collect user data from form inputs
+                $subjectData = [
+                    'subject_code' => $_POST['subject_code'],
+                    'subject_name' => $_POST['subject_name'],
+                    'semester' => $_POST['semester'],
+                    'educational_level' => $_POST['educational_level']
+                ];
 
-    $_SESSION["_ResultMessage"] = $subjectController->addSubject($subjectData);
+                // Validate input before processing
+                if (empty($subjectData['subject_code']) || empty($subjectData['subject_name'])) {
+                    $_SESSION["_ResultMessage"] = ['success' => false, 'message' => "Subject code and name are required."];
+                    break;
+                }
 
-    // Redirect to the same page to prevent resubmission
-    header("Location: " . $_SERVER['REQUEST_URI']);
-    exit();
+                $_SESSION["_ResultMessage"] = $subjectController->addSubject($subjectData);
+                header("Location: " . $_SERVER['REQUEST_URI']);
+                exit();
+
+            case "updateSectionInfo":
+                $subjectData = [ // Use square brackets for arrays
+                    'subject_id' => $_GET['viewSubject'],
+                    'subject_code' => $_POST['subject_code'],
+                    'subject_name' => $_POST['subject_name'],
+                ];
+
+                // Validate input before processing
+                if (empty($subjectData['subject_code']) || empty($subjectData['subject_name'])) {
+                    $_SESSION["_ResultMessage"] = ['success' => false, 'message' => "Subject code and name are required."];
+                    break;
+                }
+
+                $_SESSION["_ResultMessage"] = $subjectController->updateSubject($subjectData['subject_id'], $subjectData);
+                header("Location: " . $_SERVER['REQUEST_URI']);
+                exit();
+        }
+    }
 }
 
 // GET ALL SUBJECTS
@@ -56,6 +82,7 @@ if ($RETRIEVED_SUBJECTS['success'] == false) {
     }
 }
 ?>
+
 
 <!DOCTYPE html>
 <html lang="en">
@@ -113,7 +140,8 @@ if ($RETRIEVED_SUBJECTS['success'] == false) {
 
 
                             <!-- Catalog View -->
-                            <div class="row" preview-container-name="view_catalog" preview-container-default id="data_view_catalog">
+                            <div class="row" preview-container-name="view_catalog" preview-container-default
+                                id="data_view_catalog">
                                 <?php
                                 // Load All Subjects
                                 if (isset($RETRIEVED_SUBJECTS['data'])) {
@@ -128,7 +156,7 @@ if ($RETRIEVED_SUBJECTS['success'] == false) {
                                                     [
                                                         'hint' => 'Educational Level',
                                                         'icon' => '<i class="bi bi-person-workspace"></i>',
-                                                        'data' =>  htmlspecialchars($subject['educational_level']),
+                                                        'data' => htmlspecialchars($subject['educational_level']),
                                                     ],
                                                 ],
                                             ],
@@ -200,13 +228,15 @@ if ($RETRIEVED_SUBJECTS['success'] == false) {
                     <?php else: ?>
                         <div class="bg-white rounded p-3 shadow-sm border">
                             <div class="mb-3 row align-items-start bg-transparent box-sizing-border-box">
-                                <div class="col-md-8 d-flex gap-2 justify-content-start align-items-center box-sizing-border-box">
+                                <div
+                                    class="col-md-8 d-flex gap-2 justify-content-start align-items-center box-sizing-border-box">
                                     <!-- breadcrumbs -->
                                     <h5 class="ctxt-primary p-0 m-0">
                                         <a class="ctxt-primary" href="<?= clearUrlParams(); ?>">Subjects</a>
                                         <?php if (isset($_GET['viewSubject'])) { ?>
                                             <span><i class="bi bi-caret-right-fill"></i></span>
-                                            <a class="ctxt-primary" href="<?= updateUrlParams(['viewSubject' => $_GET['viewSubject']]) ?>"><?= ucfirst($SELECTED_SUBJECT['subject_name']) ?></a>
+                                            <a class="ctxt-primary"
+                                                href="<?= updateUrlParams(['viewSubject' => $_GET['viewSubject']]) ?>"><?= ucfirst($SELECTED_SUBJECT['subject_name']) ?></a>
                                         <?php } ?>
                                     </h5>
                                     <!-- end of breadcrumbs -->
@@ -216,85 +246,7 @@ if ($RETRIEVED_SUBJECTS['success'] == false) {
                             <!-- Content View -->
                             <?php if (!empty($SELECTED_SUBJECT)): ?>
                                 <hr>
-                                <!-- generated -->
-                                <div class="my-4">
-                                    <h4 class="fw-bolder text-success">Edit Subject</h4>
-                                    <div class="card shadow-sm position-relative">
-                                        <div class="card-header position-relative d-flex justify-content-start align-items-center gap-3 bg-success bg-opacity-75">
-                                            <div class="position-absolute top-0 end-0 mt-3 me-4">
-                                                <button class="btn cbtn-secondary px-4">
-                                                    Edit
-                                                </button>
-                                            </div>
-                                            <div class="text-white p-0 pb-2">
-                                                <h3 class="mt-3 p-0 m-0"><?= htmlspecialchars($SELECTED_SUBJECT['subject_name']) ?></h3>
-                                                <p class="text-white p-0 m-0"><?= htmlspecialchars($SELECTED_SUBJECT['subject_code']) ?></p>
-                                            </div>
-                                        </div>
-                                        <div class="card-body">
-                                            <section class="mb-4">
-                                                <div class="row mb-3">
-                                                    <h5>Subject Information</h5>
-                                                </div>
-                                                <div class="row mb-3">
-                                                    <div class="col-sm-6 col-md-5 col-lg-3 mb-2">
-                                                        <h6 class="pt-sm-3 pt-md-0">Subject Code</h6>
-                                                        <input updateEnabled class="form-control" type="text" disabled value="<?= htmlspecialchars($SELECTED_SUBJECT['subject_code']) ?>">
-                                                    </div>
-                                                    <div class="col-sm-12 col-md-7 col-lg-7">
-                                                        <h6>Subject Name</h6>
-                                                        <input updateEnabled class="form-control" type="text" disabled value="<?= htmlspecialchars($SELECTED_SUBJECT['subject_name']) ?>">
-                                                    </div>
-                                                    <div class="col-sm-6 col-md-6 col-lg-2">
-                                                        <h6 class="pt-sm-3 pt-md-0">Semester</h6>
-                                                        <select name="" id="" class="form-select" disabled>
-                                                            <?php if (isset($SELECTED_SUBJECT['semester'])): ?>
-                                                                <option value="<?= htmlspecialchars($SELECTED_SUBJECT['semester']) ?>"><?= htmlspecialchars($SELECTED_SUBJECT['semester']) ?></option>
-                                                            <?php endif; ?>
-                                                        </select>
-                                                    </div>
-                                                </div>
-                                                <div class="row mb-3">
-                                                    <div class="col-md-4">
-                                                        <h6 class="">Educational Level</h6>
-                                                        <select name="" id="" class="form-select" disabled>
-                                                            <?php if (isset($SELECTED_SUBJECT['educational_level'])): ?>
-                                                                <option value="<?= htmlspecialchars($SELECTED_SUBJECT['educational_level']) ?>"><?= htmlspecialchars($SELECTED_SUBJECT['educational_level']) ?></option>
-                                                            <?php endif; ?>
-                                                        </select>
-                                                    </div>
-                                                </div>
-                                            </section>
-
-                                            <hr>
-
-                                            <section class="mb-4">
-                                                <div class="row mb-3">
-                                                    <h5>Connected Sections</h5>
-                                                </div>
-                                                <div class="row mb-3">
-                                                    <div class="container table-responsive">
-                                                        <table class="table table-striped w-100">
-                                                            <thead class="table-success">
-                                                                <tr>
-                                                                    <th>test</th>
-                                                                    <th>test</th>
-                                                                </tr>
-                                                            </thead>
-                                                            <tbody>
-                                                                <tr>
-                                                                    <td>1</td>
-                                                                    <td>1</td>
-                                                                </tr>
-                                                            </tbody>
-                                                        </table>
-                                                    </div>
-
-                                                </div>
-                                            </section>
-                                        </div>
-                                    </div>
-                                </div>
+                                <?php require_once(FILE_PATHS['Partials']['HighLevel']['Configures'] . 'config_SubjectModule.php') ?>
                             <?php else: ?>
                                 <h3 class="text-danger">No Information Shown.</h3>
                             <?php endif; ?>

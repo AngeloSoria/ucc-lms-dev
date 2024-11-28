@@ -49,10 +49,10 @@
             </div>
         </li> -->
         <li class="border border-top-0">
-            <a href="#"
+            <a href="<?php echo BASE_PATH_LINK ?>"
                 class="sidebar-item">
                 <div class="sidebar-item-icon">
-                    <i class="bi bi-folder2" aria-hidden="true"></i>
+                    <i class="bi bi-columns-gap" aria-hidden="true"></i>
                 </div>
                 <div class="sidebar-item-title">
                     Overview
