@@ -51,7 +51,7 @@ class SubjectSectionModel
             $subjectData = $stmtSubject->fetch(PDO::FETCH_ASSOC);
 
             if (!$subjectData) {
-                return ["success" => false, "message" => "Subject not found."];
+                return ["success" => false, "message" => "Subject not found. "];
             }
 
             $subjectSemester = $subjectData['semester'];
@@ -76,15 +76,15 @@ class SubjectSectionModel
 
             // Query to insert subject section
             $query = "INSERT INTO $this->table_name
-                       (section_id, subject_id, subject_section_image, teacher_id, period_id) 
+                       (section_id, subject_id, teacher_id, period_id) 
                        VALUES 
-                       (:section_id, :subject_id, :subject_section_image, :teacher_id, :period_id)";
+                       (:section_id, :subject_id, :teacher_id, :period_id)";
             $stmt = $this->conn->prepare($query);
 
             // Bind parameters
             $stmt->bindParam(':section_id', $data['section_id']);
             $stmt->bindParam(':subject_id', $data['subject_id']);
-            $stmt->bindParam(':subject_section_image', $data['subject_section_image']);
+            // $stmt->bindParam(':subject_section_image', $data['subject_section_image']);
             $stmt->bindParam(':teacher_id', $data['teacher_id']);
             $stmt->bindParam(':period_id', $period_id);
 
@@ -232,8 +232,7 @@ class SubjectSectionModel
             educational_level t ON u.user_id = t.user_id
         WHERE 
             u.role = 'Teacher'
-            AND (u.first_name LIKE :query OR u.last_name LIKE :query)
-    ";
+            AND (u.first_name LIKE :query OR u.last_name LIKE :query)";
 
         // If an educational level filter is provided, include it in the query.
         if ($educationalLevel) {
@@ -246,6 +245,8 @@ class SubjectSectionModel
         if ($educationalLevel) {
             $stmt->bindParam(':educational_level', $educationalLevel);
         }
+
+
 
         $stmt->execute();
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
@@ -339,12 +340,12 @@ class SubjectSectionModel
             SELECT 
                 subject_id, 
                 subject_name AS name,
+                subject_code,
                 semester
             FROM 
                 subjects
             WHERE 
-                subject_name LIKE :query
-        ";
+                (subject_name LIKE :query OR subject_code LIKE :query)";
 
         // If educational_level is provided, add the filter to the query
         if ($educationalLevel) {

@@ -14,8 +14,8 @@ define('ERROR_PATH', BASE_PATH_LINK . 'src/views/partials/special/error.php');
 
 
 define('UPLOAD_PATH', [
-    'System' => BASE_PATH_LINK . 'src/uploads/system',
-    'User' => BASE_PATH_LINK . 'src/uploads/users',
+    'System' => BASE_PATH_LINK . 'src/uploads/system/',
+    'User' => BASE_PATH_LINK . 'src/uploads/users/',
 ]);
 
 define('FILE_PATHS', [
@@ -50,6 +50,7 @@ define('FILE_PATHS', [
         'CardImages' => __DIR__ . '../../controllers/CardImagesController.php',
         'ModuleContent' => __DIR__ . '../../controllers/ModuleContentController.php',
         'Announcements' => __DIR__ . '../../controllers/AnnouncementsController.php',
+        'Uploads' => __DIR__ . '../../controllers/UploadsController.php',
     ],
 
     'Models' => [
@@ -67,6 +68,7 @@ define('FILE_PATHS', [
         'CardImages' => __DIR__ . '../../models/CardImages.php',
         'ModuleContent' => __DIR__ . '../../models/ModuleContent.php',
         'Announcements' => __DIR__ . '../../models/Announcements.php',
+        'Uploads' => __DIR__ . '../../models/Uploads.php',
     ],
 
     'Partials' => [

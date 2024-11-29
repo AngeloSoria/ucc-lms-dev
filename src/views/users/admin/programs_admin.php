@@ -148,11 +148,11 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST'  && isset($_POST['action'])) {
                                                     [
                                                         'hint' => 'Educational Level',
                                                         'icon' => '',
-                                                        'data' => 'Level: ' . htmlspecialchars($program['educational_level']),
+                                                        'data' => 'Educational Level: ' . htmlspecialchars($program['educational_level']),
                                                     ],
                                                 ],
                                             ],
-                                            true,
+                                            false,
                                             true,
                                             updateUrlParams(['viewProgram' => $program['program_id']])
                                         );

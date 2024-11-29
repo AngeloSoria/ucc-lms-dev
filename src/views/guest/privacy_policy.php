@@ -41,7 +41,7 @@ if (isset($_SESSION['user_id']) && isset($_SESSION['role'])) {
     <!-- CONTENT -->
 
     <section class="p-5 min-vh-100">
-        <h3>Frequently Asked Question (FAQ)</h3>
+        <h3>Privacy Policy</h3>
         <hr>
         <!-- Accordion -->
         <div class="accordion" id="accordionExample">

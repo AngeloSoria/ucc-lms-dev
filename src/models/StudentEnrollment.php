@@ -2,6 +2,7 @@
 class StudentEnrollmentModel
 {
     private $db;
+    private $table_name = "student_enrollment";
 
     public function __construct($db)
     {
@@ -44,7 +45,7 @@ class StudentEnrollmentModel
     public function addStudentEnrollment($data)
     {
         $query = "
-            INSERT INTO student_enrollment (user_id, subject_section_id, enrollment_status, period_id)
+            INSERT INTO $this->table_name (user_id, subject_section_id, enrollment_status, period_id)
             VALUES (:user_id, :subject_section_id, :enrollment_status, :period_id)
         ";
         $stmt = $this->db->prepare($query);
@@ -72,7 +73,7 @@ class StudentEnrollmentModel
     {
         $query = "
             SELECT COUNT(*) AS count 
-            FROM student_enrollment 
+            FROM $this->table_name 
             WHERE user_id = :user_id 
               AND subject_section_id = :subject_section_id
         ";

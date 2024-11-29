@@ -51,6 +51,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                     $imageTmpPath = $_FILES['profile_pic']['tmp_name'];
                     $imageData = file_get_contents($imageTmpPath); // Read the binary data
                     $userData['profile_pic'] = $imageData; // Add the binary data to the user data
+                    $userData['temp_img_pic'] = $_FILES['profile_pic'];
                 }
 
                 // Save user data to the database using a controller method
@@ -68,9 +69,16 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                     'last_name' => $_POST['last_name'],
                     'gender' => $_POST['gender'],
                     'dob' => $_POST['dob'],
-                    'password' => $_POST['password'],
+                    'status' => $_POST['userStatus'],
                     'requirePasswordReset' => $_POST['requirePasswordReset'],
                 ];
+
+                // Password update check
+                if (isset($_POST['password'])) {
+                    $userData['password']  = $_POST['password'];
+                }
+
+                msgLog("UPDATE TEST", implode(", ", $userData));
 
                 $_SESSION["_ResultMessage"] = $userController->updateUserProfile($userData['user_id'], $userData);
                 header("Location: " . $_SERVER['REQUEST_URI']);
@@ -216,9 +224,9 @@ if (isset($_GET['viewRole']) && isset($_GET['user_id'])) {
                                     </div>
 
                                     <!-- Custom Filters Above the Table -->
-                                    <div class="filter-controls mb-3">
+                                    <div class="filter-controls my-3">
                                         <div class="row">
-                                            <div class="col-sm-3">
+                                            <div class="col-sm-4 col-md-3">
                                                 <label for="filterRole">Role</label>
                                                 <select class="form-select" id="filterRole">
                                                     <option value="">Select Role</option>
@@ -227,7 +235,7 @@ if (isset($_GET['viewRole']) && isset($_GET['user_id'])) {
                                                     <?php } ?>
                                                 </select>
                                             </div>
-                                            <div class="col-sm-3">
+                                            <div class="col-sm-4 col-md-3">
                                                 <label for="filterGender">Gender</label>
                                                 <select class="form-select" id="filterGender">
                                                     <option value="">Select Gender</option>
@@ -235,7 +243,7 @@ if (isset($_GET['viewRole']) && isset($_GET['user_id'])) {
                                                     <option value="female">Female</option>
                                                 </select>
                                             </div>
-                                            <div class="col-sm-3">
+                                            <div class="col-sm-4 col-md-3">
                                                 <label for="filterStatus">Status</label>
                                                 <select class="form-select" id="filterStatus">
                                                     <option value="">Select Status</option>
@@ -279,10 +287,12 @@ if (isset($_GET['viewRole']) && isset($_GET['user_id'])) {
                                                         <td><?php echo $userData['username'] ?></td>
                                                         <td><?php echo $userData['first_name'] . ' ' . $userData['last_name'] ?></td>
                                                         <td><?php echo ucfirst($userData['gender']) ?></td>
-                                                        <td class="fw-bold <?php echo $userData['status'] == 'active' ? 'text-primary' : 'text-danger' ?>">
-                                                            <?php echo ucfirst($userData['status']) ?>
-                                                        </td>
                                                         <td>
+                                                            <span class="badge <?php echo $userData['status'] == 'active' ? 'badge-primary' : 'badge-danger' ?>">
+                                                                <?php echo ucfirst($userData['status']) ?>
+                                                            </span>
+                                                        </td>
+                                                        <td class="text-center">
                                                             <a href="<?php echo htmlspecialchars(updateUrlParams(['viewRole' => $userData['role'], 'user_id' => $userData['user_id']])) ?>"
                                                                 title="Configure" class="btn btn-primary btn-sm">
                                                                 <i class="bi bi-pencil-square"></i>

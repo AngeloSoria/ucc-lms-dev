@@ -11,6 +11,7 @@ require_once(FILE_PATHS['Controllers']['StudentSection']);
 require_once(FILE_PATHS['Controllers']['Subject']);
 require_once(FILE_PATHS['Controllers']['SubjectSection']);
 require_once(FILE_PATHS['Controllers']['AcademicPeriod']);
+require_once(FILE_PATHS['Controllers']['StudentEnrollment']);
 
 require_once(FILE_PATHS['Partials']['Widgets']['Card']);
 require_once(FILE_PATHS['Partials']['Widgets']['DataTable']);
@@ -36,6 +37,7 @@ $subjectController = new SubjectController();
 $academicYearController = new AcademicPeriodController($db);
 $studentSectionController = new StudentSectionController($db);
 $subjectSectionController = new SubjectSectionController($db);
+$studentEnrollmentController = new StudentEnrollmentController($db);
 
 $sectionList = $sectionController->getAllSections(); // Fetch all sections
 $sectionList = $sectionController->updateAcademicPeriod();
@@ -119,12 +121,30 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 exit();
             case 'updateEnrolledStudentsFromSection':
                 $studentsEnrollmentToSectionData = [
-                    'user_ids' => $_POST['input_AddStudentsToEnrollFromSection'],
+                    'user_ids' => $_POST['input_enrollStudents'],
                     'section_id' => $_GET['viewSection'],
-                    'enroll'
+                    'subject_section_id' => $_GET['subject_section_id'],
                 ];
 
-                // TODO:
+                $_SESSION['_ResultMessage'] = ['success' => true, 'message' => implode(", ", $studentsEnrollmentToSectionData['user_ids'])];
+
+                $studentEnrollmentResult = $studentEnrollmentController->addStudentEnrollments($studentsEnrollmentToSectionData);
+
+                // Redirect to the same page to prevent resubmissions of forms.
+                header("Location: " . $_SERVER['REQUEST_URI']);
+                exit();
+            case 'enrollSubjectInstructor':
+                $subjectInstructorData = [
+                    'section_id' => $_GET['viewSection'],
+                    'subject_id' => $_POST['input_enrollSubject'],
+                    'teacher_id' => $_POST['input_enrollInstructor'],
+                    'multi_subject' => $_POST['multi_subject']
+                ];
+
+                // $result = $subjectSectionController->addSubjectSection($subjectInstructorData);
+
+                $_SESSION['_ResultMessage'] = $subjectSectionController->addSubjectSection($subjectInstructorData);
+
                 // Redirect to the same page to prevent resubmissions of forms.
                 header("Location: " . $_SERVER['REQUEST_URI']);
                 exit();
@@ -353,6 +373,47 @@ if (isset($_GET['viewSection'])) {
                             </div>
                         </div>
 
+                    <?php elseif (isset($_GET['viewSection'], $_GET['subject_section_id'])): ?>
+                        <?php
+                        // validate if subject_section_id can be found.
+                        $getSubjectSectionDetails = $subjectSectionController->getSubjectSectionDetails($_GET['subject_section_id']);
+                        if (!$getSubjectSectionDetails['success']) {
+                            $_SESSION["_ResultMessage"] = $getSubjectSectionDetails;
+                            echo "<script>window.location = '" . clearUrlParams() . "';</script>";
+                            exit();
+                        }
+
+                        $enrolledSubjectInformation = $subjectController->getSubjectFromSubjectId($getSubjectSectionDetails['data']['subject_id']);
+                        if (!$enrolledSubjectInformation['success']) {
+                            $_SESSION["_ResultMessage"] = $getSubjectSectionDetails;
+                            echo "<script>window.location = '" . clearUrlParams() . "';</script>";
+                            exit();
+                        }
+                        ?>
+                        <div class="bg-white rounded p-3 shadow-sm border w-100">
+                            <div class="mb-3 row align-items-start bg-transparent box-sizing-border-box">
+                                <div class="d-flex gap-2 justify-content-start align-items-center box-sizing-border-box">
+                                    <!-- breadcrumbs -->
+                                    <h5 class="ctxt-primary p-0 m-0">
+                                        <a class="ctxt-primary" href="<?= clearUrlParams(); ?>">Sections</a>
+                                        <span><i class="bi bi-caret-right-fill"></i></span>
+                                        <a class="ctxt-primary"
+                                            href="<?= updateUrlParams(['viewSection' => $_GET['viewSection']]) ?>">
+                                            <?php echo $retrievedSection['data']['section_name']; ?>
+                                        </a>
+                                        <span><i class="bi bi-caret-right-fill"></i></span>
+                                        <a class="ctxt-primary"
+                                            href="<?= updateUrlParams(['viewSection' => $_GET['viewSection'], 'subject_section_id' => $_GET['subject_section_id']]) ?>">
+                                            <?php echo $enrolledSubjectInformation['data']['subject_name']; ?>
+                                        </a>
+                                    </h5>
+                                    <!-- end of breadcrumbs -->
+                                </div>
+                            </div>
+
+                            <!-- Configure View -->
+                            <?php require_once(FILE_PATHS['Partials']['HighLevel']['Configures'] . 'config_SectionSubjectStudent.php') ?>
+                        </div>
                     <?php else: ?>
                         <div class="bg-white rounded p-3 shadow-sm border w-100">
                             <div class="mb-3 row align-items-start bg-transparent box-sizing-border-box">

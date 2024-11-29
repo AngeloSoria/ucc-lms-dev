@@ -348,3 +348,9 @@ a {
     text-decoration: none;
     color: #0056b3;
 }
+
+.select2-selection__rendered {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: clip;
+}

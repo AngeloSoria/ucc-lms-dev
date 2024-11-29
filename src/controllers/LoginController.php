@@ -3,6 +3,7 @@
 require_once(FILE_PATHS['DATABASE']);
 require_once(FILE_PATHS['Functions']['PHPLogger']);
 require_once(FILE_PATHS['Controllers']['GeneralLogs']);
+require_once(FILE_PATHS['Models']['Uploads']);
 
 
 class LoginController
@@ -44,17 +45,6 @@ class LoginController
                     // Set a default image if the profile picture is not set
                     $_SESSION['profile_pic'] = asset('img/avatars/default-profile.png'); // path to default image
                 }
-
-                msgLog(
-                    'INFO',
-                    sprintf(
-                        "[%s] [%s] [%s] [%s]",
-                        "LOGIN",
-                        $_SESSION['user_id'],
-                        $_SESSION['username'],
-                        $_SESSION['role']
-                    ),
-                );
 
                 // Redirect based on role
                 switch ($user['role']) {

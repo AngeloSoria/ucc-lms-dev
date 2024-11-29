@@ -1,16 +1,20 @@
 <?php
 require_once(__DIR__ . '../../../src/config/PathsHandler.php');
 require_once(FILE_PATHS['DATABASE']);
+require_once(FILE_PATHS['Controllers']['Uploads']);
+
 class User
 {
     private $conn;
     private $table_name = 'users';
     public const ENUM_USER_ROLES = ['admin', 'level coordinator', 'teacher', 'student'];
-
+    private $uploadsController;
     public function __construct()
     {
         $db = new Database();
         $this->conn = $db->getConnection();
+
+        $this->uploadsController = new UploadsController();
     }
 
     // ADD user to DATABASE
@@ -357,6 +361,7 @@ class User
                 last_name = :last_name,
                 gender = :gender,
                 dob = :dob,
+                status = :status,
                 requirePasswordReset = :requirePasswordReset,
                 updated_at = NOW()";
 
@@ -376,6 +381,7 @@ class User
             $stmt->bindParam(':last_name', $userData['last_name']);
             $stmt->bindParam(':gender', $userData['gender']);
             $stmt->bindParam(':dob', $userData['dob']);
+            $stmt->bindParam(':status', $userData['status']);
             $stmt->bindParam(':requirePasswordReset', $userData['requirePasswordReset'], PDO::PARAM_INT);
             $stmt->bindParam(':user_id', $userId, PDO::PARAM_INT);
 

@@ -16,47 +16,81 @@ class SubjectSectionController
 
     public function addSubjectSection($data)
     {
-        // Validate required fields
-        if (empty($data['subject_ids']) || empty($data['section_id']) || empty($data['teacher_id'])) {
-            return [
-                "success" => false,
-                "message" => "All fields are required."
-            ];
-        }
+        if (isset($data['multi_subject'])) {
+            switch ($data['multi_subject']) {
+                case 'true':
+                    // Validate required fields
+                    if (empty($data['subject_ids']) || empty($data['section_id']) || empty($data['teacher_id'])) {
+                        return [
+                            "success" => false,
+                            "message" => "All fields are required."
+                        ];
+                    }
 
-        // Initialize response array
-        $response = [
-            "success" => true,
-            "message" => "Subject Sections added successfully"
-        ];
+                    // Initialize response array
+                    $response = [
+                        "success" => true,
+                        "message" => "Subject Sections added successfully"
+                    ];
 
-        // Iterate over subject_ids to add each subject to the section
-        foreach ($data['subject_ids'] as $subject_id) {
-            // Prepare data for each subject_id
-            $subjectData = [
-                'subject_id' => $subject_id,
-                'section_id' => $data['section_id'],
-                'teacher_id' => $data['teacher_id'],
-                'subject_section_image' => $data['subject_section_image'] // Assuming this field is the same for all subjects
-            ];
+                    // Iterate over subject_ids to add each subject to the section
+                    foreach ($data['subject_ids'] as $subject_id) {
+                        // Prepare data for each subject_id
+                        $subjectData = [
+                            'subject_id' => $subject_id,
+                            'section_id' => $data['section_id'],
+                            'teacher_id' => $data['teacher_id'],
+                            'subject_section_image' => $data['subject_section_image'] // Assuming this field is the same for all subjects
+                        ];
 
-            // Call the model's addSubjectSection method for each subject_id
-            $result = $this->subjectSectionModel->addSubjectSection($subjectData);
+                        // Call the model's addSubjectSection method for each subject_id
+                        $result = $this->subjectSectionModel->addSubjectSection($subjectData);
 
-            if (!$result['success']) {
-                // If any subject fails to be added, return failure message with the error
-                return [
-                    "success" => false,
-                    "message" => "Error: " . $result['message']
-                ];
+                        if (!$result['success']) {
+                            // If any subject fails to be added, return failure message with the error
+                            return [
+                                "success" => false,
+                                "message" => "Error: " . $result['message']
+                            ];
+                        }
+
+                        // Log successful operation for each subject
+                        $this->logOperation($subject_id, $data['section_id']);
+                    }
+
+                    // Return successful response if all subject sections are added
+                    return $response;
+                case 'false':
+                    // Validate required fields
+                    if (empty($data['subject_id']) || empty($data['section_id']) || empty($data['teacher_id'])) {
+                        return [
+                            "success" => false,
+                            "message" => "All fields are required."
+                        ];
+                    }
+
+                    // Initialize response array
+                    $response = [
+                        "success" => true,
+                        "message" => "Subject Sections added successfully"
+                    ];
+
+                    // Call the model's addSubjectSection method for each subject_id
+                    $result = $this->subjectSectionModel->addSubjectSection($data);
+
+                    if (!$result['success']) {
+                        // If any subject fails to be added, return failure message with the error
+                        return [
+                            "success" => false,
+                            "message" => "Error: " . $result['message']
+                        ];
+                    }
+
+                    // Log successful operation for each subject
+                    $this->logOperation($data['subject_id'], $data['section_id']);
+                    return $response;
             }
-
-            // Log successful operation for each subject
-            $this->logOperation($subject_id, $data['section_id']);
         }
-
-        // Return successful response if all subject sections are added
-        return $response;
     }
 
 

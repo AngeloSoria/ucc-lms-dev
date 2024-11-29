@@ -6,8 +6,8 @@
     <div class="container mt-2">
         <a href="#" class="col-auto px-2 text-decoration-none text-white fw-semibold">About</a>
         <a href="#" class="col-auto px-2 text-decoration-none text-white fw-semibold">Contact</a>
-        <a href="#" class="col-auto px-2 text-decoration-none text-white fw-semibold">Terms & Conditions</a>
-        <a href="#" class="col-auto px-2 text-decoration-none text-white fw-semibold">Privacy Policy</a>
+        <a href="tc" class="col-auto px-2 text-decoration-none text-white fw-semibold">Terms & Conditions</a>
+        <a href="privacy" class="col-auto px-2 text-decoration-none text-white fw-semibold">Privacy Policy</a>
     </div>
 </footer>
 <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.3/dist/umd/popper.min.js"></script>

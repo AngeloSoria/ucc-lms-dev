@@ -44,9 +44,25 @@
                                 value="<?= htmlspecialchars($user_username) ?>">
                         </div>
                         <div class="col-md-4">
-                            <h6 class="">Password</h6>
-                            <input name="password" updateEnabled class="form-control"
-                                type="password" value="<?= htmlspecialchars($user_username) ?>">
+                            <h6 class="">
+                                Password
+                                <span role="button" id="editPasswordToggle">
+                                    <i class="bi bi-pencil-square"></i>
+                                </span>
+                            </h6>
+                            <input disabled id="inputPassword" name="password" class="form-control" type="text" value="">
+                            <script>
+                                $("#editPasswordToggle").on('click', function() {
+                                    // Toggle the 'disabled' attribute
+                                    if ($("#inputPassword").prop("disabled")) {
+                                        $("#inputPassword").prop("disabled", false); // Enable the input
+                                        $("#inputPassword").attr("type", "password"); // Enable the input
+                                    } else {
+                                        $("#inputPassword").attr("type", "text"); // Enable the input
+                                        $("#inputPassword").prop("disabled", true); // Disable the input
+                                    }
+                                });
+                            </script>
                         </div>
                         <div class="col-md-4">
                             <h6 class="">Requires Password Change</h6>
@@ -54,7 +70,15 @@
                                 <option value="1" <?php echo ($user_requirePasswordReset) ? 'selected' : ''; ?>>Yes</option>
                                 <option value="0" <?php echo (!$user_requirePasswordReset) ? 'selected' : ''; ?>>No</option>
                             </select>
-
+                        </div>
+                    </div>
+                    <div class="row mb-3">
+                        <div class="col-md-4">
+                            <h6 class="">Status</h6>
+                            <select name="userStatus" class="form-select">
+                                <option value="<?php echo ($user_status) ?>" <?php echo ($user_status) ? 'selected' : ''; ?>><?php echo ucfirst($user_status) ?></option>
+                                <option value="<?php echo ($user_status == 'active' ? 'inactive' : 'active') ?>"><?php echo ucfirst($user_status == 'active' ? 'inactive' : 'active') ?></option>
+                            </select>
                         </div>
                     </div>
                 </section>
