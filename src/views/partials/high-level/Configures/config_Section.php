@@ -380,8 +380,8 @@
                                                         <i class="bi bi-person-fill-add"></i>
                                                         Enroll
                                                     </a>
-                                                    <a href="javascript:alert('work in progress')" title="remove"
-                                                        class="btn btn-sm btn-danger m-auto">
+                                                    <a href="javascript:void(0)" title="remove" target_subject_section_id="<?php echo $subjectSectionData['subject_section_id'] ?>"
+                                                        class="btn btn-sm btn-danger m-auto btnDelete_singular">
                                                         <i class="bi bi-trash-fill"></i>
                                                         Remove
                                                     </a>
@@ -394,6 +394,72 @@
                         </table>
                         <script>
                             $(document).ready(function() {
+                                // Delete function per item
+                                $(".btnDelete_singular").on("click", function(e) {
+                                    e.preventDefault(); // Prevent the default action of the button
+
+                                    const target_subject_section_id = $(this).attr("target_subject_section_id");
+                                    if (target_subject_section_id !== undefined) {
+                                        // Insert the Bootstrap 5 confirmation modal into the DOM
+                                        const confirmationModal = `
+                                            <div class="modal fade" id="confirmationModal" tabindex="-1" aria-labelledby="confirmationModalLabel" aria-hidden="true">
+                                                <div class="modal-dialog modal-dialog-centered">
+                                                    <div class="modal-content">
+                                                        <div class="modal-header">
+                                                            <h5 class="modal-title" id="confirmationModalLabel">Confirm Deletion</h5>
+                                                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                                        </div>
+                                                        <div class="modal-body">
+                                                            Are you sure you want to delete this item?
+                                                        </div>
+                                                        <div class="modal-footer">
+                                                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                                                            <button type="button" class="btn btn-danger" id="confirmDelete">Delete</button>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>`;
+
+                                        // Append modal to the body
+                                        $("body").append(confirmationModal);
+
+                                        // Show the modal
+                                        const modalInstance = new bootstrap.Modal($("#confirmationModal"));
+                                        modalInstance.show();
+
+                                        // Handle the confirmation button click
+                                        $("#confirmDelete").on("click", function() {
+                                            // Perform the AJAX call
+                                            $.ajax({
+                                                url: "",
+                                                type: "POST",
+                                                data: {
+                                                    action: "deleteSubjectsFromSection",
+                                                    subject_section_ids: [target_subject_section_id]
+                                                },
+                                                success: function(response) {
+                                                    console.log("success");
+                                                    modalInstance.hide();
+                                                    $("#confirmationModal").remove(); // Remove modal from DOM after closing
+                                                    console.log(response.success);
+                                                    location.reload();
+                                                },
+                                                error: function(xhr, status, error) {
+                                                    console.error(error);
+                                                    modalInstance.hide();
+                                                    $("#confirmationModal").remove(); // Remove modal from DOM after closing
+                                                }
+                                            });
+                                        });
+
+                                        // Clean up modal from DOM when it's hidden
+                                        $("#confirmationModal").on("hidden.bs.modal", function() {
+                                            $(this).remove();
+                                        });
+                                    }
+                                });
+
+
                                 // Initialize DataTable
                                 $('#dataTable_enrolledSubjects').DataTable({
                                     paging: true,

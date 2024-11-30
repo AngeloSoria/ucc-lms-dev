@@ -131,11 +131,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 // Redirect to the same page to prevent resubmissions of forms.
                 header("Location: " . $_SERVER['REQUEST_URI']);
                 exit();
-            case 'deleteSubjectFromSection':
+            case 'deleteSubjectsFromSection':
+                $_SESSION['_ResultMessage'] = $subjectSectionController->deleteSubjectsFromSection($_POST['subject_section_ids']);
 
-                // Redirect to the same page to prevent resubmissions of forms.
-                header("Location: " . $_SERVER['REQUEST_URI']);
-                exit();
+                header('Content-Type: application/json');
+                echo json_encode($_SESSION['_ResultMessage']);
+                break;
         }
     } elseif (isset($_POST['search_type'])) {
         $searchType = $_POST['search_type'];

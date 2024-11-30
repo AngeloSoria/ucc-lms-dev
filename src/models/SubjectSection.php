@@ -207,13 +207,17 @@ class SubjectSectionModel
     public function deleteSubjectFromSection($subject_section_id)
     {
         try {
-            $query = "DELETE FROM {$this->table_name} WHERE subject_section_id = :subject_section_id";
+            $this->conn->beginTransaction();
+
+            $query = "DELETE FROM $this->table_name WHERE subject_section_id = :subject_section_id";
             $stmt = $this->conn->prepare($query);
             $stmt->bindParam(':subject_section_id', $subject_section_id);
             $stmt->execute();
 
+            $this->conn->commit();
             return ["success" => true, "message" => "Subject Section deleted successfully"];
         } catch (PDOException $e) {
+            $this->conn->rollBack();
             return ["success" => false, "message" => $e->getMessage()];
         }
     }
