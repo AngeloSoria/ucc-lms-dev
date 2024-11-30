@@ -134,9 +134,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             case 'deleteSubjectsFromSection':
                 $_SESSION['_ResultMessage'] = $subjectSectionController->deleteSubjectsFromSection($_POST['subject_section_ids']);
 
-                header('Content-Type: application/json');
-                echo json_encode($_SESSION['_ResultMessage']);
-                break;
+                // Send a response indicating a redirect is required
+                header("Content-Type: application/json");
+                echo json_encode(['redirect' => $_SERVER['REQUEST_URI']]); // Send the URL to redirect to
+                exit();
         }
     } elseif (isset($_POST['search_type'])) {
         $searchType = $_POST['search_type'];

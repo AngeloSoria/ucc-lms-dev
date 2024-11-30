@@ -107,12 +107,11 @@ class SubjectSectionController
                 throw new Exception("Passed subject_section_ids contains empty or not an array.");
             }
 
-
             foreach ($subject_section_ids as $subject_section_id) {
                 $this->subjectSectionModel->deleteSubjectFromSection($subject_section_id);
             }
 
-            return ["success" => true, "message" => "successfully deleted a subject from a section."];
+            return ["success" => true, "message" => "Successfully deleted a subject from a section."];
         } catch (Exception $e) {
             return ['success' => false, "message" => $e->getMessage()];
         }

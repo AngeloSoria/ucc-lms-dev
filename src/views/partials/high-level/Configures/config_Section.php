@@ -441,8 +441,10 @@
                                                     console.log("success");
                                                     modalInstance.hide();
                                                     $("#confirmationModal").remove(); // Remove modal from DOM after closing
-                                                    console.log(response.success);
-                                                    location.reload();
+                                                    console.log(response);
+                                                    if (response.redirect) {
+                                                        window.location.href = response.redirect; // Redirect the page
+                                                    }
                                                 },
                                                 error: function(xhr, status, error) {
                                                     console.error(error);
