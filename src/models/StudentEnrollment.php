@@ -2,7 +2,7 @@
 class StudentEnrollmentModel
 {
     private $db;
-    private $table_name = "student_enrollment";
+    private $table_name = "student_subject_section";
 
     public function __construct($db)
     {
@@ -17,11 +17,15 @@ class StudentEnrollmentModel
      */
     public function getSubjectSectionById($subjectSectionId)
     {
-        $query = "SELECT period_id FROM subject_sections WHERE id = :subject_section_id";
-        $stmt = $this->db->prepare($query);
-        $stmt->bindParam(':subject_section_id', $subjectSectionId, PDO::PARAM_INT);
-        $stmt->execute();
-        return $stmt->fetch(PDO::FETCH_ASSOC);
+        try {
+            $query = "SELECT period_id FROM subject_section WHERE subject_section_id = :subject_section_id";
+            $stmt = $this->db->prepare($query);
+            $stmt->bindParam(':subject_section_id', $subjectSectionId, PDO::PARAM_INT);
+            $stmt->execute();
+            return $stmt->fetch(PDO::FETCH_ASSOC);
+        } catch (Exception $e) {
+            throw new Exception($e->getMessage());
+        }
     }
 
     /**
@@ -44,22 +48,53 @@ class StudentEnrollmentModel
      */
     public function addStudentEnrollment($data)
     {
-        $query = "
-            INSERT INTO $this->table_name (user_id, subject_section_id, enrollment_status, period_id)
-            VALUES (:user_id, :subject_section_id, :enrollment_status, :period_id)
-        ";
-        $stmt = $this->db->prepare($query);
+        try {
+            if (!isset($data['enroll_to_section_only'])) {
+                // is Student enrolled
+                if ($this->isStudentAlreadyEnrolled($data)) {
+                    throw new Exception($data['user_id'] . " is already enrolled.");
+                }
 
-        $stmt->bindParam(':user_id', $data['user_id'], PDO::PARAM_INT);
-        $stmt->bindParam(':subject_section_id', $data['subject_section_id'], PDO::PARAM_INT);
-        $stmt->bindParam(':enrollment_status', $data['enrollment_status'], PDO::PARAM_STR);
-        $stmt->bindParam(':period_id', $data['period_id'], PDO::PARAM_INT);
+                // student_subject_section enrollment
+                $query1 = "
+                        INSERT INTO $this->table_name (user_id, subject_section_id, enrollment_status, period_id)
+                        VALUES (:user_id, :subject_section_id, :enrollment_status, :period_id)";
+                $stmt = $this->db->prepare($query1);
 
-        if ($stmt->execute()) {
-            return ["success" => true];
+                $stmt->bindParam(':user_id', $data['user_id']);
+                $stmt->bindParam(':subject_section_id', $data['subject_section_id'], PDO::PARAM_INT);
+                $stmt->bindParam(':enrollment_status', $data['enrollment_status'], PDO::PARAM_STR);
+                $stmt->bindParam(':period_id', $data['period_id'], PDO::PARAM_INT);
+
+                $stmt->execute();
+
+                // $this->enrollRegularStudentsToSubjects();
+
+                return ["success" => true];
+            } else {
+                // is Student enrolled
+                if ($this->isStudentAlreadyEnrolledFromSection($data)) {
+                    throw new Exception($data['user_id'] . " is already enrolled.");
+                }
+                // student_section enrollment
+                $query2 = "
+                        INSERT INTO student_section (student_id, section_id, enrollment_type)
+                        VALUES(:student_id, :section_id, :enrollment_type)";
+
+                $stmt2 = $this->db->prepare($query2);
+                $stmt2->bindParam(':student_id', $data['user_id']);
+                $stmt2->bindParam(':section_id', $data['section_id']);
+                $stmt2->bindParam(':enrollment_type', $data['enrollment_type']);
+
+                $stmt2->execute();
+
+                // $this->enrollRegularStudentsToSubjects();
+
+                return ["success" => true];
+            }
+        } catch (Exception $e) {
+            throw new Exception($e->getMessage());
         }
-
-        return ["success" => false, "message" => $stmt->errorInfo()[2]];
     }
 
     /**
@@ -69,19 +104,82 @@ class StudentEnrollmentModel
      * @param int $subjectSectionId
      * @return bool
      */
-    public function isStudentAlreadyEnrolled($userId, $subjectSectionId)
+    public function isStudentAlreadyEnrolled($data)
     {
-        $query = "
+        $query1 = "
             SELECT COUNT(*) AS count 
             FROM $this->table_name 
             WHERE user_id = :user_id 
               AND subject_section_id = :subject_section_id
         ";
-        $stmt = $this->db->prepare($query);
-        $stmt->bindParam(':user_id', $userId, PDO::PARAM_INT);
-        $stmt->bindParam(':subject_section_id', $subjectSectionId, PDO::PARAM_INT);
+        $stmt = $this->db->prepare($query1);
+        $stmt->bindParam(':user_id', $data['user_id'], PDO::PARAM_INT);
+        $stmt->bindParam(':subject_section_id', $data['subject_section_id'], PDO::PARAM_INT);
         $stmt->execute();
+
+        $result_1 = $stmt->fetch(PDO::FETCH_ASSOC);
+
+        // $query2 = "
+        //     SELECT COUNT(*) AS count
+        //     FROM student_section
+        //     WHERE student_id = :student_id AND section_id = :section_id
+        // ";
+        // $stmt = $this->db->prepare($query2);
+        // $stmt->bindParam(':student_id', $data['user_id'], PDO::PARAM_INT);
+        // $stmt->bindParam(':section_id', $data['section_id'], PDO::PARAM_INT);
+        // $stmt->execute();
+
+        // $result_2 = $stmt->fetch(PDO::FETCH_ASSOC);
+
+        return ($result_1['count'] > 0);
+    }
+    public function isStudentAlreadyEnrolledFromSection($data)
+    {
+        $query = "
+            SELECT COUNT(*) AS count
+            FROM student_section
+            WHERE student_id = :student_id AND section_id = :section_id
+        ";
+        $stmt = $this->db->prepare($query);
+        $stmt->bindParam(':student_id', $data['user_id'], PDO::PARAM_INT);
+        $stmt->bindParam(':section_id', $data['section_id'], PDO::PARAM_INT);
+        $stmt->execute();
+
         $result = $stmt->fetch(PDO::FETCH_ASSOC);
-        return $result['count'] > 0;
+
+        return ($result['count'] > 0);
+    }
+
+    public function enrollRegularStudentsToSubjects()
+    {
+        try {
+            $query = "
+                    INSERT INTO student_subject_section (user_id, subject_section_id, enrollment_status, period_id)
+                    SELECT
+                        ss.student_id AS user_id,
+                        subsec.subject_section_id, 
+                        'active' AS enrollment_status,
+                        subsec.period_id
+                    FROM
+                        student_section ss
+                    JOIN
+                        subject_section subsec 
+                        ON ss.section_id = subsec.section_id
+                    WHERE
+                        ss.enrollment_type = 'regular'
+                        AND NOT EXISTS (
+                            SELECT 1 
+                            FROM student_subject_section sss 
+                            WHERE sss.user_id = ss.student_id
+                            AND sss.subject_section_id = subsec.subject_section_id)";
+
+
+            $stmt = $this->db->prepare($query);
+            $stmt->execute();
+            msgLog("FOO", "BAR");
+            return ['success' => true];
+        } catch (Exception $e) {
+            throw new Exception($e->getMessage());
+        }
     }
 }

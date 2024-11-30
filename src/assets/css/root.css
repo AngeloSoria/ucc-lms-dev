@@ -350,7 +350,13 @@ a {
 }
 
 .select2-selection__rendered {
+    display: flex !important;
+    flex-wrap: wrap !important;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: clip;
+}
+
+.select2-selection__choice {
+    background-color: var(--c-brand-secondary-a20) !important;
 }

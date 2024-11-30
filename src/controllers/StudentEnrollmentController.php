@@ -20,74 +20,81 @@ class StudentEnrollmentController
      */
     public function addStudentEnrollments($data)
     {
-        // Validate input
-        if (empty($data['user_ids']) || empty($data['subject_section_id'])) {
-            return [
-                "success" => false,
-                "message" => "User IDs and Subject Section ID are required."
-            ];
-        }
+        try {
+            if (!isset($data['enroll_to_section_only'])) {
+                // Validate input
+                if (empty($data['user_ids']) || empty($data['subject_section_id'])) {
+                    throw new Exception("User IDs or Subject Section ID are required.");
+                }
 
-        // Get subject_section details
-        $subjectSection = $this->studentEnrollmentModel->getSubjectSectionById($data['subject_section_id']);
-        if (!$subjectSection) {
-            return [
-                "success" => false,
-                "message" => "Subject Section not found."
-            ];
-        }
+                // Get subject_section details
+                try {
+                    $subjectSection = $this->studentEnrollmentModel->getSubjectSectionById($data['subject_section_id']);
+                } catch (Exception $e) {
+                    throw new Exception("Subject Section not found | " . $e->getMessage());
+                }
 
-        // Get active period
-        $activePeriod = $this->studentEnrollmentModel->getActivePeriod();
-        if (!$activePeriod) {
-            return [
-                "success" => false,
-                "message" => "No active academic period found."
-            ];
-        }
 
-        // Determine enrollment status
-        $enrollmentStatus = $this->determineEnrollmentStatus($subjectSection['period_id'], $activePeriod['period_id']);
+                // Get active period
+                $activePeriod = $this->studentEnrollmentModel->getActivePeriod();
+                if (!$activePeriod) {
+                    throw new Exception("No active academic period found.");
+                }
 
-        // Initialize response
-        $response = [
-            "success" => true,
-            "message" => "All students enrolled successfully.",
-            "errors" => []
-        ];
+                // Determine enrollment status
+                $enrollmentStatus = $this->determineEnrollmentStatus($subjectSection['period_id'], $activePeriod['period_id']);
 
-        // Process each user_id
-        foreach ($data['user_ids'] as $userId) {
-            // Prepare data for insertion
-            $enrollmentData = [
-                'user_id' => $userId,
-                'subject_section_id' => $data['subject_section_id'],
-                'period_id' => $subjectSection['period_id'],
-                'enrollment_status' => $enrollmentStatus
-            ];
+                // Process each user_id
+                foreach ($data['user_ids'] as $userId) {
+                    // Prepare data for insertion
+                    $enrollmentData = [
+                        'user_id' => $userId,
+                        'subject_section_id' => $data['subject_section_id'],
+                        'section_id' => $data['section_id'],
+                        'enrollment_type' => $data['enrollment_type'],
+                        'period_id' => $subjectSection['period_id'],
+                        'enrollment_status' => $enrollmentStatus
+                    ];
 
-            // Insert enrollment record
-            $result = $this->studentEnrollmentModel->addStudentEnrollment($enrollmentData);
+                    // Insert enrollment record
+                    $this->studentEnrollmentModel->addStudentEnrollment($enrollmentData);
+                }
 
-            if (!$result['success']) {
-                // Log errors for failed enrollments
-                $response['success'] = false;
-                $response['errors'][] = [
-                    'user_id' => $userId,
-                    'message' => $result['message']
-                ];
+                $this->enrollRegularStudentsToSubjects();
+
+                return ['success' => true, "message" => "Student enrollment successful."];
             } else {
-                // Log successful enrollment
-                $this->logOperation($userId, $data['subject_section_id']);
+                // Process each user_id
+                foreach ($data['user_ids'] as $userId) {
+                    // Prepare data for insertion
+                    $enrollmentData = [
+                        'user_id' => $userId,
+                        'section_id' => $data['section_id'],
+                        'enrollment_type' => $data['enrollment_type'],
+                        'enroll_to_section_only' => 1
+                    ];
+
+                    // Insert enrollment record
+                    $this->studentEnrollmentModel->addStudentEnrollment($enrollmentData);
+                }
+                $this->enrollRegularStudentsToSubjects();
+                return ['success' => true, "message" => "Student/s has been enrolled to the section."];
             }
+        } catch (Exception $e) {
+            return ['success' => false, "message" => $e->getMessage()];
         }
+    }
 
-        // Adjust the response message if there were errors
-        if (!$response['success']) {
-            $response['message'] = "Some enrollments failed. See errors for details.";
+    public function enrollRegularStudentsToSubjects()
+    {
+        try {
+            if ($this->studentEnrollmentModel->enrollRegularStudentsToSubjects()) {
+                return ['success' => true, "message" => "Automatically enrolled regular students to subjects of a section."];
+            }
+            msgLog("ASD", "asdasdasdasdasd");
+        } catch (Exception $e) {
+            return ['success' => false, 'message' => $e->getMessage()];
         }
-
-        return $response;
     }
 
     /**

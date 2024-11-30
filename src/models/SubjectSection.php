@@ -204,7 +204,7 @@ class SubjectSectionModel
     }
 
     // Delete subject section by ID
-    public function deleteSubjectSection($subject_section_id)
+    public function deleteSubjectFromSection($subject_section_id)
     {
         try {
             $query = "DELETE FROM {$this->table_name} WHERE subject_section_id = :subject_section_id";
@@ -399,6 +399,62 @@ class SubjectSectionModel
             $retrievedSubjects = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
             return ['success' => true, 'data' => $retrievedSubjects];
+        } catch (Exception $e) {
+            throw new Exception($e->getMessage());
+        }
+    }
+
+    public function getNumberOfEnrolledStudentsInSubject($subject_section_id)
+    {
+        try {
+            $query = "
+            SELECT 
+                ss.subject_section_id,
+                COUNT(sss.enrollment_id) AS student_count
+            FROM
+                subject_section ss
+            LEFT JOIN 
+                student_subject_section sss 
+            ON 
+                ss.subject_section_id = sss.subject_section_id
+            WHERE 
+                ss.subject_section_id = :subject_section_id
+            GROUP BY 
+                ss.subject_section_id
+        ";
+
+            $stmt = $this->conn->prepare($query);
+            $stmt->bindParam(':subject_section_id', $subject_section_id, PDO::PARAM_INT);
+            $stmt->execute();
+
+            return $stmt->fetch(PDO::FETCH_ASSOC);
+        } catch (Exception $e) {
+            throw new Exception($e->getMessage());
+        }
+    }
+
+    public function getEnrolledStudentsFromSubject($subject_section_id)
+    {
+        try {
+            $query = "
+                SELECT 
+                    u.user_id,
+                    u.first_name,
+                    u.middle_name,
+                    u.last_name
+                FROM
+                    users u
+                JOIN
+                    student_subject_section sss
+                ON 
+                    u.user_id = sss.user_id
+                WHERE
+                    sss.subject_section_id = :subject_section_id";
+
+            $stmt = $this->conn->prepare($query);
+            $stmt->bindParam(":subject_section_id", $subject_section_id);
+            $stmt->execute();
+            return $stmt->fetchAll(PDO::FETCH_ASSOC);
         } catch (Exception $e) {
             throw new Exception($e->getMessage());
         }

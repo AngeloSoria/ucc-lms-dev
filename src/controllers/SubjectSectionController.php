@@ -1,15 +1,18 @@
 <?php
 require_once(__DIR__ . '../../../src/config/PathsHandler.php');
 require_once(FILE_PATHS['Models']['SubjectSection']);
+require_once(FILE_PATHS['Controllers']['StudentEnrollment']);
 require_once(FILE_PATHS['Functions']['PHPLogger']);
 
 class SubjectSectionController
 {
     private $subjectSectionModel;
+    private $studentEnrollmentController;
 
     public function __construct($db)
     {
         $this->subjectSectionModel = new SubjectSectionModel($db);
+        $this->studentEnrollmentController = new StudentEnrollmentController($db);
     }
 
     // Check if the subject is already assigned to the section and period
@@ -58,6 +61,8 @@ class SubjectSectionController
                         $this->logOperation($subject_id, $data['section_id']);
                     }
 
+                    $this->studentEnrollmentController->enrollRegularStudentsToSubjects();
+
                     // Return successful response if all subject sections are added
                     return $response;
                 case 'false':
@@ -86,10 +91,23 @@ class SubjectSectionController
                         ];
                     }
 
+                    $this->studentEnrollmentController->enrollRegularStudentsToSubjects();
+
                     // Log successful operation for each subject
                     $this->logOperation($data['subject_id'], $data['section_id']);
                     return $response;
             }
+        }
+    }
+
+    public function deleteSubjectsFromSection($subject_section_ids)
+    {
+        try {
+            if (!is_array($subject_section_ids) || empty($subject_section_ids)) {
+                throw new Exception("Passed subject_section_ids contains empty or not an array.");
+            }
+        } catch (Exception $e) {
+            return ['success' => false, "message" => $e->getMessage()];
         }
     }
 
@@ -175,5 +193,25 @@ class SubjectSectionController
     private function logOperation($subject_id, $section_id)
     {
         msgLog("CRUD", "[ADD] [SUBJECT_SECTION] Subject: {$subject_id}, Section: {$section_id}");
+    }
+
+    public function getNumberOfEnrolledStudentsInSubject($subject_section_id)
+    {
+        try {
+            $result = $this->subjectSectionModel->getNumberOfEnrolledStudentsInSubject($subject_section_id);
+            return $result['student_count'];
+        } catch (Exception $e) {
+            return ['success' => false, "message" => $e->getMessage()];
+        }
+    }
+
+    public function getEnrolledStudentsFromSubject($subject_section_id)
+    {
+        try {
+            $result = $this->subjectSectionModel->getEnrolledStudentsFromSubject($subject_section_id);
+            return ['success' => true, 'message' => 'Success in retrieving enrolled students.', 'data' => $result];
+        } catch (Exception $e) {
+            return ['success' => false, 'message' => $e->getMessage()];
+        }
     }
 }

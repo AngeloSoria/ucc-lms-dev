@@ -62,35 +62,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 // Redirect to the same page to prevent resubmissions of forms.
                 header("Location: " . $_SERVER['REQUEST_URI']);
                 exit();
-            case "updateSection":
-                $sectionData = [
-                    'section_id' => $_POST['section_id'],
-                    'section_name' => $_POST['input_sectionName'],
-                    'program_id' => $_POST['input_sectionProgram'],
-                    'year_level' => $_POST['input_sectionYearLevel'],
-                    'adviser_id' => $_POST['input_sectionAdviser'],
-                    'teacher_id' => $_POST['input_sectionAdviser'],
-                    'student_ids' => $_POST['input_modalAddToEnrollStudents'],
-                    'enrollment_type' => $_POST['input_sectionEnrollmentType'],
-                    'subject_ids' => $_POST['input_addToEnrollSubjects'],
-                ];
-
-                // enroll student
-                $studentSectionController->addStudentsToSection($sectionData);
-
-                // enroll subjects.
-                $result2 = $subjectSectionController->addSubjectSection($sectionData);
-
-                // update section
-                $result1 = $sectionController->updateSectionById($sectionData['section_id'], $sectionData);
-
-                $_SESSION['_ResultMessage'] = $result1;
-                $_SESSION['_ResultMessage'] = $result2;
-
-
-                // Redirect to the same page to prevent resubmissions of forms.
-                header("Location: " . $_SERVER['REQUEST_URI']);
-                exit();
             case 'updateSectionInfo':
 
                 $sectionInfoData = [
@@ -122,13 +93,27 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             case 'updateEnrolledStudentsFromSection':
                 $studentsEnrollmentToSectionData = [
                     'user_ids' => $_POST['input_enrollStudents'],
-                    'section_id' => $_GET['viewSection'],
+                    'enrollment_type' => $_POST['enrollment_type'],
+                    'section_id' => $_POST['section_id'],
                     'subject_section_id' => $_GET['subject_section_id'],
                 ];
 
-                $_SESSION['_ResultMessage'] = ['success' => true, 'message' => implode(", ", $studentsEnrollmentToSectionData['user_ids'])];
+                // $_SESSION['_ResultMessage'] = ['success' => true, 'message' => implode(", ", $studentsEnrollmentToSectionData['user_ids'])];
 
-                $studentEnrollmentResult = $studentEnrollmentController->addStudentEnrollments($studentsEnrollmentToSectionData);
+                $_SESSION['_ResultMessage'] = $studentEnrollmentController->addStudentEnrollments($studentsEnrollmentToSectionData);
+
+                // Redirect to the same page to prevent resubmissions of forms.
+                header("Location: " . $_SERVER['REQUEST_URI']);
+                exit();
+            case 'enrollStudentsAsRegularToSection':
+                $studentsEnrollmentToSectionData = [
+                    'user_ids' => $_POST['input_enrollStudents'],
+                    'enrollment_type' => "regular",
+                    'section_id' => $_POST['section_id'],
+                    'enroll_to_section_only' => 1
+                ];
+
+                $_SESSION['_ResultMessage'] = $studentEnrollmentController->addStudentEnrollments($studentsEnrollmentToSectionData);
 
                 // Redirect to the same page to prevent resubmissions of forms.
                 header("Location: " . $_SERVER['REQUEST_URI']);
@@ -141,9 +126,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                     'multi_subject' => $_POST['multi_subject']
                 ];
 
-                // $result = $subjectSectionController->addSubjectSection($subjectInstructorData);
-
                 $_SESSION['_ResultMessage'] = $subjectSectionController->addSubjectSection($subjectInstructorData);
+
+                // Redirect to the same page to prevent resubmissions of forms.
+                header("Location: " . $_SERVER['REQUEST_URI']);
+                exit();
+            case 'deleteSubjectFromSection':
 
                 // Redirect to the same page to prevent resubmissions of forms.
                 header("Location: " . $_SERVER['REQUEST_URI']);

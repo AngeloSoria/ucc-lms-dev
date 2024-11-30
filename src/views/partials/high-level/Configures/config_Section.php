@@ -225,12 +225,12 @@
                             <caption>Table of Enrolled Students</caption>
                             <thead class="table-brand-secondary">
                                 <tr>
-                                    <th class="" style="width: 2%;">
+                                    <th class="text-center" style="max-width: 4%;">
                                         <input type="checkbox" name="" id="" class="form-check-input">
                                     </th>
-                                    <th class="text-center" style="max-width: 6rem;">User Id</th>
+                                    <th class="text-center" style="max-width: 5%;">User Id</th>
                                     <th>Student Name</th>
-                                    <th>Enrollment Status</th>
+                                    <th class="text-center" style="max-width: 10%;">Enrollment Status</th>
                                     <th>Action</th>
                                 </tr>
                             </thead>
@@ -246,19 +246,25 @@
                                 <?php } else { ?>
                                     <?php foreach ($enrolledStudentInfoFromSection as $userData) { ?>
                                         <tr class="table-default">
-                                            <td class=""><?php echo $userData['first_name'] . ' ' . $userData['middle_name'] . ' ' . $userData['last_name'] ?></td>
+                                            <td class="text-center">
+                                                <input type="checkbox" name="" id="" class="form-check-input">
+                                            </td>
                                             <td class="align-center text-center">
-                                                <a title="View User" class="btn btn-sm bg-brand-secondary bg-opacity-25 ctxt-secondary fw-semibold rounded-pill" href="users_admin.php<?php echo htmlspecialchars('?viewRole=' . $userData['role'] . '&user_id=' . $userData['user_id']) ?>">
+                                                <a title="View User" class="badge badge-secondary" href="users_admin.php<?php echo htmlspecialchars('?viewRole=' . $userData['role'] . '&user_id=' . $userData['user_id']) ?>">
                                                     <?php echo $userData['user_id'] ?>
                                                 </a>
                                             </td>
-                                            <td class=""><?php echo $userData['first_name'] . ' ' . $userData['middle_name'] . ' ' . $userData['last_name'] ?></td>
-                                            <td class=""><?php echo $userData['first_name'] . ' ' . $userData['middle_name'] . ' ' . $userData['last_name'] ?></td>
+                                            <td><?php echo $userData['first_name'] . ' ' . $userData['middle_name'] . ' ' . $userData['last_name'] ?></td>
+                                            <td class="text-center" style="width: 10%;">
+                                                <span class="badge <?php echo $userData['enrollment_type'] == "regular" ? "badge-primary" : "badge-danger" ?>">
+                                                    <?php echo ucfirst($userData['enrollment_type']) ?>
+                                                </span>
+                                            </td>
                                             <td class="text-center">
                                                 <a href="javascript:alert('work in progress')" title="Remove"
                                                     class="btn btn-sm btn-danger m-auto disabled">
                                                     <i class="bi bi-person-fill-add"></i>
-                                                    Enroll
+                                                    Remove
                                                 </a>
                                             </td>
                                         </tr>
@@ -270,25 +276,14 @@
                             $(document).ready(function() {
                                 // Initialize DataTable
                                 $('#dataTable_enrolledStudents').DataTable({
+                                    paging: true,
+                                    searching: true,
+                                    ordering: true,
+                                    order: [],
                                     columnDefs: [{
-                                        "orderable": false,
-                                        "targets": [0, -1]
-                                    }],
-                                    language: {
-                                        "paginate": {
-                                            previous: '<span class="bi bi-chevron-left"></span>',
-                                            next: '<span class="bi bi-chevron-right"></span>'
-                                        },
-                                        "lengthMenu": '<select class="form-control input-sm">' +
-                                            '<option value="5">5</option>' +
-                                            '<option value="10">10</option>' +
-                                            '<option value="20">20</option>' +
-                                            '<option value="30">30</option>' +
-                                            '<option value="40">40</option>' +
-                                            '<option value="50">50</option>' +
-                                            '<option value="-1">All</option>' +
-                                            '</select> Entries per page',
-                                    },
+                                        targets: [0, -1], // Disable ordering for the first and last columns
+                                        orderable: false
+                                    }]
                                 });
 
                                 // Select All functionality
@@ -347,7 +342,7 @@
                                     <th class="text-center" style="max-width: 5%;">Subject Id</th>
                                     <th>Subject Name</th>
                                     <th>Instructor</th>
-                                    <th>No. Enrolled Students</th>
+                                    <th class="text-center">No. Enrolled Students</th>
                                     <th class="text-center">Action</th>
                                 </tr>
                             </thead>
@@ -364,6 +359,7 @@
                                 <?php } else { ?>
                                     <?php foreach ($enrolledSubjectsFromSection['data'] as $subjectSectionData) {
                                         $subjectInfo = $subjectController->getSubjectFromSubjectId($subjectSectionData['subject_id']);
+                                        $totalEnrolledStudentsInSubject = $subjectSectionController->getNumberOfEnrolledStudentsInSubject($subjectSectionData['subject_section_id']);
                                         if ($subjectInfo['success']):
                                             $subjectInstructorInfo = $userController->getUserById($subjectSectionData['teacher_id']);
                                             $instructorName = $subjectInstructorInfo['success'] ? ($subjectInstructorInfo['data']['first_name'] . " " . $subjectInstructorInfo['data']['last_name']) : "N/A";
@@ -377,7 +373,7 @@
                                                 </td>
                                                 <td class="" contenteditable="true"><?php echo $subjectInfo['data']['subject_name'] ?></td>
                                                 <td class=""><?php echo $instructorName ?></td>
-                                                <td class=""><?php echo 1337 ?></td>
+                                                <td class="text-center"><?php echo $totalEnrolledStudentsInSubject ?></td>
                                                 <td class="text-center">
                                                     <a href="<?php echo updateUrlParams(['viewSection' => $_GET['viewSection'], 'subject_section_id' => $subjectSectionData['subject_section_id']]) ?>" title="enroll"
                                                         class="btn btn-sm btn-primary m-auto">
@@ -553,9 +549,9 @@
 
             <form id="enrollRegularStudentModalForm" method="POST" enctype="multipart/form-data">
                 <div class="modal-body">
-                    <input type="hidden" name="action" value="updateEnrolledStudentsFromSection">
+                    <input type="hidden" name="action" value="enrollStudentsAsRegularToSection">
                     <input type="hidden" id="inp_educational_level" name="educational_level" value="<?php echo $enrolledProgramToSection['data'][0]['educational_level'] ?>">
-                    <input type="hidden" id="subject_section_id" name="subject_section_id" value="<?php echo $enrolledProgramToSection['data'][0]['educational_level'] ?>">
+                    <input type="hidden" id="section_id" name="section_id" value="<?php echo $_GET['viewSection'] ?>">
                     <div class="mb-3 d-flex gap-2">
                         <div class="col-md-12 d-flex flex-column">
                             <label for="input_enrollSubject" class="form-label">Enrollment Type</label>
@@ -599,7 +595,7 @@
                                         return {
                                             results: data.map(function(student) {
                                                 return {
-                                                    id: student.name,
+                                                    id: student.user_id,
                                                     text: `${student.name} | ${student.user_id}`
                                                 };
                                             })
