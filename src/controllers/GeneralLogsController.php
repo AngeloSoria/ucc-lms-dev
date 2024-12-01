@@ -48,10 +48,29 @@ class GeneralLogsController
         }
     }
 
+    public function addLog_CREATE($user_id, $user_role, $description)
+    {
+        try {
+            $this->generalLogsModel->addLog_CREATE($user_id, $user_role, $description);
+            return ['success' => true];
+        } catch (Exception $e) {
+            return ['success' => false, 'message' => 'Failed to log: ' . $e->getMessage()];
+        }
+    }
+
     public function addLog_DELETE($user_id, $user_role, $description)
     {
         try {
             $this->generalLogsModel->addLog_DELETE($user_id, $user_role, $description);
+        } catch (Exception $e) {
+            return ['success' => false, 'message' => 'Failed to log: ' . $e->getMessage()];
+        }
+    }
+
+    public function addLog_UPDATE($user_id, $user_role, $description)
+    {
+        try {
+            $this->generalLogsModel->addLog_UPDATE($user_id, $user_role, $description);
         } catch (Exception $e) {
             return ['success' => false, 'message' => 'Failed to log: ' . $e->getMessage()];
         }

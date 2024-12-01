@@ -57,6 +57,17 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 $_SESSION["_ResultMessage"] = $subjectController->updateSubject($subjectData['subject_id'], $subjectData);
                 header("Location: " . $_SERVER['REQUEST_URI']);
                 exit();
+            case "deleteSubject":
+                $subjectData = [ // Use square brackets for arrays
+                    'subject_id' => $_GET['viewSubject'],
+                    'subject_code' => $_POST['subject_code'],
+                    'subject_name' => $_POST['subject_name'],
+                ];
+
+                $_SESSION["_ResultMessage"] = $subjectController->deleteSubject($subjectData);
+                header("Content-Type: application/json");
+                echo json_encode(['redirect' => $_SERVER['REQUEST_URI']]); // Send the URL to redirect to
+                exit();
         }
     }
 }

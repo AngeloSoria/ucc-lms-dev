@@ -43,9 +43,9 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['action']) && $_POST['a
 }
 $programList = $programController->getAllPrograms();  // This will return the programs to the view
 
-if ($programList['success'] == false) {
-    $_SESSION["_ResultMessage"] = $programList;
-}
+// if ($programList['success'] == false) {
+//     $_SESSION["_ResultMessage"] = $programList;
+// }
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST'  && isset($_POST['action'])) {
     switch ($_POST['action']) {

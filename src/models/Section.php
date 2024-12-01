@@ -12,83 +12,91 @@ class Section
     // Method to determine the appropriate period_id
     private function getPeriodId($semester)
     {
-        // Query to get the active academic period
-        $queryActive = "SELECT period_id, academic_year_start, semester 
-                    FROM academic_period 
-                    WHERE is_active = 1 
-                    LIMIT 1";
-        $stmtActive = $this->conn->prepare($queryActive);
-        $stmtActive->execute();
-        $activePeriod = $stmtActive->fetch(PDO::FETCH_ASSOC);
+        try {
+            // Query to get the active academic period
+            $queryActive = "SELECT period_id, academic_year_start, semester 
+                                FROM academic_period 
+                                WHERE is_active = 1 
+                                LIMIT 1";
+            $stmtActive = $this->conn->prepare($queryActive);
+            $stmtActive->execute();
+            $activePeriod = $stmtActive->fetch(PDO::FETCH_ASSOC);
 
-        if (!$activePeriod) {
-            return null; // No active period found
+            if (!$activePeriod) {
+                return null; // No active period found
+            }
+
+            $activeYearStart = $activePeriod['academic_year_start'];
+            $activeSemester = $activePeriod['semester'];
+
+            // Case 1: If adding a section for the active semester (same semester as active period)
+            if ($activeSemester == $semester) {
+                return $activePeriod['period_id'];
+            }
+
+            // Case 2: If adding a section for the first semester of the next academic year
+            if ($activeSemester == 2 && $semester == 1) {
+                $nextYearStart = $activeYearStart + 1;
+
+                // Query to find period_id for 1st semester of the next academic year
+                $queryNextYearFirstSem = "SELECT period_id 
+                                            FROM academic_period 
+                                            WHERE academic_year_start = :nextYearStart AND semester = 1 
+                                            LIMIT 1";
+                $stmtNextYearFirstSem = $this->conn->prepare($queryNextYearFirstSem);
+                $stmtNextYearFirstSem->bindParam(':nextYearStart', $nextYearStart);
+                $stmtNextYearFirstSem->execute();
+                $nextYearFirstSemPeriod = $stmtNextYearFirstSem->fetch(PDO::FETCH_ASSOC);
+
+                // If no period_id is found, return null
+                return $nextYearFirstSemPeriod['period_id'] ?? null;
+            }
+
+            // Case 3: If adding a section for the second semester of the current academic year
+            if ($activeSemester == 1 && $semester == 2) {
+                // Query to find period_id for 2nd semester of the current academic year
+                $querySecondSem = "SELECT period_id 
+                                    FROM academic_period 
+                                    WHERE academic_year_start = :activeYearStart AND semester = 2 
+                                    LIMIT 1";
+                $stmtSecondSem = $this->conn->prepare($querySecondSem);
+                $stmtSecondSem->bindParam(':activeYearStart', $activeYearStart);
+                $stmtSecondSem->execute();
+                $secondSemPeriod = $stmtSecondSem->fetch(PDO::FETCH_ASSOC);
+
+                // If no period_id is found, return null
+                return $secondSemPeriod['period_id'] ?? null;
+            }
+
+            return null; // Return null if no matching period_id found
+        } catch (Exception $e) {
+            throw new Exception($e->getMessage());
         }
-
-        $activeYearStart = $activePeriod['academic_year_start'];
-        $activeSemester = $activePeriod['semester'];
-
-        // Case 1: If adding a section for the active semester (same semester as active period)
-        if ($activeSemester == $semester) {
-            return $activePeriod['period_id'];
-        }
-
-        // Case 2: If adding a section for the first semester of the next academic year
-        if ($activeSemester == 2 && $semester == 1) {
-            $nextYearStart = $activeYearStart + 1;
-
-            // Query to find period_id for 1st semester of the next academic year
-            $queryNextYearFirstSem = "SELECT period_id 
-                                  FROM academic_period 
-                                  WHERE academic_year_start = :nextYearStart AND semester = 1 
-                                  LIMIT 1";
-            $stmtNextYearFirstSem = $this->conn->prepare($queryNextYearFirstSem);
-            $stmtNextYearFirstSem->bindParam(':nextYearStart', $nextYearStart);
-            $stmtNextYearFirstSem->execute();
-            $nextYearFirstSemPeriod = $stmtNextYearFirstSem->fetch(PDO::FETCH_ASSOC);
-
-            // If no period_id is found, return null
-            return $nextYearFirstSemPeriod['period_id'] ?? null;
-        }
-
-        // Case 3: If adding a section for the second semester of the current academic year
-        if ($activeSemester == 1 && $semester == 2) {
-            // Query to find period_id for 2nd semester of the current academic year
-            $querySecondSem = "SELECT period_id 
-                           FROM academic_period 
-                           WHERE academic_year_start = :activeYearStart AND semester = 2 
-                           LIMIT 1";
-            $stmtSecondSem = $this->conn->prepare($querySecondSem);
-            $stmtSecondSem->bindParam(':activeYearStart', $activeYearStart);
-            $stmtSecondSem->execute();
-            $secondSemPeriod = $stmtSecondSem->fetch(PDO::FETCH_ASSOC);
-
-            // If no period_id is found, return null
-            return $secondSemPeriod['period_id'] ?? null;
-        }
-
-        return null; // Return null if no matching period_id found
     }
 
 
     // Method to automatically update sections with null period_id
     public function updateAcademicPeriod()
     {
-        // Get the active semester from the query
-        $semester = $this->getActiveSemester();
+        try {
+            // Get the active semester from the query
+            $semester = $this->getActiveSemester();
 
-        // Get the new period_id for the current or next semester
-        $newPeriodId = $this->getPeriodId($semester);
+            // Get the new period_id for the current or next semester
+            $newPeriodId = $this->getPeriodId($semester);
 
-        if ($newPeriodId === null) {
-            // Handle case when no period_id is found
-            return false;
+            if ($newPeriodId === null) {
+                // Handle case when no period_id is found
+                return false;
+            }
+
+            // Update all sections with NULL period_id to the new period_id
+            $this->updateSectionPeriod($newPeriodId);
+
+            return true; // Successfully updated all sections
+        } catch (Exception $e) {
+            throw new Exception($e->getMessage());
         }
-
-        // Update all sections with NULL period_id to the new period_id
-        $this->updateSectionPeriod($newPeriodId);
-
-        return true; // Successfully updated all sections
     }
 
     // Method to get the active semester dynamically
@@ -109,20 +117,25 @@ class Section
     // Method to automatically update sections with null period_id
     private function updateSectionPeriod($newPeriodId)
     {
-        // Update sections with NULL or outdated period_id
-        $updateQuery = "UPDATE " . $this->table_name . " 
-                        SET period_id = :newPeriodId 
-                        WHERE period_id IS NULL";
+        try {
+            // Update sections with NULL or outdated period_id
+            $updateQuery = "UPDATE " . $this->table_name . " 
+                SET period_id = :newPeriodId 
+                WHERE period_id IS NULL";
 
-        $stmtUpdate = $this->conn->prepare($updateQuery);
-        $stmtUpdate->bindParam(':newPeriodId', $newPeriodId);
+            $stmtUpdate = $this->conn->prepare($updateQuery);
+            $stmtUpdate->bindParam(':newPeriodId', $newPeriodId);
 
-        return $stmtUpdate->execute(); // Return true if successful, false otherwise
+            return $stmtUpdate->execute(); // Return true if successful, false otherwise
+        } catch (Exception $e) {
+            throw new Exception($e->getMessage());
+        }
     }
 
     public function addSection($data)
     {
         try {
+            $this->conn->beginTransaction();
             // Determine the period_id based on the semester
             $period_id = $this->getPeriodId($data['semester']);
 
@@ -148,11 +161,11 @@ class Section
 
             // Execute the statement and return success message
             if ($stmt->execute()) {
+                $this->conn->commit();
                 return ['success' => true, 'message' => 'Section added successfully.'];
-            } else {
-                return ['success' => false, 'message' => 'Failed to add section.'];
             }
         } catch (Exception $e) {
+            $this->conn->rollBack();
             throw new Exception($e->getMessage()); // Return error message if any exception occurs
         }
     }
@@ -186,10 +199,6 @@ class Section
 
     public function sectionExistsById($section_id)
     {
-        // $query = "SELECT COUNT(*) as count FROM " . $this->table_name . " 
-        //           WHERE section_name = :section_name AND program_id = :program_id 
-        //           AND year_level = :year_level AND semester = :semester";
-
         $query = "SELECT COUNT(*) as count FROM $this->table_name WHERE section_id = :section_id";
 
         $stmt = $this->conn->prepare($query);
@@ -220,6 +229,7 @@ class Section
     public function updateSectionById($section_id, $data)
     {
         try {
+            $this->conn->beginTransaction();
             if (!$this->sectionExistsById($section_id)) {
                 throw new Exception("No section found with id ($section_id).");
             }
@@ -234,8 +244,10 @@ class Section
             $stmt->bindParam(':adviser_id', $data['adviser_id']);
 
             $stmt->execute();
+            $this->conn->commit();
             return ['success' => true];
         } catch (Exception $e) {
+            $this->conn->rollBack();
             throw new Exception($e->getMessage());
         }
     }

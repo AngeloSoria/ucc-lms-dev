@@ -12,14 +12,14 @@
                         <div class="row mb-3">
                             <h5 class="display-7 text-start">Program Information</h5>
                         </div>
-                        <div class="row mb-3">
+                        <!-- <div class="row mb-3">
                             <div class="col-md-6">
                                 <h6>Program Image</h6>
                                 <div>
                                     <img style="width: 200px;" src="<?= !empty($retrieved_program_ss['data'][0]['program_image']) ? 'data:image/jpeg;base64,' . base64_encode($retrieved_program_ss['data'][0]['program_image']) : 'https://via.placeholder.com/200?text=No+Image' ?>" alt="">
                                 </div>
                             </div>
-                        </div>
+                        </div> -->
                         <div class="row mb-3">
                             <div class="col-sm-6 col-md-4 col-lg-5">
                                 <h6>Program Name<code class="fs-6">*</code></h6>

@@ -42,6 +42,8 @@ if (!$SUBJECT_SECTION_INFO['success']) {
 $SUBJECT_INFO = $subjectController->getSubjectFromSubjectId($SUBJECT_SECTION_INFO['data']['subject_id']);
 $SECTION_INFO = $sectionController->getSectionById($SUBJECT_SECTION_INFO['data']['section_id']);
 // $TEACHER_INFO = $
+
+// SUBJECT VIEW | TEACHER SIDE
 ?>
 
 <!DOCTYPE html>
@@ -67,8 +69,8 @@ $SECTION_INFO = $sectionController->getSectionById($SUBJECT_SECTION_INFO['data']
                                     <h5 class="text-success"><?php echo $SUBJECT_INFO['data']['subject_name'] . ' (' . $SECTION_INFO['data']['section_name'] . ')' ?></h5>
                                 </div>
                                 <div class="col-lg-4 d-flex justify-content-end align-items-center">
-                                    <button class="btn btn-success shadow-sm d-flex gap-2">
-                                        <i class="bi bi-plus-square"></i>
+                                    <button class="btn btn-success shadow-sm d-flex gap-2" data-bs-toggle="modal" data-bs-target="#modal_addModule">
+                                        <i class="bi bi-plus-circle"></i>
                                         Add Module
                                     </button>
                                 </div>
@@ -386,6 +388,44 @@ $SECTION_INFO = $sectionController->getSectionById($SUBJECT_SECTION_INFO['data']
                 </div>
             </section>
         </section>
+
+        <!-- ADD Module Modal -->
+        <div class="modal fade" id="modal_addModule" tabindex="-1" aria-labelledby="modal_addModule" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title fs-5 text-start">
+                            Add Module Form
+                        </h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+
+                    <div class="modal-body">
+                        <!-- Form inside the modal -->
+                        <form method="POST">
+                            <input type="hidden" name="action" value="addSubjectModule">
+                            <div class="mb-3">
+                                <label for="input_moduleName" class="form-label">Module Name:</label>
+                                <input type="text" class="form-control px-3 py-2" id="input_moduleName" name="input_moduleName" placeholder="" required />
+                            </div>
+
+                            <div class="mb-3">
+                                <div class="form-check form-switch">
+                                    <input class="form-check-input" type="checkbox" role="switch" id="input_moduleVisibility" name="input_moduleVisibility" checked>
+                                    <label class="form-check-label" for="input_moduleVisibility">Module Visibility</label>
+                                </div>
+                            </div>
+
+                            <!-- Submit Button -->
+                            <div class="modal-footer">
+                                <input type="submit" value="Submit" class="btn btn-success">
+                            </div>
+
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
 
         <!-- FOOTER -->
         <?php require_once(FILE_PATHS['Partials']['User']['Footer']) ?>

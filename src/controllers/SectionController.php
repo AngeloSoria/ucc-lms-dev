@@ -34,12 +34,20 @@ class SectionController
      */
     public function getAllSections()
     {
-        return $this->sectionModel->getAllSections(); // Fetch all sections from the model
+        try {
+            return $this->sectionModel->getAllSections(); // Fetch all sections from the model
+        } catch (Exception $e) {
+            return ['success' => false, 'message' => $e->getMessage()];
+        }
     }
 
     public function updateAcademicPeriod()
     {
-        return $this->sectionModel->updateAcademicPeriod(); // Fetch all sections from the model
+        try {
+            return $this->sectionModel->updateAcademicPeriod(); // Fetch all sections from the model
+        } catch (Exception $e) {
+            return ['success' => false, 'message' => $e->getMessage()];
+        }
     }
 
     public function getSectionById($section_id)

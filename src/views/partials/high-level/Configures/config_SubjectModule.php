@@ -3,11 +3,6 @@
     <div class="card shadow-sm position-relative">
         <div
             class="card-header position-relative d-flex justify-content-start align-items-center gap-3 bg-success bg-opacity-75">
-            <!-- <div class="position-absolute top-0 end-0 mt-3 me-4">
-                                                <button class="btn cbtn-secondary px-4">
-                                                    Edit
-                                                </button>
-                                            </div> -->
             <div class="text-white p-0 pb-2">
                 <h3 class="mt-3 p-0 m-0">
                     <?= htmlspecialchars($SELECTED_SUBJECT['subject_name']) ?>
@@ -69,7 +64,7 @@
                         <i class="bi bi-floppy-fill"></i>
                         Update
                     </button>
-                    <span type="button" class="btn btn-danger d-flex gap-2" id="btnDelete" onclick="alert('Work in progress...')">
+                    <span type="button" class="btn btn-danger d-flex gap-2" id="btnDelete">
                         <i class="bi bi-trash-fill"></i>
                         Delete
                     </span>
@@ -78,3 +73,72 @@
         </div>
     </div>
 </div>
+<script>
+    $(document).ready(function() {
+        // Attach click event to the delete button
+        $('#btnDelete').on('click', function() {
+            // Insert confirmation modal into the DOM dynamically
+            const modalHtml = `
+            <div class="modal fade" id="deleteConfirmationModal" tabindex="-1" aria-labelledby="deleteConfirmationModalLabel" aria-hidden="true">
+                <div class="modal-dialog modal-dialog-centered">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="deleteConfirmationModalLabel">Confirm Deletion</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            Are you sure you want to delete this item? This action cannot be undone.
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                            <button type="button" class="btn btn-danger" id="confirmDelete">Delete</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `;
+
+            // Append the modal to the body
+            $('body').append(modalHtml);
+
+            // Show the modal
+            $('#deleteConfirmationModal').modal('show');
+
+            // Handle confirm delete action
+            $('#confirmDelete').on('click', function() {
+                // Close the modal
+                $('#deleteConfirmationModal').modal('hide');
+
+                // Perform AJAX request
+                console.log('Performing AJAX delete action...');
+
+                $.ajax({
+                    url: "", // Replace with your endpoint
+                    method: 'POST',
+                    data: {
+                        action: "deleteSubject",
+                        subject_code: "<?php echo $SELECTED_SUBJECT['subject_code'] ?>",
+                        subject_name: "<?php echo $SELECTED_SUBJECT['subject_name'] ?>"
+                    }, // Replace with your data
+                    contentType: 'application/json',
+                    success: function(response) {
+                        console.log('Delete successful', response);
+                        // Handle success, e.g., show a success message or update the UI
+                        if (response.redirect) {
+                            window.location = response.redirect;
+                        }
+                    },
+                    error: function(xhr, status, error) {
+                        console.error('Error deleting item:', error);
+                        // Handle error, e.g., show an error message
+                    }
+                });
+            });
+
+            // Remove the modal from the DOM after it's hidden
+            $('#deleteConfirmationModal').on('hidden.bs.modal', function() {
+                $(this).remove();
+            });
+        });
+    });
+</script>

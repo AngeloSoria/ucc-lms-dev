@@ -122,7 +122,10 @@ $fakedata_enrolled_subjects2 = [
             </ul>
         </div>
         <div id="container_tileview" class="d-none h-100 row d-flex">
-            <?php for ($i = 0; $i < 5; $i++) { ?>
+            <?php foreach ($myEnrolledSubjects['data'] as $subject) {
+                $subjectInfo = $subjectController->getSubjectFromSubjectId($subject['subject_id']);
+                $sectionInfo = $sectionController->getSectionById($subject['section_id']);
+            ?>
                 <div class="col-md-6 col-lg-4 p-1" style="height: 250px;">
                     <a href="#">
                         <div id="item_card" class="h-100 w-100 bg-success bg-opacity-80 shadow-sm border rounded overflow-hidden d-flex flex-column">
@@ -131,10 +134,10 @@ $fakedata_enrolled_subjects2 = [
                             </div>
                             <div class="px-2 flex-grow-1 position-relative">
                                 <p class="fs-6 text-white pt-2 fw-semibold">
-                                    Data Structures & Algorithms III
+                                    <?php echo $subjectInfo['data']['subject_name'] ?>
                                 </p>
                                 <p class="fs-7 text-white position-absolute bottom-0 start-0 ms-2 mb-2">
-                                    BSIT701P
+                                    <?php echo $sectionInfo['data']['section_name'] ?>
                                 </p>
                                 <div class="d-flex position-absolute bottom-0 end-0 me-2 mb-2">
                                     <div class="d-flex gap-1 fs-7 align-items-center bg-primary bg-opacity-75 px-2 rounded-pill text-white" title="Grades">

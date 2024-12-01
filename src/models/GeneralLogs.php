@@ -79,6 +79,29 @@ class GeneralLogs
         }
     }
 
+
+    public function addLog_CREATE($user_id, $user_role, $description)
+    {
+        try {
+            // prepare
+            $log_type = 'CREATE';
+            $query = "INSERT INTO {$this->table_name} (type, user_id, role, description, log_date) VALUES (:type, :user_id, :role, :description, NOW())";
+            $stmt = $this->conn->prepare($query);
+
+            // Bindings
+            $stmt->bindParam(':type', $log_type);
+            $stmt->bindParam(':user_id', $user_id);
+            $stmt->bindParam(':role', $user_role);
+            $stmt->bindParam(':description', $description);
+
+            // Execute
+            $stmt->execute();
+            return ['success' => true];
+        } catch (Exception $e) {
+            throw new Exception($e->getMessage());
+        }
+    }
+
     public function addLog_DELETE($user_id, $user_role, $description)
     {
         try {
@@ -100,6 +123,29 @@ class GeneralLogs
             throw new Exception($e->getMessage());
         }
     }
+
+    public function addLog_UPDATE($user_id, $user_role, $description)
+    {
+        try {
+            // prepare
+            $log_type = 'UPDATE';
+            $query = "INSERT INTO {$this->table_name} (type, user_id, role, description, log_date) VALUES (:type, :user_id, :role, :description, NOW())";
+            $stmt = $this->conn->prepare($query);
+
+            // Bindings
+            $stmt->bindParam(':type', $log_type);
+            $stmt->bindParam(':user_id', $user_id);
+            $stmt->bindParam(':role', $user_role);
+            $stmt->bindParam(':description', $description);
+
+            // Execute
+            $stmt->execute();
+            return ['success' => true];
+        } catch (Exception $e) {
+            throw new Exception($e->getMessage());
+        }
+    }
+
 
     public function getAllLatestLogs($limit = 100)
     {

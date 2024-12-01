@@ -46,7 +46,7 @@ $myEnrolledSubjects = $subjectSectionController->getAllEnrolledSubjectsFromSecti
                         <!-- SUBJECTS -->
                         <div class="bg-white shadow-sm rounded p-4 border border-box mb-sm-2 d-flex flex-column" id="main-container" style="max-height: none;">
                             <div class="d-flex justify-content-between align-items-center">
-                                <p class="fs-4 fw-semibold text-success m-0">My Subjects (Sample)</p>
+                                <p class="fs-4 fw-semibold text-success m-0">My Subjects</p>
                                 <div class="container-controls">
                                     <button class="btn btn-transparent" data-bs-toggle="dropdown">
                                         <i class="bi bi-three-dots-vertical fs-5"></i>

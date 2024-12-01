@@ -27,8 +27,8 @@ class Subject
             $stmt->bindParam(':educational_level', $subjectData['educational_level']);
 
 
-            $this->conn->commit();
             $stmt->execute();
+            $this->conn->commit();
             return ["success" => true];
         } catch (PDOException $e) {
             $this->conn->rollBack();  // Rollback the transaction if an error occurs.

@@ -41,7 +41,9 @@ $studentEnrollmentController = new StudentEnrollmentController($db);
 
 $sectionList = $sectionController->getAllSections(); // Fetch all sections
 $sectionList = $sectionController->updateAcademicPeriod();
-
+if (isset($sectionList['success']) && !$sectionList['success']) {
+    $_SESSION['_ResultMessage'] = $sectionList;
+}
 
 // At the beginning of your main file
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
@@ -132,6 +134,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 header("Location: " . $_SERVER['REQUEST_URI']);
                 exit();
             case 'deleteSubjectsFromSection':
+                // AJAX Call only
                 $_SESSION['_ResultMessage'] = $subjectSectionController->deleteSubjectsFromSection($_POST['subject_section_ids']);
 
                 // Send a response indicating a redirect is required
