@@ -127,6 +127,7 @@ if (!isset($_GET['subject_section_id'])) {
     $SECTION_INFO = $sectionController->getSectionById($SUBJECT_SECTION_INFO['data']['section_id']);
 
     $CONFIGURE_MODULE = false;
+    $CONFIGURE_MODULE_CONTENT = false;
     if (isset($_GET['module_id'])) {
         $getModuleByModuleId = $moduleContentController->getModule($_GET['module_id']);
         if (!$getModuleByModuleId['success'] || $getModuleByModuleId['success'] && empty($getModuleByModuleId['data'])) {
@@ -136,6 +137,8 @@ if (!isset($_GET['subject_section_id'])) {
             exit();
         }
         $CONFIGURE_MODULE = true;
+        if (isset($_GET['content_id'])) {
+        }
     }
 }
 

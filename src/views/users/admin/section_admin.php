@@ -47,12 +47,21 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     if (isset($_POST['action'])) {
         switch ($_POST['action']) {
             case "addSection":
+                $getSemester = $academicYearController->getAcademicPeriodById($_POST['period_id']);
+                if (!$getSemester['success']) {
+                    $_SESSION["_ResultMessage"] = $getSemester;
+
+                    // Redirect to prevent resubmission
+                    header("Location: " . $_SERVER['REQUEST_URI']);
+                    exit();
+                }
+
                 $sectionData = [
                     'section_name' => $_POST['section_name'],
                     'educational_level' => $_POST['educational_level'],
                     'program_id' => $_POST['program_id'],
                     'year_level' => $_POST['year_level'],
-                    'semester' => $_POST['semester'], // this is the selected semester
+                    'semester' => $getSemester['data']['semester'], // this is the selected semester
                     'adviser_id' => $_POST['adviser_id'],
                     'period_id' => $_POST['period_id'], // save the period_id connected to the semester
                 ];

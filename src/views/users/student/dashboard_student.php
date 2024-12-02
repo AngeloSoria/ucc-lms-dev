@@ -9,6 +9,7 @@ require_once(FILE_PATHS['Controllers']['SubjectSection']);
 require_once(FILE_PATHS['Controllers']['Subject']);
 require_once(FILE_PATHS['Controllers']['Section']);
 require_once(FILE_PATHS['Functions']['SessionChecker']);
+require_once(FILE_PATHS['Controllers']['StudentEnrollment']);
 require_once(FILE_PATHS['Functions']['ToastLogger']);
 checkUserAccess(['Student']);
 
@@ -21,8 +22,9 @@ $userController = new UserController();
 $subjectSectionController = new SubjectSectionController($db);
 $subjectController = new SubjectController();
 $sectionController = new SectionController();
+$studentEnrollmentController = new StudentEnrollmentController($db);
 
-$myEnrolledSubjects = $subjectSectionController->getAllEnrolledSubjectsFromSectionByTeacherId($_SESSION['user_id']);
+$myEnrolledSubjects = $studentEnrollmentController->getAllSubjectsEnrolledByStudentId($_SESSION['user_id']);
 
 ?>
 

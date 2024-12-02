@@ -9,7 +9,7 @@ require_once(FILE_PATHS['Controllers']['SubjectSection']);
 require_once(FILE_PATHS['Controllers']['Subject']);
 require_once(FILE_PATHS['Controllers']['Section']);
 require_once(FILE_PATHS['Functions']['SessionChecker']);
-checkUserAccess(['Teacher']);
+checkUserAccess(['Teacher', 'Student']);
 
 // Create a new instance of the Database class
 $database = new Database();
@@ -84,7 +84,7 @@ $myEnrolledSubjects = $subjectSectionController->getAllEnrolledSubjectsFromSecti
                                                         </p>
                                                         <div class="d-flex position-absolute bottom-0 end-0 me-2 mb-2">
                                                             <div class="d-flex gap-1 fs-7 align-items-center bg-primary bg-opacity-75 px-2 rounded-pill text-white" title="Grades">
-                                                                <p>87</p>
+                                                                <p>0</p>
                                                                 <div class="icon"><i class="bi bi-percent"></i></div>
                                                             </div>
                                                             <div class="d-flex gap-1 fs-7 align-items-center bg-danger bg-opacity-75 px-2 rounded-pill text-white" title="Number of Modules">

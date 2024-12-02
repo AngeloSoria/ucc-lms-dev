@@ -18,7 +18,7 @@ class StudentEnrollmentModel
     public function getSubjectSectionById($subjectSectionId)
     {
         try {
-            $query = "SELECT period_id FROM subject_section WHERE subject_section_id = :subject_section_id";
+            $query = "SELECT * FROM subject_section WHERE subject_section_id = :subject_section_id";
             $stmt = $this->db->prepare($query);
             $stmt->bindParam(':subject_section_id', $subjectSectionId, PDO::PARAM_INT);
             $stmt->execute();
@@ -178,6 +178,33 @@ class StudentEnrollmentModel
             $stmt->execute();
             msgLog("FOO", "BAR");
             return ['success' => true];
+        } catch (Exception $e) {
+            throw new Exception($e->getMessage());
+        }
+    }
+
+    public function getAllSubjectsEnrolledByStudentId($studentId)
+    {
+        try {
+            $query = "SELECT 
+                            subj.*,
+                            ss.section_id,
+                            sss.subject_section_id
+                        FROM 
+                            subjects AS subj
+                        JOIN 
+                            subject_section AS ss 
+                            ON subj.subject_id = ss.subject_id
+                        JOIN 
+                            student_subject_section AS sss
+                            ON ss.subject_section_id = sss.subject_section_id
+                        WHERE 
+                            sss.user_id = :user_id";
+            $stmt = $this->db->prepare($query);
+            $stmt->bindParam(":user_id", $studentId);
+
+            $stmt->execute();
+            return $stmt->fetchAll(PDO::FETCH_ASSOC);
         } catch (Exception $e) {
             throw new Exception($e->getMessage());
         }

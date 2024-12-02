@@ -65,7 +65,6 @@ try {
                     '1st Semester (' . $nextSemester['academic_year_start'] . '-' . $nextSemester['academic_year_end'] . ')</option>';
             }
         }
-
     } else {
         // Case: No active semester, find the nearest upcoming semester based on current date and academic year
         $currentDate = date('Y-m-d'); // Current date for comparison
@@ -135,7 +134,6 @@ try {
     }
 
     echo $options;
-
 } catch (PDOException $e) {
     echo json_encode(['error' => $e->getMessage()]);
 }

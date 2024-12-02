@@ -114,6 +114,15 @@ class StudentEnrollmentController
             return 'completed';
         }
     }
+    public function getAllSubjectsEnrolledByStudentId($studentId)
+    {
+        try {
+            $result = $this->studentEnrollmentModel->getAllSubjectsEnrolledByStudentId($studentId);
+            return ['success' => true, 'data' => $result];
+        } catch (Exception $e) {
+            return ['success' => false, 'message' => $e->getMessage()];
+        }
+    }
 
     /**
      * Log operation details.
