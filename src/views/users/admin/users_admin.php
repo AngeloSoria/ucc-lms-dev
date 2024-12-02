@@ -78,10 +78,13 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                     $userData['password']  = $_POST['password'];
                 }
 
-                msgLog("UPDATE TEST", implode(", ", $userData));
-
                 $_SESSION["_ResultMessage"] = $userController->updateUserProfile($userData['user_id'], $userData);
                 header("Location: " . $_SERVER['REQUEST_URI']);
+                exit();
+
+            case "deleteUser":
+                $_SESSION["_ResultMessage"] = $userController->deleteUser($_POST['user_id']);
+                header("Location: " . clearUrlParams());
                 exit();
         }
     }

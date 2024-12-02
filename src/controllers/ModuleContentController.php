@@ -2,81 +2,177 @@
 require_once(__DIR__ . '../../../src/config/PathsHandler.php');
 require_once(FILE_PATHS['DATABASE']);
 require_once(FILE_PATHS['Models']['ModuleContent']);
+require_once(FILE_PATHS['Functions']['PermissionCheck']);
 
 
 class ModuleContentController
 {
-    private $db;
     private $moduleContentModel;
+    private $generalLogsController;
 
     public function __construct()
     {
         $database = new Database();
-        $this->db = $database->getConnection();
-        $this->moduleContentModel = new ModuleContent($this->db);
+        $this->moduleContentModel = new ModuleContent();
+        $this->generalLogsController = new GeneralLogsController();
     }
 
     // Handle adding a module
     public function addModule($moduleData)
     {
-        $result = $this->moduleContentModel->addModules($moduleData);
-        return $this->jsonResponse($result);
+        try {
+            if (!isAllowedToProceed(["Teacher", "Admin"])) {
+                throw new Exception("You don't have permission to do this action.");
+            }
+
+            $result = $this->moduleContentModel->addModule($moduleData);
+            if ($result['success']) {
+                $result['message'] = "Successfully added a module.";
+                return $result;
+            }
+        } catch (Exception $e) {
+            return ['success' => false, 'message' => $e->getMessage()];
+        }
+        // return $this->jsonResponse($result);
     }
 
     // Handle getting modules by subject_section_id
     public function getModules($subject_section_id)
     {
-        $result = $this->moduleContentModel->getModulesBySubjectSection($subject_section_id);
-        return $this->jsonResponse($result);
+        try {
+            $result = $this->moduleContentModel->getModulesBySubjectSection($subject_section_id);
+            return ['success' => true, "data" => $result];
+        } catch (Exception $e) {
+            return ['success' => false, "message" => $e->getMessage()];
+        }
+    }
+
+    public function getModule($module_id)
+    {
+        try {
+            $result = $this->moduleContentModel->getModuleByModuleId($module_id);
+            return ['success' => true, "data" => $result];
+        } catch (Exception $e) {
+            return ['success' => false, "message" => $e->getMessage()];
+        }
     }
 
     // Handle updating a module
     public function updateModule($moduleData)
     {
-        $result = $this->moduleContentModel->updateModules($moduleData);
-        return $this->jsonResponse($result);
+        try {
+            if (!isAllowedToProceed(["Teacher", "Admin"])) {
+                throw new Exception("You don't have permission to do this action.");
+            }
+            $result = $this->moduleContentModel->updateModule($moduleData);
+            return ['success' => true, "message" => "Successfully updated the module."];
+        } catch (Exception $e) {
+            return ["success" => false, "message" => $e->getMessage()];
+        }
     }
 
     // Handle deleting a module
     public function deleteModule($module_id)
     {
-        $result = $this->moduleContentModel->deleteModule($module_id);
-        return $this->jsonResponse($result);
+        try {
+            if (!isAllowedToProceed(["Teacher", "Admin"])) {
+                throw new Exception("You don't have permission to do this action.");
+            }
+
+            $result = $this->moduleContentModel->deleteModule($module_id);
+            return ['success' => true, "message" => "Successfully deleted a module."];
+        } catch (Exception $e) {
+            return ["success" => false, "message" => $e->getMessage()];
+        }
     }
 
     // Handle adding content to a module
     public function addContent($contentData)
     {
-        $result = $this->moduleContentModel->addContent($contentData);
-        return $this->jsonResponse($result);
+        try {
+            if (!isAllowedToProceed(["Teacher", "Admin"])) {
+                throw new Exception("You don't have permission to do this action.");
+            }
+
+            $result = $this->moduleContentModel->addContent($contentData);
+            if ($result['success']) {
+                return ['success' => true, "message" => "Successfully added a content to a module."];
+            } else {
+                throw new Exception("Something went wrong adding content to a module.");
+            }
+        } catch (Exception $e) {
+            return ["success" => false, "message" => $e->getMessage()];
+        }
     }
 
     // Handle getting contents by module_id
     public function getContents($module_id)
     {
-        $result = $this->moduleContentModel->getContentsByModule($module_id);
-        return $this->jsonResponse($result);
+        try {
+            $success = $this->moduleContentModel->getContentsByModule($module_id);
+            return ['success' => true, "data" => $success];
+        } catch (Exception $e) {
+            return ['success' => false, "message" => $e->getMessage()];
+        }
     }
 
     // Handle updating content
     public function updateContent($contentData)
     {
-        $result = $this->moduleContentModel->updateContent($contentData);
-        return $this->jsonResponse($result);
+        try {
+            if (!isAllowedToProceed(["Teacher", "Admin"])) {
+                throw new Exception("You don't have permission to do this action.");
+            }
+
+            $result = $this->moduleContentModel->updateContent($contentData);
+            return ['success' => true, "data" => $result];
+        } catch (Exception $e) {
+            return ["success" => false, "message" => $e->getMessage()];
+        }
+    }
+
+    public function updateContentVisibility($contentData)
+    {
+        try {
+            $result = $this->moduleContentModel->updateContentVisibility($contentData);
+            if ($result['success']) {
+                return ['success' => true, 'message' => 'Successfuly updated the visibility of a content.'];
+            }
+        } catch (Exception $e) {
+            return ['success' => false, 'message' => $e->getMessage()];
+        }
     }
 
     // Handle deleting content
-    public function deleteContent($content_id)
+    public function deleteContent($contentData)
     {
-        $result = $this->moduleContentModel->deleteContent($content_id);
-        return $this->jsonResponse($result);
+        try {
+            if (!isAllowedToProceed(["Teacher", "Admin"])) {
+                throw new Exception("You don't have permission to do this action.");
+            }
+
+            $result = $this->moduleContentModel->deleteContent($contentData);
+            if ($result['success']) {
+                return ['success' => true, "message" => "Successfully deleted a content from a module."];
+            }
+        } catch (Exception $e) {
+            return ["success" => false, "message" => $e->getMessage()];
+        }
     }
 
     // Handle adding a file to content
     public function addContentFile($fileData)
     {
-        $result = $this->moduleContentModel->addContentFile($fileData);
-        return $this->jsonResponse($result);
+        try {
+            if (!isAllowedToProceed(["Teacher", "Admin"])) {
+                throw new Exception("You don't have permission to do this action.");
+            }
+
+            $result = $this->moduleContentModel->addContentFile($fileData);
+            return ['success' => true, "data" => $result];
+        } catch (Exception $e) {
+            return ["success" => false, "message" => $e->getMessage()];
+        }
     }
 
     // Handle getting files for content
@@ -89,8 +185,16 @@ class ModuleContentController
     // Handle deleting a file from content
     public function deleteContentFile($file_id)
     {
-        $result = $this->moduleContentModel->deleteContentFile($file_id);
-        return $this->jsonResponse($result);
+        try {
+            if (!isAllowedToProceed(["Teacher", "Admin"])) {
+                throw new Exception("You don't have permission to do this action.");
+            }
+
+            $result = $this->moduleContentModel->deleteContentFile($file_id);
+            return ['success' => true, "data" => $result];
+        } catch (Exception $e) {
+            return ["success" => false, "message" => $e->getMessage()];
+        }
     }
 
     // Handle adding a student submission
@@ -115,4 +219,3 @@ class ModuleContentController
         exit;
     }
 }
-?>

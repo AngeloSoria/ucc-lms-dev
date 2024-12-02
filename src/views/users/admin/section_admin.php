@@ -40,10 +40,7 @@ $subjectSectionController = new SubjectSectionController($db);
 $studentEnrollmentController = new StudentEnrollmentController($db);
 
 $sectionList = $sectionController->getAllSections(); // Fetch all sections
-$sectionList = $sectionController->updateAcademicPeriod();
-if (isset($sectionList['success']) && !$sectionList['success']) {
-    $_SESSION['_ResultMessage'] = $sectionList;
-}
+
 
 // At the beginning of your main file
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
@@ -55,15 +52,18 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                     'educational_level' => $_POST['educational_level'],
                     'program_id' => $_POST['program_id'],
                     'year_level' => $_POST['year_level'],
-                    'semester' => $_POST['semester'],
+                    'semester' => $_POST['semester'], // this is the selected semester
+                    'adviser_id' => $_POST['adviser_id'],
+                    'period_id' => $_POST['period_id'], // save the period_id connected to the semester
                 ];
 
                 $addProgramResult = $sectionController->addSection($sectionData);
                 $_SESSION["_ResultMessage"] = $addProgramResult;
 
-                // Redirect to the same page to prevent resubmissions of forms.
+                // Redirect to prevent resubmission
                 header("Location: " . $_SERVER['REQUEST_URI']);
                 exit();
+
             case 'updateSectionInfo':
 
                 $sectionInfoData = [
@@ -167,7 +167,10 @@ try {
     FROM 
         section s
     LEFT JOIN users u ON s.adviser_id = u.user_id
-    LEFT JOIN programs p ON s.program_id = p.program_id;";
+    LEFT JOIN programs p ON s.program_id = p.program_id
+    LEFT JOIN academic_period ap ON s.period_id = ap.period_id
+    WHERE 
+        ap.is_active = 1;";  // Filter by active period
 
     // Prepare and execute the SQL statement
     $stmt = $db->prepare($sql);

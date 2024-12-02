@@ -76,7 +76,7 @@
 
 <script>
     // Update programs and year levels based on educational level selection
-    $('#educational_level').change(function() {
+    $('#educational_level').change(function () {
         educationalLevel = $(this).val();
         $('#program_id').html('<option value="" disabled selected>Select Program</option>'); // Clear previous options
         $('#year_level').html('<option value="" disabled selected>Select Year Level</option>'); // Clear year level options
@@ -93,7 +93,7 @@
             data: {
                 educational_level: educationalLevel
             },
-            success: function(data) {
+            success: function (data) {
                 console.log('Programs fetched:', data);
                 $('#program_id').html(data); // Populate the program dropdown
 
@@ -106,25 +106,25 @@
                 // Fetch advisers based on the selected academic level
                 // fetchAdvisers(educationalLevel);
             },
-            error: function(xhr, status, error) {
+            error: function (xhr, status, error) {
                 console.error('AJAX Error:', status, error);
                 alert('Failed to fetch programs. Please try again.');
             }
         });
     });
 
-    $(document).ready(function() {
+    $(document).ready(function () {
         // Fetch and populate active semesters
         function fetchActiveSemesters() {
             $.ajax({
                 url: '../../../views/partials/high-level/fetch_semesters.php', // PHP script to fetch active semesters
                 type: 'POST',
-                success: function(data) {
+                success: function (data) {
                     // Populate the semester dropdown with the fetched options
                     $('#semester').html('<option value="" disabled selected>Select Semester</option>'); // Clear previous options
                     $('#semester').append(data); // Add new options
                 },
-                error: function(xhr, status, error) {
+                error: function (xhr, status, error) {
                     console.error("Error fetching semesters:", error);
                     alert("Failed to fetch active semesters. Please try again.");
                 }
@@ -132,20 +132,20 @@
         }
 
         // Capture the selected semester and store its period_id in a hidden input
-        $('#semester').change(function() {
+        $('#semester').change(function () {
             const periodId = $(this).val(); // Get the selected period_id from the dropdown
             $('#period_id').val(periodId); // Set the hidden input field's value to period_id
         });
 
         // Call the function to load semesters when the modal is shown
-        $('#sectionFormModal').on('show.bs.modal', function() {
+        $('#sectionFormModal').on('show.bs.modal', function () {
             fetchActiveSemesters();
         });
     });
 
 
 
-    $(document).ready(function() {
+    $(document).ready(function () {
         // Function to initialize Select2 for the adviser dropdown
         function initializeSelect2() {
             $('#adviser_id').select2({
@@ -158,15 +158,13 @@
                     type: "POST",
                     dataType: "json",
                     delay: 250,
-                    data: function(params) {
+                    data: function (params) {
                         // Get the educational level from the dropdown
                         const educationalLevel = $('#educational_level').val();
 
                         if (!educationalLevel) {
                             console.error("Educational level is not selected");
-                            return {
-                                query: ""
-                            }; // If no educational level, return no data
+                            return { query: "" }; // If no educational level, return no data
                         }
 
                         return {
@@ -175,7 +173,7 @@
                             educational_level: educationalLevel // Send the educational level
                         };
                     },
-                    processResults: function(data) {
+                    processResults: function (data) {
                         // Map the returned data to Select2 format
                         return {
                             results: data.map(teacher => ({
@@ -184,7 +182,7 @@
                             }))
                         };
                     },
-                    error: function(xhr, status, error) {
+                    error: function (xhr, status, error) {
                         console.error("Error fetching data:", error);
                         alert("Failed to fetch advisers. Please try again.");
                     }
@@ -193,18 +191,18 @@
         }
 
         // Reinitialize Select2 whenever the educational level dropdown changes
-        $('#educational_level').change(function() {
+        $('#educational_level').change(function () {
             $('#adviser_id').val(null).trigger('change'); // Reset adviser selection
             initializeSelect2(); // Reinitialize with the updated educational level
         });
 
         // Initialize Select2 when the modal is shown
-        $('#sectionFormModal').on('show.bs.modal', function() {
+        $('#sectionFormModal').on('show.bs.modal', function () {
             initializeSelect2(); // Ensure Select2 is initialized
         });
 
         // Form submission handling
-        $('#sectionForm').submit(function(e) {
+        $('#sectionForm').submit(function (e) {
             e.preventDefault();
             // If N/A is selected for adviser, we handle it as null or a special case when submitting.
             const adviserValue = $('#adviser_id').val();

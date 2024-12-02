@@ -73,6 +73,19 @@ class UserController
         }
     }
 
+    public function deleteUser($userId)
+    {
+        try {
+            $result = $this->userModel->deleteUser($userId);
+            if ($result['success']) {
+                $result["message"] = "Successfully deleted a user";
+            }
+            return $result;
+        } catch (Exception $e) {
+            return ['success' => false, "message" => $e->getMessage()];
+        }
+    }
+
     public function getUserById($userId)
     {
         try {

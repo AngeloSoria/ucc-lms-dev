@@ -30,8 +30,9 @@
                 <p class="text-white p-0 m-0">@<?= htmlspecialchars($user_username) ?></p>
             </div>
         </div>
-        <form method="POST" enctype="multipart/form-data">
-            <input type="hidden" name="action" value="updateUserInfo">
+        <form method="POST" enctype="multipart/form-data" id="formAccountInfo">
+            <input type="hidden" name="user_id" value="<?php echo $user_userid ?>">
+            <input type="hidden" name="action" value="updateUserInfo" id="formAction">
             <div class="card-body">
                 <section class="mb-4">
                     <div class="row mb-3">
@@ -127,10 +128,56 @@
                         <i class="bi bi-floppy-fill"></i>
                         Update
                     </button>
-                    <span type="button" class="btn btn-danger d-flex gap-2" id="btnDelete" onclick="alert('Work in progress...')">
+                    <span type="button" class="btn btn-danger d-flex gap-2" id="btnDelete" role="button">
                         <i class="bi bi-trash-fill"></i>
                         Delete
                     </span>
+                    <script>
+                        $(document).ready(function() {
+                            // Handle the Delete button click
+                            $("#btnDelete").on("click", function() {
+                                // Dynamically create and insert the modal into the DOM
+                                const modalHTML = `
+                                                <div class="modal fade" id="confirmationModal" tabindex="-1" aria-labelledby="confirmationModalLabel" aria-hidden="true">
+                                                    <div class="modal-dialog modal-dialog-centered">
+                                                        <div class="modal-content">
+                                                            <div class="modal-header">
+                                                                <h5 class="modal-title" id="confirmationModalLabel">Confirm Action</h5>
+                                                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                                            </div>
+                                                            <div class="modal-body">
+                                                                Are you sure you want to delete this user? This action cannot be undone.
+                                                            </div>
+                                                            <div class="modal-footer">
+                                                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                                                                <button type="button" class="btn btn-danger" id="confirmDelete">Delete</button>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>`;
+
+                                // Append the modal to the body
+                                $("body").append(modalHTML);
+
+                                // Show the modal
+                                $("#confirmationModal").modal("show");
+
+                                // Handle the Confirm Delete button click
+                                $("#confirmDelete").on("click", function() {
+                                    $("#formAction").val("deleteUser");
+                                    $("#confirmationModal").modal("hide");
+
+                                    // Submit the form
+                                    $("#formAccountInfo").submit();
+                                });
+
+                                // Remove the modal from the DOM after it is hidden
+                                $("#confirmationModal").on("hidden.bs.modal", function() {
+                                    $(this).remove();
+                                });
+                            });
+                        });
+                    </script>
                 </div>
         </form>
         <hr>

@@ -35,7 +35,7 @@ $latestUserId = $userController->getLatestUserId();
                                 <select class="form-select" id="role" name="role" required>
                                     <option value="" disabled selected>Select Role</option>
                                     <option value="Admin">Admin</option>
-                                    <option value="Level Coordinator">Level Coordinator</option>
+                                    <!-- <option value="Level Coordinator">Level Coordinator</option> -->
                                     <option value="Student">Student</option>
                                     <option value="Teacher">Teacher</option>
                                 </select>

@@ -2,6 +2,7 @@
 require_once(__DIR__ . '../../../src/config/PathsHandler.php');
 require_once(FILE_PATHS['DATABASE']);
 require_once(FILE_PATHS['Controllers']['Uploads']);
+require_once(FILE_PATHS['Controllers']['GeneralLogs']);
 
 class User
 {
@@ -9,12 +10,15 @@ class User
     private $table_name = 'users';
     public const ENUM_USER_ROLES = ['admin', 'level coordinator', 'teacher', 'student'];
     private $uploadsController;
+
+    private $generalLogsController;
     public function __construct()
     {
         $db = new Database();
         $this->conn = $db->getConnection();
 
         $this->uploadsController = new UploadsController();
+        $this->generalLogsController = new GeneralLogsController();
     }
 
     // ADD user to DATABASE
@@ -45,6 +49,8 @@ class User
             $stmt->execute(); // Execute statement
             $this->conn->commit(); // Commit transaction
 
+            $this->generalLogsController->addLog_CREATE($_SESSION['user_id'], $_SESSION['role'], "Added a user with user_id of " . $userData['user_id']);
+
             return ["success" => true];
         } catch (PDOException $e) {
             $this->conn->rollBack(); // Rollback transaction on error
@@ -62,6 +68,8 @@ class User
             $stmt->bindParam(':educational_level', $educational_level);
             $stmt->execute();
 
+            $this->generalLogsController->addLog_CREATE($_SESSION['user_id'], $_SESSION['role'], "Enrolled a user as a teacher" . $userId);
+
             return ['success' => true, 'message' => 'User added successfully.'];
         } catch (PDOException $e) {
             return ["success" => false, 'message' => $e->getMessage()];
@@ -76,9 +84,32 @@ class User
             $stmt->bindParam(':educational_level', $educational_level);
             $stmt->execute();
 
+            $this->generalLogsController->addLog_CREATE($_SESSION['user_id'], $_SESSION['role'], "Enrolled a user as a student (" . $userId . ")");
+
             return ['success' => true, 'message' => 'User added successfully.'];
         } catch (PDOException $e) {
             return ["success" => false, 'message' => $e->getMessage()];
+        }
+    }
+
+    public function deleteUser($userId)
+    {
+        try {
+            $this->conn->beginTransaction();
+
+            $query = "DELETE FROM {$this->table_name} WHERE user_id = :user_id";
+
+            $stmt = $this->conn->prepare($query);
+            $stmt->bindParam(":user_id", $userId);
+            $stmt->execute();
+
+            $this->generalLogsController->addLog_DELETE($_SESSION['user_id'], $_SESSION['role'], "Deleted a user with user_id of $userId");
+            $this->conn->commit();
+
+            return ['success' => true];
+        } catch (Exception $e) {
+            $this->conn->rollBack();
+            throw new Exception($e->getMessage());
         }
     }
 
@@ -393,6 +424,8 @@ class User
 
             // Execute the statement
             $stmt->execute();
+
+            $this->generalLogsController->addLog_UPDATE($_SESSION['user_id'], $_SESSION['role'], "Updated the user data of " . $userId);
 
             // Commit the transaction
             $this->conn->commit();

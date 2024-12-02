@@ -30,6 +30,7 @@ define('FILE_PATHS', [
         'UpdateURLParams' => __DIR__ . '../../functions/updateURLParams.php',
         'CalculateElapsedTime' => __DIR__ . '../../functions/CalculateElapsedTime.php',
         'UpdatePassword' => __DIR__ . '../../functions/updatePasswordRequest.php',
+        'PermissionCheck' => __DIR__ . '../../functions/PermissionCheck.php',
     ],
 
 

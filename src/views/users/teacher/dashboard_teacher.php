@@ -8,6 +8,8 @@ require_once(FILE_PATHS['Controllers']['User']);
 require_once(FILE_PATHS['Controllers']['SubjectSection']);
 require_once(FILE_PATHS['Controllers']['Subject']);
 require_once(FILE_PATHS['Controllers']['Section']);
+
+require_once(FILE_PATHS['Functions']['ToastLogger']);
 require_once(FILE_PATHS['Functions']['SessionChecker']);
 checkUserAccess(['Teacher']);
 
@@ -67,6 +69,16 @@ $myEnrolledSubjects = $subjectSectionController->getAllEnrolledSubjectsFromSecti
         <?php require_once(FILE_PATHS['Partials']['User']['Footer']) ?>
     </section>
 </body>
-
+<?php
+// Show Toast
+if (isset($_SESSION["_ResultMessage"])) {
+    makeToast([
+        'type' => $_SESSION["_ResultMessage"]['success'] ? 'success' : 'error',
+        'message' => $_SESSION["_ResultMessage"]['message'],
+    ]);
+    outputToasts(); // Execute toast on screen.
+    unset($_SESSION["_ResultMessage"]); // Dispose
+}
+?>
 
 </html>

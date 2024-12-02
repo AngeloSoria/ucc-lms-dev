@@ -1,28 +1,42 @@
 <?php
 require_once(__DIR__ . '../../../src/config/PathsHandler.php');
+require_once(FILE_PATHS['DATABASE']);
+require_once(FILE_PATHS['Functions']['PHPLogger']);
+require_once(FILE_PATHS['Controllers']['GeneralLogs']);
 
 
 class ModuleContent
 {
     private $conn;
+    private $generalLogsController;
 
-    public function __construct($db)
+    public function __construct()
     {
+        $db = new Database();
         $this->conn = $db->getConnection();
+        $this->generalLogsController = new GeneralLogsController();
     }
 
-    public function addModules($moduleData)
+
+    // ===============================================
+    // MODULES
+    // ===============================================
+    public function addModule($moduleData)
     {
         try {
             $this->conn->beginTransaction(); // Begin transaction
 
-            $query = "INSERT INTO modules (subject_section_id, title) VALUES (:subject_section_id, :title)";
+            $query = "INSERT INTO modules (subject_section_id, title, visibility) VALUES (:subject_section_id, :title, :visibility)";
 
             $stmt = $this->conn->prepare($query);
             $stmt->bindParam(':subject_section_id', $moduleData['subject_section_id']);
             $stmt->bindParam(':title', $moduleData['title']);
+            $stmt->bindParam(':visibility', $moduleData['visibility']);
 
             $stmt->execute(); // Execute statement
+
+            $this->generalLogsController->addLog_CREATE($_SESSION['user_id'], $_SESSION['role'], "Created a module for subject_section_id (" . $moduleData['subject_section_id'] . ")");
+
             $this->conn->commit(); // Commit transaction
 
             return ["success" => true];
@@ -32,6 +46,7 @@ class ModuleContent
         }
     }
 
+    // Multiple modules
     public function getModulesBySubjectSection($subject_section_id)
     {
         try {
@@ -48,20 +63,40 @@ class ModuleContent
         }
     }
 
+    // Single module
+    public function getModuleByModuleId($module_id)
+    {
+        try {
+            $query = "SELECT * FROM modules WHERE module_id = :module_id";
+            $stmt = $this->conn->prepare($query);
+            $stmt->bindParam(':module_id', $module_id, PDO::PARAM_INT);
+            $stmt->execute();
+            $result = $stmt->fetchAll(PDO::FETCH_ASSOC); // Fetch as an associative array
+
+            return $result ? $result : []; // Return result or an empty array if no records found
+        } catch (PDOException $e) {
+            // Log the error or handle it as needed
+            throw new PDOException("Failed to get all terms: " . $e->getMessage());
+        }
+    }
+
     // Method to update an existing module
-    public function updateModules($moduleData)
+    public function updateModule($moduleData)
     {
         try {
             $this->conn->beginTransaction(); // Begin transaction
 
-            $query = "UPDATE modules SET subject_section_id = :subject_section_id, title = :title WHERE id = :id";
+            $query = "UPDATE modules SET subject_section_id = :subject_section_id, title = :title, visibility = :visibility WHERE module_id = :module_id";
             $stmt = $this->conn->prepare($query);
             $stmt->bindParam(':subject_section_id', $moduleData['subject_section_id']);
             $stmt->bindParam(':title', $moduleData['title']);
-            $stmt->bindParam(':id', $moduleData['id'], PDO::PARAM_INT); // Bind the module ID
+            $stmt->bindParam(':visibility', $moduleData['visibility']);
+            $stmt->bindParam(':module_id', $moduleData['module_id'], PDO::PARAM_INT); // Bind the module ID
 
             $stmt->execute(); // Execute statement
             $this->conn->commit(); // Commit transaction
+
+            $this->generalLogsController->addLog_UPDATE($_SESSION['user_id'], $_SESSION['role'], "Updated the information of the module (" . $moduleData['module_id'] . ")");
 
             return ["success" => true];
         } catch (PDOException $e) {
@@ -76,24 +111,12 @@ class ModuleContent
         try {
             $this->conn->beginTransaction();
 
-            // First, delete all related contents and their files for the module
-            $queryDeleteFiles = "DELETE cf FROM content_files cf 
-                                 JOIN contents c ON cf.content_id = c.id 
-                                 WHERE c.module_id = :module_id";
-            $stmtDeleteFiles = $this->conn->prepare($queryDeleteFiles);
-            $stmtDeleteFiles->bindParam(':module_id', $module_id, PDO::PARAM_INT);
-            $stmtDeleteFiles->execute();
-
-            $queryDeleteContents = "DELETE FROM contents WHERE module_id = :module_id";
-            $stmtDeleteContents = $this->conn->prepare($queryDeleteContents);
-            $stmtDeleteContents->bindParam(':module_id', $module_id, PDO::PARAM_INT);
-            $stmtDeleteContents->execute();
-
-            // Finally, delete the module
-            $query = "DELETE FROM modules WHERE id = :id";
+            $query = "DELETE FROM modules WHERE module_id = :module_id";
             $stmt = $this->conn->prepare($query);
-            $stmt->bindParam(':id', $module_id, PDO::PARAM_INT);
+            $stmt->bindParam(':module_id', $module_id, PDO::PARAM_INT);
             $stmt->execute();
+
+            $this->generalLogsController->addLog_DELETE($_SESSION['user_id'], $_SESSION['role'], "Deleted the module ($module_id)");
 
             $this->conn->commit();
             return ["success" => true];
@@ -103,34 +126,75 @@ class ModuleContent
         }
     }
 
+    // ===============================================
+    // MODULE CONTENTS
+    // ===============================================
+
     // Add content
     public function addContent($contentData)
     {
         try {
             $this->conn->beginTransaction();
 
-            $query = "INSERT INTO contents (module_id, content_title, content_type, description, visibility, start_date, due_date, max_attempts, assignment_type, allow_late) 
-                      VALUES (:module_id, :content_title, :content_type, :description, :visibility, :start_date, :due_date, :max_attempts, :assignment_type, :allow_late)";
+            $query = "INSERT INTO contents (module_id, content_title, content_type, description, visibility, start_date, due_date, max_attempts, assignment_type, allow_late, max_score) 
+                      VALUES (:module_id, :content_title, :content_type, :description, :visibility, :start_date, :due_date, :max_attempts, :assignment_type, :allow_late, :max_score)";
 
             $stmt = $this->conn->prepare($query);
             $stmt->bindParam(':module_id', $contentData['module_id']);
             $stmt->bindParam(':content_title', $contentData['content_title']);
             $stmt->bindParam(':content_type', $contentData['content_type']);
-            $stmt->bindParam(':description', $contentData['description']);
+            $stmt->bindParam(':description', ($contentData['description']));
             $stmt->bindParam(':visibility', $contentData['visibility']);
             $stmt->bindParam(':start_date', $contentData['start_date']);
             $stmt->bindParam(':due_date', $contentData['due_date']);
             $stmt->bindParam(':max_attempts', $contentData['max_attempts']);
             $stmt->bindParam(':assignment_type', $contentData['assignment_type']);
             $stmt->bindParam(':allow_late', $contentData['allow_late']);
+            $stmt->bindParam(':max_score', $contentData['max_score']);
 
             $stmt->execute();
-            $this->conn->commit();
 
+            // Get the last inserted ID
+            if (!in_array($contentData['content_type'], ['assignment', 'quiz'])) {
+                $contentId = $this->conn->lastInsertId();
+                $query_contentFiles = "
+                INSERT INTO content_files 
+                (content_id, file_name, file_data)
+                VALUES
+                (:content_id, :file_name, :file_data)";
+
+                $stmt = $this->conn->prepare($query_contentFiles);
+
+                foreach ($_FILES['input_contentFiles']['tmp_name'] as $key => $tmpName) {
+                    // Get the file details for each file using the index $key
+                    $fileName = $_FILES['input_contentFiles']['name'][$key];
+                    $fileType = $_FILES['input_contentFiles']['type'][$key];
+                    $fileSize = $_FILES['input_contentFiles']['size'][$key];
+                    $fileError = $_FILES['input_contentFiles']['error'][$key];
+
+                    // Check for any file upload errors
+                    if ($fileError === UPLOAD_ERR_OK) {
+                        // Read file content as binary data
+                        $fileData = file_get_contents($tmpName);
+
+                        // Execute the database insert query
+                        $stmt->execute([
+                            ':content_id' => $contentId,
+                            ':file_name' => $fileName,
+                            ':file_data' => $fileData,
+                        ]);
+                    } else {
+                        // Handle file upload errors if needed
+                        throw new Exception("Error uploading file: " . $fileError);
+                    }
+                }
+            }
+
+            $this->conn->commit();
             return ["success" => true];
-        } catch (PDOException $e) {
+        } catch (Exception $e) {
             $this->conn->rollBack();
-            return ['success' => false, "message" => $e->getMessage()];
+            throw new Exception($e->getMessage());
         }
     }
 
@@ -190,27 +254,62 @@ class ModuleContent
         }
     }
 
+    public function updateContentVisibility($contentData)
+    {
+        try {
+            $this->conn->beginTransaction();
+
+            // Get the current visibility value
+            $query1 = "SELECT visibility FROM contents WHERE content_id = :content_id AND module_id = :module_id";
+            $stmt1 = $this->conn->prepare($query1);
+            $stmt1->bindParam(":content_id", $contentData['content_id']);
+            $stmt1->bindParam(":module_id", $contentData['module_id']);
+            $stmt1->execute();
+
+            $currentVisibility = $stmt1->fetchColumn();
+
+            // Toggle the visibility value
+            if ($currentVisibility === 'show') {
+                $newVisibility = 'hide';
+            } elseif ($currentVisibility === 'hide') {
+                $newVisibility = 'show';
+            } else {
+                throw new Exception("Invalid visibility value in the database. | $currentVisibility");
+            }
+
+            // Update the visibility value
+            $query2 = "UPDATE contents SET visibility = :visibility WHERE content_id = :content_id AND module_id = :module_id";
+            $stmt2 = $this->conn->prepare($query2);
+            $stmt2->bindParam(":visibility", $newVisibility);
+            $stmt2->bindParam(":content_id", $contentData['content_id']);
+            $stmt2->bindParam(":module_id", $contentData['module_id']);
+            $stmt2->execute();
+
+            $this->conn->commit();
+            return ['success' => true];
+        } catch (Exception $e) {
+            $this->conn->rollBack();
+            throw new Exception("Failed to update visibility: " . $e->getMessage());
+        }
+    }
+
+
     // Delete a content by ID
-    public function deleteContent($content_id)
+    public function deleteContent($contentData)
     {
         try {
             $this->conn->beginTransaction();
 
             // First, delete all related files for the content
-            $queryDeleteFiles = "DELETE FROM content_files WHERE content_id = :content_id";
+            $queryDeleteFiles = "DELETE FROM contents WHERE content_id = :content_id AND module_id = :module_id";
             $stmtDeleteFiles = $this->conn->prepare($queryDeleteFiles);
-            $stmtDeleteFiles->bindParam(':content_id', $content_id, PDO::PARAM_INT);
+            $stmtDeleteFiles->bindParam(':content_id', $contentData['content_id'], PDO::PARAM_INT);
+            $stmtDeleteFiles->bindParam(':module_id', $contentData['module_id'], PDO::PARAM_INT);
             $stmtDeleteFiles->execute();
-
-            // Then, delete the content
-            $query = "DELETE FROM contents WHERE id = :id";
-            $stmt = $this->conn->prepare($query);
-            $stmt->bindParam(':id', $content_id, PDO::PARAM_INT);
-            $stmt->execute();
 
             $this->conn->commit();
             return ["success" => true];
-        } catch (PDOException $e) {
+        } catch (Exception $e) {
             $this->conn->rollBack();
             return ['success' => false, "message" => $e->getMessage()];
         }
@@ -266,6 +365,12 @@ class ModuleContent
             return ['success' => false, "message" => $e->getMessage()];
         }
     }
+
+
+
+    // ===============================================
+    // SUBMISSIONS
+    // ===============================================
 
     // Add a new student submission
     public function addSubmission($submissionData)
@@ -404,8 +509,4 @@ class ModuleContent
             return ['success' => false, 'message' => $e->getMessage()];
         }
     }
-
-
-
 }
-?>
