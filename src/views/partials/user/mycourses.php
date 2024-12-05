@@ -2,7 +2,8 @@
 
 ?>
 <!-- Container -->
-<div class="bg-white shadow-sm rounded p-3 border border-box mb-sm-2 d-flex flex-column" id="main-container" style="max-height: 350px;">
+<div class="bg-white shadow-sm rounded p-3 border border-box mb-sm-2 d-flex flex-column" id="main-container"
+    style="max-height: 350px;">
     <div class="d-flex justify-content-between align-items-center">
         <p class="fs-5 fw-semibold text-success m-0">My Subjects</p>
         <div class="container-controls">
@@ -10,7 +11,8 @@
                 <i class="bi bi-three-dots-vertical fs-5"></i>
             </button>
             <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="mycourses_dropdown">
-                <li><a class="dropdown-item" href="javascript:void(0);" onclick="toggleCoursesView(this);">Tile View</a></li>
+                <li><a class="dropdown-item" href="javascript:void(0);" onclick="toggleCoursesView(this);">Tile View</a>
+                </li>
             </ul>
         </div>
     </div>
@@ -24,20 +26,28 @@
                     <?php foreach ($myEnrolledSubjects['data'] as $subject) {
                         $subjectInfo = $subjectController->getSubjectFromSubjectId($subject['subject_id']);
                         $sectionInfo = $sectionController->getSectionById($subject['section_id']);
-                    ?>
+                        ?>
                         <li class="list-group-item box border-box bg-transparent p-0 py-1">
                             <div class="row bg-transparent p-1">
                                 <div class="col-sm-9 col-md-6 col-lg-6 d-flex justify-content-start align-items-center gap-2">
-                                    <div id="itemIconContainer" class="position-relative rounded" style="width: 50px; height: 50px;">
+                                    <div id="itemIconContainer" class="position-relative rounded"
+                                        style="width: 50px; height: 50px;">
                                         <?php if (!empty($subject['subject_section_image'])): ?>
-                                            <img src="<?php echo "data:image/jpeg;base64," . base64_encode($subject['subject_section_image']) ?>" class="object-fit-fill position-absolute w-100 h-100 rounded border border-success" style="height: 120px;">
+                                            <img src="<?php echo "data:image/jpeg;base64," . base64_encode($subject['subject_section_image']) ?>"
+                                                class="object-fit-fill position-absolute w-100 h-100 rounded border border-success"
+                                                style="height: 120px;">
                                         <?php else: ?>
-                                            <img src="<?php echo asset('img/placeholder-1.jpg') ?>" class="object-fit-fill position-absolute w-100 h-100 rounded border border-success" style="height: 120px;">
+                                            <img src="<?php echo asset('img/placeholder-1.jpg') ?>"
+                                                class="object-fit-fill position-absolute w-100 h-100 rounded border border-success"
+                                                style="height: 120px;">
                                         <?php endif; ?>
                                     </div>
                                     <div>
-                                        <a href="<?= "subject_view.php?subject_section_id=" . $subject['subject_section_id'] ?>" class="link link-body-emphasis">
-                                            <p class="fs-6 p-0 m-0"><?php echo $subjectInfo['data']['subject_name'] . ' (' . $subjectInfo['data']['subject_code'] . ')' ?></p>
+                                        <a href="<?= "subject_view.php?subject_section_id=" . $subject['subject_section_id'] ?>"
+                                            class="link link-body-emphasis">
+                                            <p class="fs-6 p-0 m-0">
+                                                <?php echo $subjectInfo['data']['subject_name'] . ' (' . $subjectInfo['data']['subject_code'] . ')' ?>
+                                            </p>
                                         </a>
                                         <a href="#" class="link-dark">
                                             <p class="fs-7 p-0 m-0"><?php echo $sectionInfo['data']['section_name'] ?></p>
@@ -46,11 +56,13 @@
                                 </div>
                                 <div class="col-sm-3 col-md-4 col-lg-6 d-flex align-items-center justify-content-end">
                                     <div class="d-flex gap-3 fw-semibold">
-                                        <div class="d-flex gap-1 fs-7 align-items-center bg-primary bg-opacity-75 px-2 rounded-pill text-white" title="Grades">
-                                            <p>87</p>
+                                        <div class="d-flex gap-1 fs-7 align-items-center bg-primary bg-opacity-75 px-2 rounded-pill text-white"
+                                            title="Grades">
+                                            <p>0</p>
                                             <div class="icon"><i class="bi bi-percent"></i></div>
                                         </div>
-                                        <div class="d-flex gap-1 fs-7 align-items-center bg-danger bg-opacity-75 px-2 rounded-pill text-white" title="Number of Modules">
+                                        <div class="d-flex gap-1 fs-7 align-items-center bg-danger bg-opacity-75 px-2 rounded-pill text-white"
+                                            title="Number of Modules">
                                             <p>1</p>
                                             <div class="icon"><i class="bi bi-file-earmark-text-fill"></i></div>
                                         </div>
@@ -68,12 +80,14 @@
             <?php foreach ($myEnrolledSubjects['data'] as $subject) {
                 $subjectInfo = $subjectController->getSubjectFromSubjectId($subject['subject_id']);
                 $sectionInfo = $sectionController->getSectionById($subject['section_id']);
-            ?>
+                ?>
                 <div class="col-md-6 col-lg-4 p-1" style="height: 250px;">
                     <a href="#">
-                        <div id="item_card" class="h-100 w-100 bg-success bg-opacity-80 shadow-sm border rounded overflow-hidden d-flex flex-column">
+                        <div id="item_card"
+                            class="h-100 w-100 bg-success bg-opacity-80 shadow-sm border rounded overflow-hidden d-flex flex-column">
                             <div>
-                                <img src="<?php echo asset('img/placeholder-1.jpg') ?>" class="w-100 object-fit-cover" style="height: 120px;">
+                                <img src="<?php echo asset('img/placeholder-1.jpg') ?>" class="w-100 object-fit-cover"
+                                    style="height: 120px;">
                             </div>
                             <div class="px-2 flex-grow-1 position-relative">
                                 <p class="fs-6 text-white pt-2 fw-semibold">
@@ -83,11 +97,13 @@
                                     <?php echo $sectionInfo['data']['section_name'] ?>
                                 </p>
                                 <div class="d-flex position-absolute bottom-0 end-0 me-2 mb-2">
-                                    <div class="d-flex gap-1 fs-7 align-items-center bg-primary bg-opacity-75 px-2 rounded-pill text-white" title="Grades">
+                                    <div class="d-flex gap-1 fs-7 align-items-center bg-primary bg-opacity-75 px-2 rounded-pill text-white"
+                                        title="Grades">
                                         <p>87</p>
                                         <div class="icon"><i class="bi bi-percent"></i></div>
                                     </div>
-                                    <div class="d-flex gap-1 fs-7 align-items-center bg-danger bg-opacity-75 px-2 rounded-pill text-white" title="Number of Modules">
+                                    <div class="d-flex gap-1 fs-7 align-items-center bg-danger bg-opacity-75 px-2 rounded-pill text-white"
+                                        title="Number of Modules">
                                         <p>1</p>
                                         <div class="icon"><i class="bi bi-file-earmark-text-fill"></i></div>
                                     </div>

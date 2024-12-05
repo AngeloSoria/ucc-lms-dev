@@ -159,9 +159,9 @@ class ModuleContent
                 $contentId = $this->conn->lastInsertId();
                 $query_contentFiles = "
                 INSERT INTO content_files 
-                (content_id, file_name, file_data)
+                (content_id, file_name, file_data, mime_type)
                 VALUES
-                (:content_id, :file_name, :file_data)";
+                (:content_id, :file_name, :file_data, :mime_type)";
 
                 $stmt = $this->conn->prepare($query_contentFiles);
 
@@ -182,6 +182,7 @@ class ModuleContent
                             ':content_id' => $contentId,
                             ':file_name' => $fileName,
                             ':file_data' => $fileData,
+                            ':mime_type' => $fileType,
                         ]);
                     } else {
                         // Handle file upload errors if needed
@@ -336,14 +337,14 @@ class ModuleContent
     }
 
     // Get files for a content
-    public function getFilesByContent($content_id)
+    public function getFileByContent($content_id)
     {
         try {
             $query = "SELECT * FROM content_files WHERE content_id = :content_id";
             $stmt = $this->conn->prepare($query);
             $stmt->bindParam(':content_id', $content_id, PDO::PARAM_INT);
             $stmt->execute();
-            $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
+            $result = $stmt->fetch(PDO::FETCH_ASSOC);
 
             return $result ? $result : [];
         } catch (PDOException $e) {

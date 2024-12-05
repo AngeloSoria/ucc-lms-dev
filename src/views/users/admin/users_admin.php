@@ -125,17 +125,26 @@ if (isset($_GET['viewRole']) && isset($_GET['user_id'])) {
                         <div class="container-fluid bg-white rounded p-3 shadow-sm border">
                             <!-- Headers -->
                             <div class="mb-3 row align-items-start">
-                                <div class="col-4 d-flex gap-3">
+                                <div class="col-md-4 d-flex gap-3">
                                     <h5 class="ctxt-primary">Users</h5>
                                 </div>
-                                <div class="col-8 d-flex justify-content-end gap-2">
+                                <div class="col-md-8 d-flex justify-content-end gap-2">
                                     <!-- Tools -->
 
                                     <!-- Add New Button -->
                                     <button
-                                        class="btn btn-primary btn-lg rounded fs-6 px-3 c-primary d-flex gap-3 align-items-center"
+                                        class="btn btn-success btn-lg rounded fs-6 px-3 d-flex gap-3 align-items-center"
                                         data-bs-toggle="modal" data-bs-target="#userFormModal" apply_section_modal>
-                                        <i class="bi bi-plus-circle"></i> Add User
+                                        <i class="bi bi-plus-circle"></i>
+                                        Add User
+                                    </button>
+
+                                    <!-- Bulk Upload -->
+                                    <button
+                                        class="btn btn-outline-success btn-lg rounded fs-6 px-3 d-flex gap-3 align-items-center"
+                                        data-bs-toggle="modal" data-bs-target="#userFormModal" apply_section_modal>
+                                        <i class="bi bi-upload"></i>
+                                        Import
                                     </button>
 
                                     <!-- Preview Type -->

@@ -175,11 +175,19 @@ class ModuleContentController
         }
     }
 
-    // Handle getting files for content
-    public function getContentFiles($content_id)
+    // Handle getting files for contentw
+    public function getContentFile($content_id)
     {
-        $result = $this->moduleContentModel->getFilesByContent($content_id);
-        return $this->jsonResponse($result);
+        try {
+            $result = $this->moduleContentModel->getFileByContent($content_id);
+            if ($result) {
+                return ['success' => true, 'data' => $result];
+            } else {
+                return ['success' => false, 'message' => "No file found for content id '$content_id'"];
+            }
+        } catch (Exception $e) {
+            return ['success' => false, 'message' => $e->getMessage()];
+        }
     }
 
     // Handle deleting a file from content

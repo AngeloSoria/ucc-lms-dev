@@ -54,5 +54,3 @@
         </div>
     </div>
 </div>
-
-<script src="<?php echo asset("js/root.js") ?>"></script>

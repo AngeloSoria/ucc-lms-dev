@@ -1,9 +1,6 @@
 /* Mobile responsive media */
 /* Tablets */
 @media only screen and (max-width: 768px) {
-    body {
-        background-color: blue;
-    }
     .sidebar {
         position: absolute;
         top: 0;

@@ -49,8 +49,7 @@
             </div>
         </li> -->
         <li class="border border-top-0">
-            <a href="<?php echo BASE_PATH_LINK ?>"
-                class="sidebar-item">
+            <a href="<?php echo BASE_PATH_LINK ?>" class="sidebar-item">
                 <div class="sidebar-item-icon">
                     <i class="bi bi-columns-gap" aria-hidden="true"></i>
                 </div>
@@ -60,7 +59,7 @@
             </a>
         </li>
         <li class="border border-top-0">
-            <a href="#"
+            <a href="<?php echo updateUrlParams(['subject_section_id' => $_GET['subject_section_id']]); ?>"
                 class="sidebar-item">
                 <div class="sidebar-item-icon">
                     <i class="bi bi-folder2" aria-hidden="true"></i>
@@ -71,8 +70,7 @@
             </a>
         </li>
         <li class="border border-top-0">
-            <a href="#"
-                class="sidebar-item">
+            <a href="#" class="sidebar-item">
                 <div class="sidebar-item-icon">
                     <i class="bi bi-clipboard2-check" aria-hidden="true"></i>
                 </div>
@@ -82,8 +80,7 @@
             </a>
         </li>
         <li class="border border-top-0">
-            <a href="#"
-                class="sidebar-item">
+            <a href="#" class="sidebar-item">
                 <div class="sidebar-item-icon">
                     <i class="bi bi-people" aria-hidden="true"></i>
                 </div>
@@ -93,8 +90,7 @@
             </a>
         </li>
         <li class="border border-top-0">
-            <a href="#"
-                class="sidebar-item">
+            <a href="#" class="sidebar-item">
                 <div class="sidebar-item-icon">
                     <i class="bi bi-people" aria-hidden="true"></i>
                 </div>
@@ -110,7 +106,8 @@
         <h6 class="px-3">Others</h6>
         <ul class="p-0 ul_no-design">
             <li class="border border-top-0">
-                <a href="<?php echo BASE_PATH_LINK . 'src/views/users/viewprofile.php?viewProfile=' . $_SESSION['user_id'] ?>" class="sidebar-item <?= $CURRENT_PAGE == $key ? 'active' : '' ?>">
+                <a href="<?php echo BASE_PATH_LINK . 'src/views/users/viewprofile.php?viewProfile=' . $_SESSION['user_id'] ?>"
+                    class="sidebar-item <?= $CURRENT_PAGE == $key ? 'active' : '' ?>">
                     <div class="sidebar-item-icon">
                         <i class="bi bi-person" aria-hidden="true"></i>
                     </div>

@@ -31,6 +31,7 @@ define('FILE_PATHS', [
         'CalculateElapsedTime' => __DIR__ . '../../functions/CalculateElapsedTime.php',
         'UpdatePassword' => __DIR__ . '../../functions/updatePasswordRequest.php',
         'PermissionCheck' => __DIR__ . '../../functions/PermissionCheck.php',
+        'DownloadFile' => __DIR__ . '../../functions/DownloadFile.php',
     ],
 
 

@@ -43,11 +43,11 @@
                             </select>
                         </div>
 
-                        <div class="flex-grow-1">
+                        <!-- <div class="flex-grow-1">
                             <label for="program_image" class="form-label">Tile Picture</label>
                             <input type="file" class="form-control" id="program_image" name="program_image"
                                 accept="image/*">
-                        </div>
+                        </div> -->
                     </div>
                 </form>
                 <div id="notification" class="alert" style="display:none;"></div>

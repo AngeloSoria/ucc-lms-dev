@@ -137,7 +137,8 @@ if (!isset($_GET['subject_section_id'])) {
             exit();
         }
         $CONFIGURE_MODULE = true;
-        if (isset($_GET['content_id'])) {
+        if (isset($_GET['content_id'], $_GET["configure"])) {
+            $CONFIGURE_MODULE_CONTENT = true;
         }
     }
 }
@@ -164,11 +165,14 @@ if (!isset($_GET['subject_section_id'])) {
                         <div class="bg-white shadow-sm rounded px-2 pt-3">
                             <div id="top-controls" class="row m-0">
                                 <div class="col-lg-8">
-                                    <h5 class="text-success"><?php echo $SUBJECT_INFO['data']['subject_name'] . ' (' . $SECTION_INFO['data']['section_name'] . ')' ?></h5>
+                                    <h5 class="text-success">
+                                        <?php echo $SUBJECT_INFO['data']['subject_name'] . ' (' . $SECTION_INFO['data']['section_name'] . ')' ?>
+                                    </h5>
                                 </div>
                                 <div class="col-lg-4 d-flex justify-content-end align-items-center">
                                     <?php if ($_SESSION['role'] == "Teacher" && !isset($_GET['module_id'])): ?>
-                                        <button class="btn btn-success shadow-sm d-flex gap-2" data-bs-toggle="modal" data-bs-target="#modal_addModule">
+                                        <button class="btn btn-success shadow-sm d-flex gap-2" data-bs-toggle="modal"
+                                            data-bs-target="#modal_addModule">
                                             <i class="bi bi-plus-circle"></i>
                                             Add Module
                                         </button>
@@ -185,29 +189,30 @@ if (!isset($_GET['subject_section_id'])) {
                                     if ($getAllModules['success']): ?>
                                         <?php if ($getAllModules['data']): ?>
                                             <?php foreach ($getAllModules['data'] as $module): ?>
-                                                <div class="accordion rounded shadow-sm border overflow-hidden" id="module_<?php echo $module['module_id'] ?>">
+                                                <div class="accordion rounded shadow-sm border overflow-hidden"
+                                                    id="module_<?php echo $module['module_id'] ?>">
                                                     <div class="accordion-item">
                                                         <h2 class="accordion-header" id="headingModule1">
                                                             <button
                                                                 class="accordion-button collapsed bg-success bg-opacity-75 text-white fs-5 fw-medium"
-                                                                type="button"
-                                                                data-bs-toggle="collapse"
+                                                                type="button" data-bs-toggle="collapse"
                                                                 data-bs-target="#collapseModule<?php echo $module['module_id'] ?>"
                                                                 aria-expanded="false"
                                                                 aria-controls="collapseModule<?php echo $module['module_id'] ?>">
                                                                 <?php echo htmlspecialchars($module['title']) ?>
                                                             </button>
                                                         </h2>
-                                                        <div
-                                                            id="collapseModule<?php echo $module['module_id'] ?>"
+                                                        <div id="collapseModule<?php echo $module['module_id'] ?>"
                                                             class="accordion-collapse collapse"
                                                             aria-labelledby="headingModule<?php echo $module['module_id'] ?>"
                                                             data-bs-parent="#module_<?php echo $module['module_id'] ?>">
                                                             <div class="accordion-body">
                                                                 <?php if ($_SESSION['role'] == "Teacher"): ?>
                                                                     <div class="d-flex justify-content-end align-items-center gap-2 mb-3">
-                                                                        <a href="<?php echo updateUrlParams(['subject_section_id' => $_GET['subject_section_id'], 'module_id' => $module['module_id']]) ?>">
-                                                                            <button class="btn btn-sm btn-primary shadow-sm text-white" title="Edit this Module">
+                                                                        <a
+                                                                            href="<?php echo updateUrlParams(['subject_section_id' => $_GET['subject_section_id'], 'module_id' => $module['module_id']]) ?>">
+                                                                            <button class="btn btn-sm btn-primary shadow-sm text-white"
+                                                                                title="Edit this Module">
                                                                                 <i class="bi bi-pencil-square"></i>
                                                                                 Edit Module
                                                                             </button>
@@ -218,33 +223,47 @@ if (!isset($_GET['subject_section_id'])) {
                                                                     <?php
                                                                     // Get All contents of the module from this Subject.
                                                                     $getAllContentsFromModule = $moduleContentController->getContents($module['module_id']);
+
                                                                     if ($getAllContentsFromModule['success']): ?>
                                                                         <?php if ($getAllContentsFromModule['data']): ?>
-                                                                            <?php foreach ($getAllContentsFromModule['data'] as $content): ?>
-                                                                                <li class="list-group-item d-flex gap-2">
-                                                                                    <?php
-                                                                                    $contentIconClass = "bi-asterisk text-dark";
-                                                                                    $titleHint = "null";
-                                                                                    switch ($content['content_type']) {
-                                                                                        case 'handout':
-                                                                                            $contentIconClass = "bi-file-earmark-text-fill text-critical";
-                                                                                            $titleHint = "Handout";
-                                                                                            break;
-                                                                                        case 'assignment':
-                                                                                            $contentIconClass = "bi-clipboard-fill text-primary";
-                                                                                            $titleHint = "Assignment";
-                                                                                            break;
-                                                                                        case 'quiz':
-                                                                                            $contentIconClass = "bi-stickies-fill text-warning";
-                                                                                            $titleHint = "Quiz";
-                                                                                            break;
-                                                                                    }
-                                                                                    ?>
-                                                                                    <div>
-                                                                                        <i class="bi <?php echo $contentIconClass ?>" title="<?php echo $titleHint ?>"></i>
-                                                                                        <a href="#" class="link-body-emphasis"><?php echo htmlspecialchars($content['content_title']) ?></a>
-                                                                                    </div>
-                                                                                </li>
+                                                                            <?php foreach ($getAllContentsFromModule['data'] as $content):
+                                                                                $canShow = ($_SESSION['role'] == 'Teacher' || $_SESSION['role'] == 'Student' && $content['visibility'] == 'show');
+                                                                                if ($canShow):
+                                                                            ?>
+                                                                                    <li class="list-group-item d-flex gap-2">
+                                                                                        <?php
+                                                                                        $contentLink = null;
+                                                                                        $isFile = false;
+                                                                                        $contentIconClass = "bi-asterisk text-dark";
+                                                                                        $titleHint = "null";
+                                                                                        switch ($content['content_type']) {
+                                                                                            case 'handout':
+                                                                                                $contentIconClass = "bi-file-earmark-text-fill text-critical";
+                                                                                                $titleHint = "Handout";
+                                                                                                $contentLink = BASE_PATH_LINK . "src/models/DownloadFile.php?content_id=" . $content['content_id'];
+                                                                                                $isFile = true;
+                                                                                                break;
+                                                                                            case 'assignment':
+                                                                                                $contentIconClass = "bi-clipboard-fill text-primary";
+                                                                                                $contentLink = "#";
+                                                                                                $titleHint = "Assignment";
+                                                                                                break;
+                                                                                            case 'quiz':
+                                                                                                $contentIconClass = "bi-stickies-fill text-warning";
+                                                                                                $contentLink = "#";
+                                                                                                $titleHint = "Quiz";
+                                                                                                break;
+                                                                                        }
+
+                                                                                        ?>
+                                                                                        <div>
+                                                                                            <i class="bi <?php echo $contentIconClass ?>"
+                                                                                                title="<?php echo $titleHint ?>"></i>
+                                                                                            <a href="<?php echo $contentLink ?>" <?php echo ($isFile) ? 'target="_blank"' : '' ?>
+                                                                                                class="link-body-emphasis"><?php echo htmlspecialchars($content['content_title']) ?></a>
+                                                                                        </div>
+                                                                                    </li>
+                                                                                <?php endif; ?>
                                                                             <?php endforeach; ?>
                                                                         <?php else: ?>
                                                                             <h6 class="p-2 text-center">No Contents</h6>
@@ -253,7 +272,8 @@ if (!isset($_GET['subject_section_id'])) {
                                                                 </ul>
                                                                 <?php if ($_SESSION['role'] == "Teacher"): ?>
                                                                     <div class="p-3 text-end border-top">
-                                                                        <span>Visible to students: <strong><?php echo $module['visibility'] == '1' ? "Yes" : "No"; ?></strong></span>
+                                                                        <span>Visible to students:
+                                                                            <strong><?php echo $module['visibility'] == '1' ? "Yes" : "No"; ?></strong></span>
                                                                     </div>
                                                                 <?php endif; ?>
                                                             </div>
@@ -269,7 +289,8 @@ if (!isset($_GET['subject_section_id'])) {
                             <?php else: ?>
                                 <section id="module_editor_view" class="p-2 mb-3">
                                     <div>
-                                        <a href="<?php echo updateUrlParams(["subject_section_id" => $_GET['subject_section_id']]) ?>">
+                                        <a
+                                            href="<?php echo updateUrlParams(["subject_section_id" => $_GET['subject_section_id']]) ?>">
                                             <button class="btn btn-sm btn-transparent text-success">
                                                 <i class="bi bi-arrow-bar-left"></i>
                                                 Go Back
@@ -283,19 +304,18 @@ if (!isset($_GET['subject_section_id'])) {
                                             <div class="row col-md-12">
                                                 <div class="col-md-6">
                                                     <label for="input_moduleName">Module Name</label>
-                                                    <input type="text" name="input_moduleName" id="input_moduleName" class="form-control" value="<?php echo $getModuleByModuleId['data'][0]['title'] ?>">
+                                                    <input type="text" name="input_moduleName" id="input_moduleName"
+                                                        class="form-control"
+                                                        value="<?php echo $getModuleByModuleId['data'][0]['title'] ?>">
                                                 </div>
                                                 <div class="col-md-6 d-flex align-items-end">
                                                     <div class="form-check form-switch">
-                                                        <input
-                                                            class="form-check-input"
-                                                            type="checkbox" role="switch"
-                                                            id="input_moduleVisibility"
-                                                            name="input_moduleVisibility"
-                                                            <?php echo $getModuleByModuleId['data'][0]['visibility'] == '1' ? 'checked' : '' ?>>
+                                                        <input class="form-check-input" type="checkbox" role="switch"
+                                                            id="input_moduleVisibility" name="input_moduleVisibility" <?php echo $getModuleByModuleId['data'][0]['visibility'] == '1' ? 'checked' : '' ?>>
                                                         <label class="form-check-label" for="input_moduleVisibility">
                                                             Module Visibility
-                                                            <sup class="opacity-75" title="Indicates the visibity of the module to Student's point of view.">
+                                                            <sup class="opacity-75"
+                                                                title="Indicates the visibity of the module to Student's point of view.">
                                                                 <i class="bi bi-info-circle-fill fs-7"></i>
                                                             </sup>
                                                         </label>
@@ -307,7 +327,8 @@ if (!isset($_GET['subject_section_id'])) {
                                                     <i class="bi bi-floppy-fill"></i>
                                                     Save
                                                 </button>
-                                                <span class="btn btn-sm btn-danger" id="btnDelete" data-bs-toggle="modal" data-bs-target="#deleteConfirmationModal">
+                                                <span class="btn btn-sm btn-danger" id="btnDelete" data-bs-toggle="modal"
+                                                    data-bs-target="#deleteConfirmationModal">
                                                     <i class="bi bi-trash-fill"></i>
                                                     Delete Module
                                                 </span>
@@ -324,20 +345,27 @@ if (!isset($_GET['subject_section_id'])) {
                                     </form>
                                     <div id="confirmation_modal">
                                         <!-- Delete Confirmation Modal -->
-                                        <div class="modal fade" id="deleteConfirmationModal" tabindex="-1" aria-labelledby="deleteConfirmationModalLabel" aria-hidden="true">
+                                        <div class="modal fade" id="deleteConfirmationModal" tabindex="-1"
+                                            aria-labelledby="deleteConfirmationModalLabel" aria-hidden="true">
                                             <div class="modal-dialog modal-dialog-centered">
                                                 <div class="modal-content">
                                                     <div class="modal-header">
-                                                        <h5 class="modal-title" id="deleteConfirmationModalLabel">Confirm Deletion</h5>
-                                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                                        <h5 class="modal-title" id="deleteConfirmationModalLabel">Confirm
+                                                            Deletion</h5>
+                                                        <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                                            aria-label="Close"></button>
                                                     </div>
                                                     <div class="modal-body">
-                                                        Are you sure you want to delete this module? Deletion of this module will delete all of its content and its connected
-                                                        files including submissions from other users. This action cannot be undone.
+                                                        Are you sure you want to delete this module? Deletion of this module
+                                                        will delete all of its content and its connected
+                                                        files including submissions from other users. This action cannot be
+                                                        undone.
                                                     </div>
                                                     <div class="modal-footer">
-                                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                                                        <button type="button" class="btn btn-danger" id="confirmDeleteBtn">Delete</button>
+                                                        <button type="button" class="btn btn-secondary"
+                                                            data-bs-dismiss="modal">Cancel</button>
+                                                        <button type="button" class="btn btn-danger"
+                                                            id="confirmDeleteBtn">Delete</button>
                                                     </div>
                                                 </div>
                                             </div>
@@ -345,21 +373,27 @@ if (!isset($_GET['subject_section_id'])) {
                                     </div>
                                     <div id="addContent_modal">
                                         <!-- Add Module Content Modal -->
-                                        <div class="modal fade" id="addModuleContentModal" tabindex="-1" aria-labelledby="addModuleContentLabel" aria-hidden="true">
+                                        <div class="modal fade" id="addModuleContentModal" tabindex="-1"
+                                            aria-labelledby="addModuleContentLabel" aria-hidden="true">
                                             <div class="modal-dialog modal-lg">
                                                 <div class="modal-content">
                                                     <div class="modal-header">
-                                                        <h5 class="modal-title" id="addModuleContentLabel">Add Module Content</h5>
-                                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                                        <h5 class="modal-title" id="addModuleContentLabel">Add Module
+                                                            Content</h5>
+                                                        <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                                            aria-label="Close"></button>
                                                     </div>
-                                                    <form id="moduleContentForm" method="POST" enctype="multipart/form-data">
+                                                    <form id="moduleContentForm" method="POST"
+                                                        enctype="multipart/form-data">
                                                         <div class="modal-body">
                                                             <input type="hidden" name="action" value="addModuleContent">
                                                             <!-- Content Title and Content Type (Same Row) -->
                                                             <div class="row g-3 mb-3">
                                                                 <div class="col-md-6">
-                                                                    <label for="contentType" class="form-label">Content Type</label>
-                                                                    <select class="form-select" id="contentType" name="input_contentType" required>
+                                                                    <label for="contentType" class="form-label">Content
+                                                                        Type</label>
+                                                                    <select class="form-select" id="contentType"
+                                                                        name="input_contentType" required>
                                                                         <option value="handout">Handout</option>
                                                                         <option value="assignment">Assignment</option>
                                                                         <option value="quiz">Quiz</option>
@@ -367,22 +401,30 @@ if (!isset($_GET['subject_section_id'])) {
                                                                     <div class="invalid-feedback"></div>
                                                                 </div>
                                                                 <div class="col-md-6">
-                                                                    <label for="contentTitle" class="form-label">Content Title</label>
-                                                                    <input type="text" class="form-control" id="contentTitle" name="input_contentTitle" placeholder="" required>
+                                                                    <label for="contentTitle" class="form-label">Content
+                                                                        Title</label>
+                                                                    <input type="text" class="form-control"
+                                                                        id="contentTitle" name="input_contentTitle"
+                                                                        placeholder="" required>
                                                                     <div class="invalid-feedback"></div>
                                                                 </div>
                                                             </div>
 
                                                             <!-- Description -->
                                                             <div class="mb-3" id="descriptionContainer">
-                                                                <label for="description" class="form-label">Description</label>
-                                                                <textarea class="tinyMCE" id="description" rows="3" name="input_contentDescription" placeholder="Enter description"></textarea>
+                                                                <label for="description"
+                                                                    class="form-label">Description</label>
+                                                                <textarea class="tinyMCE" id="description" rows="3"
+                                                                    name="input_contentDescription"
+                                                                    placeholder="Enter description"></textarea>
                                                             </div>
 
                                                             <!-- File Input for Handout -->
                                                             <div class="mb-3 d-none" id="fileInputContainer">
-                                                                <label for="fileInput" class="form-label">Upload Files</label>
-                                                                <input type="file" class="form-control" id="fileInput" name="input_contentFiles[]" multiple>
+                                                                <label for="fileInput" class="form-label">Upload
+                                                                    Files</label>
+                                                                <input type="file" class="form-control" id="fileInput"
+                                                                    name="input_contentFiles[]" multiple>
                                                             </div>
 
                                                             <!-- Visibility -->
@@ -390,20 +432,29 @@ if (!isset($_GET['subject_section_id'])) {
                                                                 <div class="col-md-4">
                                                                     <!-- Max Attempts -->
                                                                     <div class="mb-3" id="maxAttemptsContainer">
-                                                                        <label for="maxAttempts" class="form-label">Max Attempts</label>
-                                                                        <input type="number" class="form-control" id="maxAttempts" name="input_contentMaxAttempts" min="1" placeholder="Enter max attempts" value="1">
+                                                                        <label for="maxAttempts" class="form-label">Max
+                                                                            Attempts</label>
+                                                                        <input type="number" class="form-control"
+                                                                            id="maxAttempts" name="input_contentMaxAttempts"
+                                                                            min="1" placeholder="Enter max attempts"
+                                                                            value="1">
                                                                         <div class="invalid-feedback"></div>
                                                                         <div class="form-check mt-2">
-                                                                            <input class="form-check-input" type="checkbox" id="unlimitedAttempts" name="input_unlimitedAttempts">
-                                                                            <label class="form-check-label" for="unlimitedAttempts">Unlimited</label>
+                                                                            <input class="form-check-input" type="checkbox"
+                                                                                id="unlimitedAttempts"
+                                                                                name="input_unlimitedAttempts">
+                                                                            <label class="form-check-label"
+                                                                                for="unlimitedAttempts">Unlimited</label>
                                                                         </div>
                                                                     </div>
                                                                 </div>
                                                                 <div class="col-md-4">
                                                                     <!-- Assignment Type -->
                                                                     <div class="mb-3" id="assignmentTypeContainer">
-                                                                        <label for="assignmentType" class="form-label">Assignment Type</label>
-                                                                        <select class="form-select" id="assignmentType" name="input_contentAssignmentType">
+                                                                        <label for="assignmentType"
+                                                                            class="form-label">Assignment Type</label>
+                                                                        <select class="form-select" id="assignmentType"
+                                                                            name="input_contentAssignmentType">
                                                                             <option value="dropbox">Dropbox</option>
                                                                             <option value="richText">Rich Text</option>
                                                                             <option value="both">Both</option>
@@ -414,8 +465,12 @@ if (!isset($_GET['subject_section_id'])) {
                                                                 <div class="col-md-4">
                                                                     <!-- Assignment Type -->
                                                                     <div class="mb-3" id="maxScoreContainer">
-                                                                        <label for="maxScoreContainer" class="form-label">Max Score</label>
-                                                                        <input class="form-control" type="number" name="input_contentMaxScore" id="maxScoreContainer" min="1" value="100" placeholder="either 100">
+                                                                        <label for="maxScoreContainer"
+                                                                            class="form-label">Max Score</label>
+                                                                        <input class="form-control" type="number"
+                                                                            name="input_contentMaxScore"
+                                                                            id="maxScoreContainer" min="1" value="100"
+                                                                            placeholder="either 100">
                                                                         <div class="invalid-feedback"></div>
                                                                     </div>
                                                                 </div>
@@ -424,33 +479,44 @@ if (!isset($_GET['subject_section_id'])) {
                                                             <!-- Start Date and Due Date (Same Row) -->
                                                             <div class="row g-3 mb-3" id="dateContainer">
                                                                 <div class="col-md-6">
-                                                                    <label for="startDate" class="form-label">Start Date</label>
-                                                                    <input type="datetime-local" class="form-control" id="startDate" name="input_contentStartDate">
+                                                                    <label for="startDate" class="form-label">Start
+                                                                        Date</label>
+                                                                    <input type="datetime-local" class="form-control"
+                                                                        id="startDate" name="input_contentStartDate">
                                                                     <div class="invalid-feedback"></div>
                                                                 </div>
                                                                 <div class="col-md-6">
                                                                     <label for="dueDate" class="form-label">Due Date</label>
-                                                                    <input type="datetime-local" class="form-control" id="dueDate" name="input_contentDueDate">
+                                                                    <input type="datetime-local" class="form-control"
+                                                                        id="dueDate" name="input_contentDueDate">
                                                                     <div class="invalid-feedback"></div>
                                                                 </div>
                                                             </div>
 
                                                             <!-- Allow Late -->
-                                                            <div class="form-check form-switch mb-3" id="allowLateContainer">
-                                                                <input class="form-check-input" type="checkbox" id="allowLate" name="input_contentAllowLate">
-                                                                <label class="form-check-label" for="allowLate">Allow Late</label>
+                                                            <div class="form-check form-switch mb-3"
+                                                                id="allowLateContainer">
+                                                                <input class="form-check-input" type="checkbox"
+                                                                    id="allowLate" name="input_contentAllowLate">
+                                                                <label class="form-check-label" for="allowLate">Allow
+                                                                    Late</label>
                                                                 <div class="invalid-feedback"></div>
                                                             </div>
 
-                                                            <div class="form-check form-switch mb-3" id="visibilityContainer">
-                                                                <input class="form-check-input" type="checkbox" id="visibility" name="input_contentVisibility">
-                                                                <label class="form-check-label" for="visibility">Visibility</label>
+                                                            <div class="form-check form-switch mb-3"
+                                                                id="visibilityContainer">
+                                                                <input class="form-check-input" type="checkbox"
+                                                                    id="visibility" name="input_contentVisibility">
+                                                                <label class="form-check-label"
+                                                                    for="visibility">Visibility</label>
                                                                 <div class="invalid-feedback"></div>
                                                             </div>
                                                         </div>
                                                         <div class="modal-footer">
-                                                            <span type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</span>
-                                                            <button type="submit" class="btn btn-success">Save Changes</button>
+                                                            <span type="button" class="btn btn-secondary"
+                                                                data-bs-dismiss="modal">Close</span>
+                                                            <button type="submit" class="btn btn-success">Save
+                                                                Changes</button>
                                                         </div>
                                                     </form>
                                                 </div>
@@ -562,7 +628,8 @@ if (!isset($_GET['subject_section_id'])) {
                                         <div class="row mb-2">
                                             <div class="col-md-6">Contents</div>
                                             <div class="col-md-6 d-flex justify-content-end align-items-center">
-                                                <button class="btn btn-sm btn-success d-flex align-items-center gap-2" data-bs-toggle="modal" data-bs-target="#addModuleContentModal">
+                                                <button class="btn btn-sm btn-success d-flex align-items-center gap-2"
+                                                    data-bs-toggle="modal" data-bs-target="#addModuleContentModal">
                                                     <i class="bi bi-plus-circle"></i>
                                                     Add Content
                                                 </button>
@@ -592,22 +659,34 @@ if (!isset($_GET['subject_section_id'])) {
                                                                     $titleHint = "Quiz";
                                                                     break;
                                                             }
+                                                            // Get content's file
+                                                            $getAllContentFilesFromContent = $moduleContentController->getContentFile($content['content_id']);
                                                 ?>
                                                             <li class="list-group-item row d-flex align-items-center">
                                                                 <div class="col-md-8">
                                                                     <div class="d-flex justify-content-start align-items-center gap-2">
-                                                                        <i class="bi <?php echo $contentIconClass ?>" title="<?php echo $titleHint ?>"></i>
-                                                                        <span class="link-body-emphasis"><?php echo htmlspecialchars($content['content_title']) ?></span>
+                                                                        <i class="bi <?php echo $contentIconClass ?>"
+                                                                            title="<?php echo $titleHint ?>"></i>
+                                                                        <span
+                                                                            class="link-body-emphasis"><?php echo htmlspecialchars($content['content_title']) ?></span>
                                                                     </div>
                                                                 </div>
-                                                                <div class="col-md-4 bg-transparent d-flex justify-content-end align-items-center gap-2">
-                                                                    <button id="<?php echo $content['content_id'] ?>" class="contentButton_ToggleVisibity btn btn-sm btn-transparent text-primary" title="visibility">
+                                                                <div
+                                                                    class="col-md-4 bg-transparent d-flex justify-content-end align-items-center gap-2">
+                                                                    <button id="<?php echo $content['content_id'] ?>"
+                                                                        class="contentButton_ToggleVisibity btn btn-sm btn-transparent text-primary"
+                                                                        title="visibility">
                                                                         <i class="fs-6 bi <?php echo $contentVisibilityIcon ?>"></i>
                                                                     </button>
-                                                                    <button id="<?php echo $content['content_id'] ?>" class="contentButton_ConfigContent btn btn-sm btn-transparent text-success" title="edit">
+                                                                    <button id="<?php echo $content['content_id'] ?>"
+                                                                        class="contentButton_ConfigContent btn btn-sm btn-transparent text-success"
+                                                                        title="edit">
                                                                         <i class="fs-6 bi bi-pencil-square"></i>
                                                                     </button>
-                                                                    <button id="<?php echo $content['content_id'] ?>" class="contentButton_Delete btn btn-sm btn-transparent text-danger" title="delete" data-bs-toggle="modal" data-bs-target="#deleteConfirmationModalForContent">
+                                                                    <button id="<?php echo $content['content_id'] ?>"
+                                                                        class="contentButton_Delete btn btn-sm btn-transparent text-danger"
+                                                                        title="delete" data-bs-toggle="modal"
+                                                                        data-bs-target="#deleteConfirmationModalForContent">
                                                                         <i class="fs-6 bi bi-trash-fill"></i>
                                                                     </button>
                                                                 </div>
@@ -658,12 +737,14 @@ if (!isset($_GET['subject_section_id'])) {
                                                             });
                                                         </script>
                                                     <?php else: ?>
-                                                        <li class="list-group-item row d-flex align-items-center justify-content-center">
+                                                        <li
+                                                            class="list-group-item row d-flex align-items-center justify-content-center">
                                                             No contents...
                                                         </li>
                                                     <?php endif; ?>
                                                 <?php else: ?>
-                                                    <li class="list-group-item row d-flex align-items-center justify-content-center">
+                                                    <li
+                                                        class="list-group-item row d-flex align-items-center justify-content-center">
                                                         Something went wrong...
                                                     </li>
                                                 <?php endif; ?>
@@ -699,13 +780,16 @@ if (!isset($_GET['subject_section_id'])) {
                             <input type="hidden" name="action" value="addSubjectModule">
                             <div class="mb-3">
                                 <label for="input_moduleName" class="form-label">Module Name</label>
-                                <input type="text" class="form-control px-3 py-2" id="input_moduleName" name="input_moduleName" placeholder="" required />
+                                <input type="text" class="form-control px-3 py-2" id="input_moduleName"
+                                    name="input_moduleName" placeholder="" required />
                             </div>
 
                             <div class="mb-3">
                                 <div class="form-check form-switch">
-                                    <input class="form-check-input" type="checkbox" role="switch" id="input_moduleVisibility" name="input_moduleVisibility">
-                                    <label class="form-check-label" for="input_moduleVisibility">Module Visibility</label>
+                                    <input class="form-check-input" type="checkbox" role="switch"
+                                        id="input_moduleVisibility" name="input_moduleVisibility">
+                                    <label class="form-check-label" for="input_moduleVisibility">Module
+                                        Visibility</label>
                                 </div>
                             </div>
 
@@ -721,7 +805,8 @@ if (!isset($_GET['subject_section_id'])) {
         </div>
 
         <!-- Delete Confirmation Modal for Content -->
-        <div class="modal fade" id="deleteConfirmationModalForContent" tabindex="-1" aria-labelledby="deleteConfirmationModalForContentLabel" aria-hidden="true">
+        <div class="modal fade" id="deleteConfirmationModalForContent" tabindex="-1"
+            aria-labelledby="deleteConfirmationModalForContentLabel" aria-hidden="true">
             <div class="modal-dialog modal-dialog-centered">
                 <div class="modal-content">
                     <div class="modal-header">
@@ -729,7 +814,8 @@ if (!isset($_GET['subject_section_id'])) {
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
                     <div class="modal-body">
-                        Are you sure you want to delete this content? Deletion of this content will delete all of its data and its connected
+                        Are you sure you want to delete this content? Deletion of this content will delete all of its
+                        data and its connected
                         files including submissions from other users. This action cannot be undone.
                     </div>
                     <div class="modal-footer">
