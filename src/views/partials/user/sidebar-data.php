@@ -63,7 +63,7 @@ $sidebar_content = [
             'isGroup' => true,
             'sublinks' => [
                 'AcademicPeriod' => [
-                    'title' => 'Academic Terms',
+                    'title' => 'Academic Period',
                     'icon' => 'bi-calendar-event',
                     'link' => 'academic_calendar_admin.php',
                 ],

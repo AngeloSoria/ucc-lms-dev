@@ -26,10 +26,10 @@
                     <?php foreach ($myEnrolledSubjects['data'] as $subject) {
                         $subjectInfo = $subjectController->getSubjectFromSubjectId($subject['subject_id']);
                         $sectionInfo = $sectionController->getSectionById($subject['section_id']);
-                        ?>
+                    ?>
                         <li class="list-group-item box border-box bg-transparent p-0 py-1">
                             <div class="row bg-transparent p-1">
-                                <div class="col-sm-9 col-md-6 col-lg-6 d-flex justify-content-start align-items-center gap-2">
+                                <div class="flex-grow-1 col-sm-9 col-md-6 col-lg-6 d-flex justify-content-start align-items-center gap-2">
                                     <div id="itemIconContainer" class="position-relative rounded"
                                         style="width: 50px; height: 50px;">
                                         <?php if (!empty($subject['subject_section_image'])): ?>
@@ -80,7 +80,7 @@
             <?php foreach ($myEnrolledSubjects['data'] as $subject) {
                 $subjectInfo = $subjectController->getSubjectFromSubjectId($subject['subject_id']);
                 $sectionInfo = $sectionController->getSectionById($subject['section_id']);
-                ?>
+            ?>
                 <div class="col-md-6 col-lg-4 p-1" style="height: 250px;">
                     <a href="#">
                         <div id="item_card"

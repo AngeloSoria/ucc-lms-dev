@@ -18,6 +18,8 @@ define('UPLOAD_PATH', [
     'User' => BASE_PATH_LINK . 'src/uploads/users/',
 ]);
 
+define('UTILS', __DIR__ . '../../functions/Utilities.php');
+
 define('FILE_PATHS', [
     'DATABASE' => __DIR__ . '/connection.php',
 
@@ -71,6 +73,7 @@ define('FILE_PATHS', [
         'ModuleContent' => __DIR__ . '../../models/ModuleContent.php',
         'Announcements' => __DIR__ . '../../models/Announcements.php',
         'Uploads' => __DIR__ . '../../models/Uploads.php',
+        'SessionLock' => __DIR__ . '../../models/SessionLock.php',
     ],
 
     'Partials' => [

@@ -42,28 +42,20 @@
         <h5 class="modal-title" id="fileSelectModalLabel">Select File</h5>
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
-      <div class="modal-body">
-        <!-- Tab navigation -->
-        <ul class="nav nav-tabs" id="fileTab" role="tablist">
-          <li class="nav-item" role="presentation">
-            <button class="nav-link active" id="upload-tab" data-bs-toggle="tab" data-bs-target="#upload" type="button"
-              role="tab" aria-controls="upload" aria-selected="true">Upload</button>
-          </li>
-          <li class="nav-item" role="presentation">
-            <button class="nav-link" id="system-default-tab" data-bs-toggle="tab" data-bs-target="#my-upload"
-              type="button" role="tab" aria-controls="system-default" aria-selected="false">My Uploads</button>
-          </li>
-          <li class="nav-item" role="presentation">
-            <button class="nav-link" id="system-default-tab" data-bs-toggle="tab" data-bs-target="#system-default"
-              type="button" role="tab" aria-controls="system-default" aria-selected="false">System Default</button>
-          </li>
-        </ul>
+      <form id="fileUploadForm" method="POST" enctype="multipart/form-data">
+        <div class="modal-body">
+          <!-- Tab navigation -->
+          <ul class="nav nav-tabs" id="fileTab" role="tablist">
+            <li class="nav-item" role="presentation">
+              <button class="nav-link active" id="upload-tab" data-bs-toggle="tab" data-bs-target="#upload" type="button"
+                role="tab" aria-controls="upload" aria-selected="true">Upload</button>
+            </li>
+          </ul>
 
-        <!-- Tab content -->
-        <div class="tab-content mt-3">
-          <!-- Upload Tab -->
-          <div class="tab-pane fade show active" id="upload" role="tabpanel" aria-labelledby="upload-tab">
-            <form id="fileUploadForm" method="POST" enctype="multipart/form-data">
+          <!-- Tab content -->
+          <div class="tab-content mt-3">
+            <!-- Upload Tab -->
+            <div class="tab-pane fade show active" id="upload" role="tabpanel" aria-labelledby="upload-tab">
               <input type="hidden" name="action" value="addCarousel">
               <div class="mb-3">
                 <label for="title" class="form-label">Title</label>
@@ -73,7 +65,7 @@
 
               <div class="mb-3">
                 <label for="formFile" class="form-label">Choose file to upload</label>
-                <input class="form-control" type="file" id="formFile" name="file" accept="image/*">
+                <input class="form-control" type="file" id="formFile" name="file" accept="image/*" required>
               </div>
 
               <div class="mb-3">
@@ -84,18 +76,14 @@
                   <option value="dashboard">Dashboard</option>
                 </select>
               </div>
-
-            </form>
+            </div>
           </div>
-
-
-
         </div>
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-        <button type="submit" class="btn btn-primary" form="fileUploadForm">Save</button>
-      </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+          <button type="submit" class="btn btn-success px-3" form="fileUploadForm">Save</button>
+        </div>
+      </form>
     </div>
   </div>
 </div>

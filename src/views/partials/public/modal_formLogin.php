@@ -45,7 +45,8 @@
                     // Display the invalid credentials message if login failed
                     if ($_loginResult === false) {
                         echo '<p id="invalid-feedback" class="invalid-feedback d-block text-center fw-semibold">Invalid userid or password. Please try again.</p>';
-                        unset($_SESSION['_loginResult']);
+                    } else if (isset($_SESSION['SESSION_LOCK_ERR'])) {
+                        echo '<p id="invalid-feedback" class="invalid-feedback d-block text-center fw-semibold">User has been already logged in to different device.</p>';
                     }
                     ?>
                 </form>

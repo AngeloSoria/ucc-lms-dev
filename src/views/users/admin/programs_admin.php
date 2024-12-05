@@ -220,7 +220,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST'  && isset($_POST['action'])) {
                     <?php else: ?>
                         <div class="bg-white rounded p-3 shadow-sm border">
                             <div class="mb-3 row align-items-start bg-transparent box-sizing-border-box">
-                                <div class="col-4 d-flex gap-2 justify-content-start align-items-center box-sizing-border-box">
+                                <div class="col-md-7 d-flex gap-2 justify-content-start align-items-center box-sizing-border-box">
                                     <!-- breadcrumbs -->
                                     <h5 class="ctxt-primary p-0 m-0">
                                         <a class="ctxt-primary" href="<?= clearUrlParams(); ?>">Programs</a>
@@ -242,7 +242,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST'  && isset($_POST['action'])) {
                                     </h5>
                                     <!-- end of breadcrumbs -->
                                 </div>
-                                <div class="col-8 d-flex justify-content-end gap-2">
+                                <div class="col-md-5 d-flex justify-content-end gap-2">
                                     <!-- <button class="btn btn-success" disabled data-bs-toggle="modal" data-bs-target="#modal_updateCardModal_program">
                                         <i class="bi bi-card-image"></i>
                                         Set Image

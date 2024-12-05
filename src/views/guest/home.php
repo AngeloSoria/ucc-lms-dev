@@ -103,7 +103,7 @@ if (isset($_SESSION['user_id']) && isset($_SESSION['role'])) {
 </body>
 
 <?php
-if ($_loginResult === false) { ?>
+if ($_loginResult === false || isset($_SESSION['SESSION_LOCK_ERR'])) { ?>
     <script>
         // Initialize the modal only once
         var loginModalElement = document.getElementById('modal_LoginForm');

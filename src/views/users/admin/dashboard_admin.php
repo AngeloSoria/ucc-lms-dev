@@ -7,6 +7,7 @@ require_once(FILE_PATHS['DATABASE']);
 require_once(FILE_PATHS['Controllers']['User']);
 require_once(FILE_PATHS['Functions']['SessionChecker']);
 require_once(FILE_PATHS['Functions']['ToastLogger']);
+require_once(UTILS);
 
 checkUserAccess(['Admin']);
 
@@ -39,7 +40,7 @@ $userController = new UserController();
                         <!-- CAROUSEL -->
                         <?php require_once(FILE_PATHS['Partials']['User']['Carousel']) ?>
 
-                        <!-- LIVE COUNT -->
+                        <!-- USER OVERVIEW COUNT -->
                         <?php require_once(FILE_PATHS['Partials']['HighLevel']['LiveCount']) ?>
 
                         <!-- ACADEMIC OVERVIEW -->

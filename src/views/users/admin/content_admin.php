@@ -93,7 +93,7 @@ try {
                             </li>
                         </ul>
 
-                        <section class="tab-content border p-2 mt-2" id="contentTabContent">
+                        <section class="tab-content border p-2" id="contentTabContent">
                             <!-- Home Carousel Section -->
                             <div class="tab-pane fade show active" id="home" role="tabpanel" aria-labelledby="home-tab">
                                 <!-- Display Selected Images for Homepage -->
@@ -102,30 +102,37 @@ try {
                                     Home Carousel
                                     <p class="text-danger fs-7 p-2">
                                         <i class="bi bi-info-circle-fill"></i>
-                                        (Max item: 4)
+                                        (Max item: 4) / Any new uploaded content will overwrite the last added.
                                     </p>
                                 </h5>
                                 <div id="sortableCarousel" class="sortable-main border bg-white">
-                                    <div class="d-flex flex-wrap gap-0 p-1 bg-light-3" role="listbox" id="sortableContentHomeCarousel">
-                                        <?php createSortable($selectedImagesHome); ?>
+                                    <div class="d-flex flex-wrap gap-0 p-1 bg-light" role="listbox" id="sortableContentHomeCarousel">
+                                        <?php if (!empty($selectedImagesHome)): ?>
+                                            <?php createSortable($selectedImagesHome); ?>
+                                        <?php else: ?>
+                                            <h6 class="d-block text-center w-100 p-2">No uploaded content yet.</h6>
+                                        <?php endif; ?>
                                     </div>
-                                    <form method="POST" class="p-2 d-flex justify-content-end align-items-start">
-                                        <button type="submit" class="btn btn-success d-flex gap-2" id="btnUpdate">
-                                            <i class="bi bi-floppy-fill"></i>
-                                            Update
-                                        </button>
-                                    </form>
                                 </div>
 
                             </div>
 
                             <!-- User Content Tab Section -->
                             <div class="tab-pane fade" id="user-content" role="tabpanel" aria-labelledby="user-content-tab">
-                                <h5>Dashboard Carousel <i class="text-danger"
-                                        style="font-size: 0.85rem; font-weight: normal;">(Max item: 4)</i></h5>
-                                <div id="sortableCarousel" class="sortable-main bg-light-3 border">
-                                    <div class="d-flex flex-wrap gap-0 p-1" role="listbox" id="sortableContentDashboardCarousel">
-                                        <?php createSortable($selectedImagesDashboard); ?>
+                                <h5>
+                                    Dashboard Carousel
+                                    <p class="text-danger fs-7 p-2">
+                                        <i class="bi bi-info-circle-fill"></i>
+                                        (Max item: 4) / Any new uploaded content will overwrite the last added.
+                                    </p>
+                                </h5>
+                                <div id="sortableCarousel" class="sortable-main border bg-white">
+                                    <div class="d-flex flex-wrap gap-0 p-1 bg-light" role="listbox" id="sortableContentHomeCarousel">
+                                        <?php if (!empty($selectedImagesDashboard)): ?>
+                                            <?php createSortable($selectedImagesDashboard); ?>
+                                        <?php else: ?>
+                                            <h6 class="d-block text-center w-100 p-2">No uploaded content yet.</h6>
+                                        <?php endif; ?>
                                     </div>
                                 </div>
                             </div>

@@ -41,8 +41,8 @@
                         aria-expanded="false">
                         <!-- User Profile Picture -->
                         <?php if (isset($_SESSION['profile_pic'])): ?>
-                            <img src="<?php echo $_SESSION['profile_pic']; ?>" alt="Profile Picture" class="rounded-circle"
-                                width="30" height="30">
+                            <img src="<?php echo $_SESSION['profile_pic']; ?>" alt="Profile Picture" class="rounded-circle object-fit-fill"
+                                width="28" height="30">
                         <?php else: ?>
                             <i class="bi bi-person-circle fs-5"></i>
                         <?php endif; ?>
