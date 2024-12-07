@@ -17,7 +17,7 @@ $db = $database->getConnection(); // Establish the database connection
 // Create an instance of the UserController
 $userController = new UserController();
 
-if (isset($_GET['access_denied'])) {
+if (isset($_GET['message'])) {
 }
 
 ?>
@@ -53,19 +53,7 @@ if (isset($_GET['access_denied'])) {
     </div>
 </body>
 
-<?php
-// Show Toast
-if (isset($_SESSION["_ResultMessage"])) {
-    // print_r($_SESSION["_ResultMessage"]);
-    makeToast([
-        'type' => $_SESSION["_ResultMessage"]['success'] ? 'success' : 'error',
-        'message' => $_SESSION["_ResultMessage"]['message'],
-    ]);
-    outputToasts(); // Execute toast on screen.
-    unset($_SESSION["_ResultMessage"]); // Dispose
-}
-
-?>
+<?php include_once PARTIALS . 'user/toastHandler.php' ?>
 
 
 </html>

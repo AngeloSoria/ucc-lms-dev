@@ -13,9 +13,6 @@ $pdo = $database->getConnection();
 $loginController = new LoginController();
 $carouselController = new CarouselController($pdo); // Create an instance of the CarouselController
 
-$_loginResult = isset($_SESSION['_loginResult']) ? $_SESSION['_loginResult'] : null; // Variable to check if login failed
-
-
 // CAROUSEL
 $stmt = $pdo->query("SELECT carousel_id, title, image_path, view_type FROM carousel WHERE view_type = 'home' AND is_selected = 1 ORDER BY created_at DESC LIMIT 4");
 $images = $stmt->fetchAll(PDO::FETCH_ASSOC);
@@ -23,10 +20,7 @@ $images = $stmt->fetchAll(PDO::FETCH_ASSOC);
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $rememberMe = isset($_POST['remember_me']);
 
-    $_SESSION['_loginResult'] = $loginController->login(); // Validate
-
-    $_loginResult = $_SESSION['_loginResult'];
-    unset($_SESSION['_loginResult']);
+    $loginController->login(); // Validate
 }
 // =================================
 
@@ -103,7 +97,12 @@ if (isset($_SESSION['user_id']) && isset($_SESSION['role'])) {
 </body>
 
 <?php
-if ($_loginResult === false || isset($_SESSION['SESSION_LOCK_ERR'])) { ?>
+if (isset($_SESSION['LOGIN_INVALID']) || isset($_SESSION['SESSION_LOCK_ERR']) || isset($_SESSION['SESSION_EXPIRED_ERR'])) {
+    msgLog("FOUND");
+    unset($_SESSION['SESSION_EXPIRED_ERR']);
+    unset($_SESSION['SESSION_LOCK_ERR']);
+    unset($_SESSION['LOGIN_INVALID']);
+?>
     <script>
         // Initialize the modal only once
         var loginModalElement = document.getElementById('modal_LoginForm');

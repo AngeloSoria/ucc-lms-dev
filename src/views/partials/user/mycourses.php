@@ -1,5 +1,6 @@
 <?php
-
+require CONTROLLERS . 'ModuleContentController.php';
+$moduleContentController = new ModuleContentController();
 ?>
 <!-- Container -->
 <div class="bg-white shadow-sm rounded p-3 border border-box mb-sm-2 d-flex flex-column" id="main-container"
@@ -26,6 +27,7 @@
                     <?php foreach ($myEnrolledSubjects['data'] as $subject) {
                         $subjectInfo = $subjectController->getSubjectFromSubjectId($subject['subject_id']);
                         $sectionInfo = $sectionController->getSectionById($subject['section_id']);
+                        $numOfModules = $moduleContentController->getNumberOfModulesBySubjectSectionId($subject['subject_section_id']);
                     ?>
                         <li class="list-group-item box border-box bg-transparent p-0 py-1">
                             <div class="row bg-transparent p-1">
@@ -49,21 +51,21 @@
                                                 <?php echo $subjectInfo['data']['subject_name'] . ' (' . $subjectInfo['data']['subject_code'] . ')' ?>
                                             </p>
                                         </a>
-                                        <a href="#" class="link-dark">
-                                            <p class="fs-7 p-0 m-0"><?php echo $sectionInfo['data']['section_name'] ?></p>
-                                        </a>
+                                        <p class="fs-7 p-0 m-0"><?php echo $sectionInfo['data']['section_name'] ?></p>
                                     </div>
                                 </div>
                                 <div class="col-sm-3 col-md-4 col-lg-6 d-flex align-items-center justify-content-end">
                                     <div class="d-flex gap-3 fw-semibold">
-                                        <div class="d-flex gap-1 fs-7 align-items-center bg-primary bg-opacity-75 px-2 rounded-pill text-white"
-                                            title="Grades">
-                                            <p>0</p>
-                                            <div class="icon"><i class="bi bi-percent"></i></div>
-                                        </div>
+                                        <?php if (userHasPerms(['Student'])): ?>
+                                            <div class="d-flex gap-1 fs-7 align-items-center bg-primary bg-opacity-75 px-2 rounded-pill text-white"
+                                                title="Grades">
+                                                <p>0</p>
+                                                <div class="icon"><i class="bi bi-percent"></i></div>
+                                            </div>
+                                        <?php endif; ?>
                                         <div class="d-flex gap-1 fs-7 align-items-center bg-danger bg-opacity-75 px-2 rounded-pill text-white"
                                             title="Number of Modules">
-                                            <p>1</p>
+                                            <p><?php echo sanitizeInput($numOfModules['data']) ?></p>
                                             <div class="icon"><i class="bi bi-file-earmark-text-fill"></i></div>
                                         </div>
                                     </div>

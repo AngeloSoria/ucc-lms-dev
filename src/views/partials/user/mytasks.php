@@ -1,4 +1,4 @@
-<div class="widget-card p-3 shadow-sm rounded border" id="myTasks">
+<div class="mt-sm-2 widget-card p-3 shadow-sm rounded border" id="myTasks">
     <div class="d-flex justify-content-between align-items-center">
         <p class="fs-6 fw-semibold text-success m-0">My Tasks</p>
     </div>

@@ -25,6 +25,8 @@ class ModuleContentController
                 throw new Exception("You don't have permission to do this action.");
             }
 
+            $moduleData['visibility'] = $moduleData['visibility'] == '1' ? 'shown' : 'hidden';
+
             $result = $this->moduleContentModel->addModule($moduleData);
             if ($result['success']) {
                 $result['message'] = "Successfully added a module.";
@@ -86,6 +88,16 @@ class ModuleContentController
         }
     }
 
+    public function getNumberOfModulesBySubjectSectionId($subject_section_id)
+    {
+        try {
+            $result = $this->moduleContentModel->getNumberOfModulesBySubjectSectionId($subject_section_id);
+            return ['success' => true, "data" => $result];
+        } catch (Exception $e) {
+            return ['success' => false, "message" => $e->getMessage()];
+        }
+    }
+
     // Handle adding content to a module
     public function addContent($contentData)
     {
@@ -102,6 +114,16 @@ class ModuleContentController
             }
         } catch (Exception $e) {
             return ["success" => false, "message" => $e->getMessage()];
+        }
+    }
+
+    public function getContentById($content_id)
+    {
+        try {
+            $success = $this->moduleContentModel->getContentById($content_id);
+            return ['success' => true, "data" => $success];
+        } catch (Exception $e) {
+            return ['success' => false, "message" => $e->getMessage()];
         }
     }
 
@@ -176,15 +198,11 @@ class ModuleContentController
     }
 
     // Handle getting files for contentw
-    public function getContentFile($content_id)
+    public function getContentFiles($content_id)
     {
         try {
-            $result = $this->moduleContentModel->getFileByContent($content_id);
-            if ($result) {
-                return ['success' => true, 'data' => $result];
-            } else {
-                return ['success' => false, 'message' => "No file found for content id '$content_id'"];
-            }
+            $result = $this->moduleContentModel->getFilesByContent($content_id);
+            return ['success' => true, 'data' => $result];
         } catch (Exception $e) {
             return ['success' => false, 'message' => $e->getMessage()];
         }

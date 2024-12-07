@@ -19,6 +19,10 @@ define('UPLOAD_PATH', [
 ]);
 
 define('UTILS', __DIR__ . '../../functions/Utilities.php');
+define('PARTIALS', __DIR__ . '../../views/partials/');
+define('CONTROLLERS', __DIR__ . '../../controllers/');
+define('MODELS', __DIR__ . '../../models/');
+define('FUNCTIONS', __DIR__ . '../../functions/');
 
 define('FILE_PATHS', [
     'DATABASE' => __DIR__ . '/connection.php',
@@ -192,4 +196,10 @@ define('FILE_PATHS', [
 function asset($path)
 {
     return BASE_PATH_LINK . 'src/assets/' . ltrim($path, '/');
+}
+
+function showErrorPage($err_code)
+{
+    header('Location: ' . BASE_PATH_LINK . 'src/views/partials/special/error.php?err_code=' . $err_code);
+    exit;
 }

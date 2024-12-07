@@ -207,16 +207,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     </script>
 
 </body>
-<script src="<?php echo asset('js/toast.js') ?>"></script>
-<?php
-if (isset($_SESSION["_ResultMessage"])) {
-    makeToast([
-        'type' => $_SESSION["_ResultMessage"]["success"] ? "success" : "error",
-        'message' => $_SESSION["_ResultMessage"]["message"],
-    ]);
-    outputToasts();
-    unset($_SESSION["_ResultMessage"]);
-}
-?>
+<?php include_once PARTIALS . 'user/toastHandler.php' ?>
 
 </html>

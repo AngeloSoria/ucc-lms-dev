@@ -4,6 +4,7 @@ require_once(FILE_PATHS['DATABASE']);
 require_once(FILE_PATHS['Functions']['PHPLogger']);
 require_once(FILE_PATHS['Controllers']['GeneralLogs']);
 
+use Dotenv\Dotenv;
 
 class ModuleContent
 {
@@ -12,6 +13,9 @@ class ModuleContent
 
     public function __construct()
     {
+        $dotenv = Dotenv::createImmutable(BASE_PATH);
+        $dotenv->load();
+
         $db = new Database();
         $this->conn = $db->getConnection();
         $this->generalLogsController = new GeneralLogsController();
@@ -62,6 +66,23 @@ class ModuleContent
             throw new PDOException("Failed to get all terms: " . $e->getMessage());
         }
     }
+
+    public function getNumberOfModulesBySubjectSectionId($subject_section_id)
+    {
+        try {
+            $query = "SELECT COUNT(*) FROM modules WHERE subject_section_id = :subject_section_id";
+            $stmt = $this->conn->prepare($query);
+            $stmt->bindParam(":subject_section_id", $subject_section_id, PDO::PARAM_INT); // Bind as integer for better type safety
+            $stmt->execute();
+
+            // Use fetchColumn for a single value
+            return (int)$stmt->fetchColumn();
+        } catch (Exception $e) {
+            // Optionally log or handle the error here
+            throw new Exception("Error fetching module count: " . $e->getMessage());
+        }
+    }
+
 
     // Single module
     public function getModuleByModuleId($module_id)
@@ -126,6 +147,8 @@ class ModuleContent
         }
     }
 
+
+
     // ===============================================
     // MODULE CONTENTS
     // ===============================================
@@ -158,7 +181,7 @@ class ModuleContent
             if (!in_array($contentData['content_type'], ['assignment', 'quiz'])) {
                 $contentId = $this->conn->lastInsertId();
                 $query_contentFiles = "
-                INSERT INTO content_files 
+                INSERT INTO content_files
                 (content_id, file_name, file_data, mime_type)
                 VALUES
                 (:content_id, :file_name, :file_data, :mime_type)";
@@ -171,6 +194,13 @@ class ModuleContent
                     $fileType = $_FILES['input_contentFiles']['type'][$key];
                     $fileSize = $_FILES['input_contentFiles']['size'][$key];
                     $fileError = $_FILES['input_contentFiles']['error'][$key];
+
+                    // Identify File Size
+                    $maxFileSize = $_ENV['MAX_UPLOAD_FILE_SIZE'] * 1024 * 1024;
+                    if ($fileSize > $maxFileSize) {
+                        msgLog("FILE SIZE EXCEEDED", "$fileSize >> $maxFileSize");
+                        throw new Exception("File too large. (Max: $maxFileSize)");
+                    }
 
                     // Check for any file upload errors
                     if ($fileError === UPLOAD_ERR_OK) {
@@ -196,6 +226,22 @@ class ModuleContent
         } catch (Exception $e) {
             $this->conn->rollBack();
             throw new Exception($e->getMessage());
+        }
+    }
+
+    // Get content by content ID
+    public function getContentById($content_id)
+    {
+        try {
+            $query = "SELECT * FROM contents WHERE content_id = :content_id";
+            $stmt = $this->conn->prepare($query);
+            $stmt->bindParam(':content_id', $content_id, PDO::PARAM_INT);
+            $stmt->execute();
+            $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+            return $result ? $result : [];
+        } catch (PDOException $e) {
+            throw new PDOException("Failed to get contents: " . $e->getMessage());
         }
     }
 
@@ -270,10 +316,10 @@ class ModuleContent
             $currentVisibility = $stmt1->fetchColumn();
 
             // Toggle the visibility value
-            if ($currentVisibility === 'show') {
-                $newVisibility = 'hide';
-            } elseif ($currentVisibility === 'hide') {
-                $newVisibility = 'show';
+            if ($currentVisibility === 'shown') {
+                $newVisibility = 'hidden';
+            } elseif ($currentVisibility === 'hidden') {
+                $newVisibility = 'shown';
             } else {
                 throw new Exception("Invalid visibility value in the database. | $currentVisibility");
             }
@@ -337,15 +383,14 @@ class ModuleContent
     }
 
     // Get files for a content
-    public function getFileByContent($content_id)
+    public function getFilesByContent($content_id)
     {
         try {
             $query = "SELECT * FROM content_files WHERE content_id = :content_id";
             $stmt = $this->conn->prepare($query);
-            $stmt->bindParam(':content_id', $content_id, PDO::PARAM_INT);
+            $stmt->bindParam(':content_id', $content_id);
             $stmt->execute();
-            $result = $stmt->fetch(PDO::FETCH_ASSOC);
-
+            $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
             return $result ? $result : [];
         } catch (PDOException $e) {
             throw new PDOException("Failed to get files: " . $e->getMessage());
@@ -366,8 +411,6 @@ class ModuleContent
             return ['success' => false, "message" => $e->getMessage()];
         }
     }
-
-
 
     // ===============================================
     // SUBMISSIONS

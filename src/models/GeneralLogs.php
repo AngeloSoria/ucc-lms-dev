@@ -1,7 +1,7 @@
 <?php
 require_once(__DIR__ . '../../../src/config/PathsHandler.php');
 require_once(FILE_PATHS['DATABASE']);
-
+require_once UTILS;
 class GeneralLogs
 {
     private $conn;
@@ -32,6 +32,7 @@ class GeneralLogs
             $stmt->execute();
             return ['success' => true];
         } catch (PDOException $e) {
+            msgLog("MODEL", "test");
             throw new Exception($e->getMessage());
         }
     }

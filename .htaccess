@@ -21,6 +21,9 @@ ErrorDocument 500 /ucc-lms-dev/src/views/partials/special/error.php
 ErrorDocument 401 /ucc-lms-dev/src/views/partials/special/error.php
 ErrorDocument 400 /ucc-lms-dev/src/views/partials/special/error.php
 
+php_value upload_max_filesize 1000M
+php_value post_max_size 1000M
+
 # Deny access to.env file to prevent sensitive data exposure.
 <Files .env>
     Order allow,deny

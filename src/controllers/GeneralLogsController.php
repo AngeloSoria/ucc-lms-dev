@@ -15,11 +15,12 @@ class GeneralLogsController
     {
         try {
             $generalLogsModelResult = $this->generalLogsModel->addLog_LOGIN($user_id, $user_role, "User logged in to session.");
-            if ($generalLogsModelResult['success'] == false) {
+            if (!$generalLogsModelResult['success']) {
                 return ['success' => false, 'message' => 'Login unsuccessful.'];
             }
+            return ['success' => true, 'message' => 'Login successfully.'];
         } catch (Exception $e) {
-            return ['success' => false, 'message' => 'Login unsuccessful.'];
+            return ['success' => false, 'message' => 'Login unsuccessful. ' . $e->getMessage()];
         }
     }
 

@@ -277,19 +277,9 @@ if ($RETRIEVED_SUBJECTS['success'] == false) {
 </body>
 
 <script src="<?php echo asset('js/preview-handler.js') ?>"></script>
-<script src="<?php echo asset('js/toast.js') ?>"></script>
 
 <?php
-// Show Toast
-if (isset($_SESSION["_ResultMessage"])) {
-    makeToast([
-        'type' => $_SESSION["_ResultMessage"]['success'] ? 'success' : 'error',
-        'message' => $_SESSION["_ResultMessage"]['message'],
-    ]);
-    outputToasts(); // Execute toast on screen.
-    unset($_SESSION["_ResultMessage"]); // Dispose
-}
-
+include_once PARTIALS . 'user/toastHandler.php'
 ?>
 
 </html>

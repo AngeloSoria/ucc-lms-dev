@@ -150,7 +150,7 @@ try {
 </body>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.14.0/Sortable.min.js"></script>
-<script src="<?php echo asset('js/toast.js') ?>"></script>
+
 <script>
     Sortable.create(document.querySelector('#sortableContentHomeCarousel'), {
         group: 'home-carousel',
@@ -184,16 +184,7 @@ try {
 </script>
 
 <?php
-// Show Toast
-if (isset($_SESSION["_ResultMessage"])) {
-    makeToast([
-        'type' => $_SESSION["_ResultMessage"]['success'] ? 'success' : 'error',
-        'message' => $_SESSION["_ResultMessage"]['message'],
-    ]);
-    outputToasts(); // Execute toast on screen.
-    unset($_SESSION["_ResultMessage"]); // Dispose
-}
-
+include_once PARTIALS . 'user/toastHandler.php'
 ?>
 
 </html>

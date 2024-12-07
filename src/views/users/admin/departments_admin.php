@@ -176,19 +176,6 @@ $db = $database->getConnection(); // Establish the database connection
     </div>
 </body>
 
-<?php
-// Show Toast
-if (isset($_SESSION["_ResultMessage"]) && isset($_SESSION["_ResultMessage"]['success'])) {
-    $type = $_SESSION["_ResultMessage"]['success'] ? 'success' : 'error';
-    $text = isset($_SESSION["_ResultMessage"]['message']) ? $_SESSION["_ResultMessage"]['message'] : 'No message passed.';
-    makeToast([
-        'type' => $type,
-        'message' => $text,
-    ]);
-    outputToasts(); // Execute toast on screen.
-    unset($_SESSION["_ResultMessage"]); // Dispose
-}
-
-?>
+<?php include_once PARTIALS . 'user/toastHandler.php' ?>
 
 </html>
