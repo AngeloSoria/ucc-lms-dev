@@ -1,12 +1,43 @@
 <?php
-// Extract start and end year from the current active term
-$activeTermStartYear = $currentTerm['academic_year_start'] ?? '';
-$activeTermEndYear = $currentTerm['academic_year_end'] ?? '';
+// Assuming $pdo is your PDO database connection
 
-// Set the next academic year
-$newStartYear = $activeTermEndYear; // The next year
-$newEndYear = $newStartYear; // The next year after the new start year
+// Query to get the latest start and end year based on the most recent academic year
+$query = "SELECT academic_year_start, academic_year_end 
+          FROM academic_period 
+          ORDER BY academic_year_start DESC 
+          LIMIT 1";
+
+try {
+    // Prepare and execute the query
+    $stmt = $db->prepare($query);
+    $stmt->execute();
+
+    // Check if a result was returned
+    if ($stmt->rowCount() > 0) {
+        // Fetch the latest active term data
+        $currentTerm = $stmt->fetch(PDO::FETCH_ASSOC);
+
+        // Extract the start and end year of the latest active term
+        $activeTermStartYear = $currentTerm['academic_year_start'];
+        $activeTermEndYear = $currentTerm['academic_year_end'];
+
+        // Set the next academic year
+        $newStartYear = $activeTermEndYear;  // The next academic year starts after the current term ends
+        $newEndYear = $newStartYear + 1;     // The next year's end year (one year after the new start year)
+
+        // // Output the next academic year (optional)
+        // echo "Next academic year: $newStartYear - $newEndYear";
+    } else {
+        // If no active academic year exists, default to the current year (2024)
+        $activeTermStartYear = date("Y");  // Current year as start year (e.g. 2024)
+        $activeTermEndYear = $activeTermStartYear; // Next year as end year (e.g. 2025)
+    }
+} catch (PDOException $e) {
+    echo "Error: " . $e->getMessage();
+}
+
 ?>
+
 <style>
     .error-text-small {
         font-size: 0.8rem;
@@ -110,14 +141,15 @@ $newEndYear = $newStartYear; // The next year after the new start year
     // Fetch PHP values for activeTermStartYear and activeTermEndYear
     const activeTermStartYear = <?php echo json_encode($activeTermStartYear); ?>;
     const activeTermEndYear = <?php echo json_encode($activeTermEndYear); ?>;
+    const currentYear = new Date().getFullYear(); // Get current year
 
     // Function to set the academic year fields dynamically
     function setAcademicYearFields() {
-        // Set new start year and end year based on the current active year
-        const newStartYear = parseInt(activeTermEndYear);
-        const newEndYear = newStartYear + 1;
+        // Calculate the new start year and end year
+        const newStartYear = parseInt(activeTermEndYear); // New start year is after the current end year
+        const newEndYear = newStartYear + 1; // End year is one year after the start year
 
-        // Set the start and end year fields
+        // Set the values in the form fields
         document.getElementById('start_year').value = newStartYear;
         document.getElementById('end_year').value = newEndYear;
     }
@@ -127,89 +159,129 @@ $newEndYear = $newStartYear; // The next year after the new start year
         setAcademicYearFields();
     });
 
-    // Existing validation function for year and date inputs
-    document.getElementById('start_year').addEventListener('input', validateDateInput);
-    document.getElementById('end_year').addEventListener('input', validateDateInput);
-    document.getElementById('first_semester_start').addEventListener('input', validateDateInput);
-    document.getElementById('first_semester_end').addEventListener('input', validateDateInput);
-    document.getElementById('second_semester_start').addEventListener('input', validateDateInput);
-    document.getElementById('second_semester_end').addEventListener('input', validateDateInput);
+    // Event Listeners for Validation
+    document.querySelectorAll('input').forEach(input => {
+        input.addEventListener('input', validateInputs);
+    });
 
-    function validateDateInput(event) {
+    // Function to validate the inputs
+    function validateInputs(event) {
+        let isValid = true; // Flag to track the overall validity of the form
+
         const startYear = document.getElementById('start_year').value;
         const endYear = document.getElementById('end_year').value;
-        const currentYear = new Date().getFullYear();
-        const startYearNum = parseInt(startYear);
-        const endYearNum = parseInt(endYear);
+        const firstStart = document.getElementById('first_semester_start').value;
+        const firstEnd = document.getElementById('first_semester_end').value;
+        const secondStart = document.getElementById('second_semester_start').value;
+        const secondEnd = document.getElementById('second_semester_end').value;
 
-        // Validate start year
-        if (startYear !== '' && startYear < currentYear) {
-            document.getElementById('startYearError').style.display = 'block';
-            document.getElementById('start_year').classList.add('is-invalid');
+        // Start Year Validation
+        if (!startYear) {
+            showError('start_year', 'startYearError', 'Start year is required.');
+            isValid = false;
+        } else if (parseInt(startYear) < new Date().getFullYear()) {
+            showError('start_year', 'startYearError', 'Start year cannot be in the past.');
+            isValid = false;
         } else {
             resetError('start_year', 'startYearError');
         }
 
-        // Prevent setting the same start year as the current active term's start year
-        if (startYear === activeTermStartYear) {
-            document.getElementById('startYearError').style.display = 'block';
-            document.getElementById('start_year').classList.add('is-invalid');
-            document.getElementById('startYearError').innerHTML = 'Start year cannot be the same as the current active year.';
+        // End Year Validation
+        if (!endYear) {
+            showError('end_year', 'endYearError', 'End year is required.');
+            isValid = false;
+        } else if (startYear && parseInt(endYear) <= parseInt(startYear)) {
+            showError('end_year', 'endYearError', 'End year must be later than start year.');
+            isValid = false;
+        } else {
+            resetError('end_year', 'endYearError');
         }
 
-        // Validate end year
-        if (startYear !== '' && endYear !== '') {
-            if (endYear <= startYear) {
-                document.getElementById('endYearError').style.display = 'block';
-                document.getElementById('end_year').classList.add('is-invalid');
-            } else {
-                resetError('end_year', 'endYearError');
-            }
-        }
-
-        // Validate First Semester Dates
-        const firstStartDate = document.getElementById('first_semester_start').value;
-        const firstEndDate = document.getElementById('first_semester_end').value;
-
-        if (firstStartDate) {
-            const firstStartYear = new Date(firstStartDate).getFullYear();
-            if (firstStartYear < startYearNum || firstStartYear > endYearNum) {
-                document.getElementById('firstSemesterStartError').style.display = 'block';
-                document.getElementById('first_semester_start').classList.add('is-invalid');
+        // First Semester Start Validation
+        if (!firstStart) {
+            showError('first_semester_start', 'firstSemesterStartError', 'Start date is required for the first semester.');
+            isValid = false;
+        } else if (firstStart) {
+            const firstStartYear = new Date(firstStart).getFullYear();
+            if (firstStartYear < startYear || firstStartYear > endYear) {
+                showError('first_semester_start', 'firstSemesterStartError', 'Start date must be within the academic year.');
+                isValid = false;
             } else {
                 resetError('first_semester_start', 'firstSemesterStartError');
             }
         }
-        if (firstStartDate && firstEndDate && firstEndDate < firstStartDate) {
-            document.getElementById('firstSemesterEndError').style.display = 'block';
-            document.getElementById('first_semester_end').classList.add('is-invalid');
+
+        // First Semester End Validation
+        if (!firstEnd) {
+            showError('first_semester_end', 'firstSemesterEndError', 'End date is required for the first semester.');
+            isValid = false;
+        } else if (firstStart && new Date(firstEnd) <= new Date(firstStart)) {
+            showError('first_semester_end', 'firstSemesterEndError', 'End date cannot be earlier than or equal to start date.');
+            isValid = false;
+        } else if (firstEnd && new Date(firstEnd) > new Date(endYear + '-12-31')) {
+            showError('first_semester_end', 'firstSemesterEndError', 'End date cannot be later than the academic year\'s end date.');
+            isValid = false;
         } else {
             resetError('first_semester_end', 'firstSemesterEndError');
         }
 
-        // Validate Second Semester Dates
-        const secondStartDate = document.getElementById('second_semester_start').value;
-        const secondEndDate = document.getElementById('second_semester_end').value;
-
-        if (secondStartDate) {
-            const secondStartYear = new Date(secondStartDate).getFullYear();
-            if (secondStartYear < firstEndDate || secondStartYear > endYearNum) {
-                document.getElementById('secondSemesterStartError').style.display = 'block';
-                document.getElementById('second_semester_start').classList.add('is-invalid');
+        // Second Semester Start Validation
+        if (!secondStart) {
+            showError('second_semester_start', 'secondSemesterStartError', 'Start date is required for the second semester.');
+            isValid = false;
+        } else if (secondStart) {
+            const firstSemesterEndDate = new Date(firstEnd);
+            const secondSemesterStartDate = new Date(secondStart);
+            if (secondSemesterStartDate <= firstSemesterEndDate) {
+                showError('second_semester_start', 'secondSemesterStartError', 'Start date must be after the end date of the first semester.');
+                isValid = false;
+            } else if (new Date(secondStart).getFullYear() < startYear || new Date(secondStart).getFullYear() > endYear) {
+                showError('second_semester_start', 'secondSemesterStartError', 'Start date must be within the academic year.');
+                isValid = false;
             } else {
                 resetError('second_semester_start', 'secondSemesterStartError');
             }
         }
-        if (secondStartDate && secondEndDate && secondEndDate < secondStartDate) {
-            document.getElementById('secondSemesterEndError').style.display = 'block';
-            document.getElementById('second_semester_end').classList.add('is-invalid');
+
+        // Second Semester End Validation
+        if (!secondEnd) {
+            showError('second_semester_end', 'secondSemesterEndError', 'End date is required for the second semester.');
+            isValid = false;
+        } else if (secondStart && new Date(secondEnd) <= new Date(secondStart)) {
+            showError('second_semester_end', 'secondSemesterEndError', 'End date cannot be earlier than or equal to start date.');
+            isValid = false;
+        } else if (secondEnd && new Date(secondEnd) > new Date(endYear + '-12-31')) {
+            showError('second_semester_end', 'secondSemesterEndError', 'End date cannot be later than the academic year\'s end date.');
+            isValid = false;
         } else {
             resetError('second_semester_end', 'secondSemesterEndError');
         }
+
+        // Prevent form submission if validation fails
+        if (!isValid) {
+            event.preventDefault();
+        }
     }
 
+    // Attach validation to the form submit event
+    document.getElementById('addAcademicForm').addEventListener('submit', validateInputs);
+
+    // Show error message
+    function showError(fieldId, errorId, message) {
+        const errorElement = document.getElementById(errorId);
+        const inputElement = document.getElementById(fieldId);
+
+        errorElement.style.display = 'block';
+        errorElement.innerText = message;
+        inputElement.classList.add('is-invalid');
+    }
+
+    // Reset error message
     function resetError(fieldId, errorId) {
-        document.getElementById(errorId).style.display = 'none';
-        document.getElementById(fieldId).classList.remove('is-invalid');
+        const errorElement = document.getElementById(errorId);
+        const inputElement = document.getElementById(fieldId);
+
+        errorElement.style.display = 'none';
+        inputElement.classList.remove('is-invalid');
     }
 </script>

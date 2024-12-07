@@ -40,7 +40,7 @@ if (isset($_SESSION['user_id']) && isset($_SESSION['role'])) {
 
     <!-- CONTENT -->
 
-    <section class="p-5 content-100vh">
+    <section class="p-5 min-vh-100">
         <h3>Frequently Asked Question (FAQ)</h3>
         <hr>
         <!-- Accordion -->
@@ -48,36 +48,67 @@ if (isset($_SESSION['user_id']) && isset($_SESSION['role'])) {
             <div class="accordion-item">
                 <h2 class="accordion-header">
                     <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
-                        Accordion Item #1
+                        Student Help: Account Login Instructions
                     </button>
                 </h2>
                 <div id="collapseOne" class="accordion-collapse collapse show" data-bs-parent="#accordionExample">
                     <div class="accordion-body">
-                        <strong>This is the first item's accordion body.</strong> It is shown by default, until the collapse plugin adds the appropriate classes that we use to style each element. These classes control the overall appearance, as well as the showing and hiding via CSS transitions. You can modify any of this with custom CSS or overriding our default variables. It's also worth noting that just about any HTML can go within the <code>.accordion-body</code>, though the transition does limit overflow.
+                        <strong>If you don't know your login credentials, follow the steps below to access your accounts:</strong>
+                        <br>
+                        Login Credentials Format:
+                        <br>
+                        <br>
+                        <p>Username: First letter of your first name + Last name + period + user ID</p>
+                        <ul>
+                            <li>Example: <i>JDoe.1004</i> (for a student named John Doe with a user ID of 1004)</li>
+                        </ul>
+
+                        <p>Password: Last name + birthdate in MMDDYYYY format</p>
+                        <ul>
+                            <li>Example: Doe09242002 (for John Doe with a birthdate of September 24, 2002)</li>
+                        </ul>
+
+                        <br>
+                        <h6>Important Notes:</h6>
+                        <ul>
+                            <li>Case Sensitivity: Passwords are case-sensitive, so ensure that the first letter of your last name is uppercase.</li>
+                            <li>Where to Use: Use this format to log in to your eLearning Management System (eLMS), Microsoft Office 365, and other related accounts.</li>
+                        </ul>
+
                     </div>
                 </div>
             </div>
             <div class="accordion-item">
                 <h2 class="accordion-header">
                     <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
-                        Accordion Item #2
+                        How to Get Your Account Information:
                     </button>
                 </h2>
                 <div id="collapseTwo" class="accordion-collapse collapse" data-bs-parent="#accordionExample">
                     <div class="accordion-body">
-                        <strong>This is the second item's accordion body.</strong> It is hidden by default, until the collapse plugin adds the appropriate classes that we use to style each element. These classes control the overall appearance, as well as the showing and hiding via CSS transitions. You can modify any of this with custom CSS or overriding our default variables. It's also worth noting that just about any HTML can go within the <code>.accordion-body</code>, though the transition does limit overflow.
+                        <strong>Since no email is used for registration and only admins create accounts, here's how you can obtain your login credentials:</strong>
+                        <ol>
+                            <li>Physical Distribution:
+                                After your account is created, the admin will provide your username and password either on a physical form or during an in-person session. Ensure you keep this information safe.</li>
+                            <li>Contact Admin or IT for Assistance:
+                                If you don't know your credentials or if you need help accessing your account, please reach out to the admin or IT support at your campus. They will provide you with your login details.</li>
+                        </ol>
                     </div>
                 </div>
             </div>
             <div class="accordion-item">
                 <h2 class="accordion-header">
                     <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseThree" aria-expanded="false" aria-controls="collapseThree">
-                        Accordion Item #3
+                        Account Reset Option:
                     </button>
                 </h2>
                 <div id="collapseThree" class="accordion-collapse collapse" data-bs-parent="#accordionExample">
                     <div class="accordion-body">
-                        <strong>This is the third item's accordion body.</strong> It is hidden by default, until the collapse plugin adds the appropriate classes that we use to style each element. These classes control the overall appearance, as well as the showing and hiding via CSS transitions. You can modify any of this with custom CSS or overriding our default variables. It's also worth noting that just about any HTML can go within the <code>.accordion-body</code>, though the transition does limit overflow.
+                        <strong>If you need to reset your password:</strong>
+                        <ul>
+                            <li>Contact Admin or IT Support:
+                                To reset your password, you will need to contact the admin or IT support at your campus. They can verify your identity and assist you with resetting your account password.</li>
+                        </ul>
                     </div>
                 </div>
             </div>

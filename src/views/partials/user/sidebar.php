@@ -2,53 +2,9 @@
 include_once(FILE_PATHS['Partials']['User']['SideBarData']);
 $user_sidebar_data = $sidebar_content[$_SESSION['role']];
 
-// Get All Enrolled Subjects from User (Teacher, Student)
-$fakedata_enrolled_subjects = [
-    [
-        'subject_id' => 3001,
-        'subject_code' => 'ITMA1223',
-        'subject_name' => 'Data Structures & Algorithms',
-    ],
-    [
-        'subject_id' => 3002,
-        'subject_code' => 'PHYS4412',
-        'subject_name' => 'Physical Education 2',
-    ],
-    [
-        'subject_id' => 3003,
-        'subject_code' => 'LERP1337',
-        'subject_name' => 'Information Assurance and Security (Data Privacy)',
-    ],
-    [
-        'subject_id' => 3004,
-        'subject_code' => 'MATH1124',
-        'subject_name' => 'Calculus II',
-    ],
-    [
-        'subject_id' => 3005,
-        'subject_code' => 'CHEM2011',
-        'subject_name' => 'Organic Chemistry',
-    ],
-    [
-        'subject_id' => 3006,
-        'subject_code' => 'HIST3010',
-        'subject_name' => 'World History',
-    ],
-    [
-        'subject_id' => 3007,
-        'subject_code' => 'PSYC2210',
-        'subject_name' => 'Introduction to Psychology',
-    ],
-    [
-        'subject_id' => 3008,
-        'subject_code' => 'CSCI1101',
-        'subject_name' => 'Introduction to Computer Science',
-    ],
-];
-
 ?>
 
-<div class="sidebar bg-light shadow-sm py-1 border z-3" id="sidebarMenu">
+<div class="sidebar bg-white shadow-sm py-1 border z-3" id="sidebarMenu">
     <div class="sidebar-controls">
         <div class="controls">
             <button class="btn btn-close" id="btnSideBarMenu2" onclick="toggleSidebar();"></button>
@@ -73,7 +29,7 @@ $fakedata_enrolled_subjects = [
                         <ul class="ul_no-design">
                             <?php foreach ($single_user['sublinks'] as $sublinks => $sublink): ?>
                                 <li>
-                                    <a href="<?= isset($sublink['link']) ? $sublink['link'] : '#' ?>"
+                                    <a href="<?= isset($sublink['link']) ? BASE_PATH_LINK . 'src/views/users/' . strtolower(str_replace(' ', '_', $_SESSION['role'])) . '/' . $sublink['link'] : '#' ?>"
                                         class="d-flex gap-3 py-3 pe-2 submenu-item <?= $CURRENT_PAGE == $sublinks ? 'active' : '' ?>" style="padding-left: 2rem;">
                                         <i class="bi <?= htmlspecialchars($sublink['icon']) ?>"></i>
                                         <span class="submenu-item-text">
@@ -85,20 +41,22 @@ $fakedata_enrolled_subjects = [
                             <hr class="p-0 m-0">
                             <?php
                             // load enrolled subjects.
-                            $RETRIEVED_ENROLLED_SUBJECTS = $fakedata_enrolled_subjects;
                             if ($single_user['title'] === 'Subjects'):
-                                foreach ($RETRIEVED_ENROLLED_SUBJECTS as $subject):
+                                if ($myEnrolledSubjects['success'] && isset($myEnrolledSubjects['data']) && is_array($myEnrolledSubjects['data'])) {
+                                    foreach ($myEnrolledSubjects["data"] as $subject):
+                                        $subjectInfo = $subjectController->getSubjectFromSubjectId($subject['subject_id']);
                             ?>
-                                    <li>
-                                        <a href="<?= "enrolled_subjects.php?subject_id=" . $subject['subject_id'] ?>"
-                                            class="d-flex gap-3 py-3 pe-2 submenu-item" style="padding-left: 2rem;">
-                                            <i class="bi bi-journal-text"></i>
-                                            <span class="submenu-item-text">
-                                                <?= htmlspecialchars($subject['subject_name']) ?>
-                                            </span>
-                                        </a>
-                                    </li>
+                                        <li>
+                                            <a href="<?= "subject_view.php?subject_section_id=" . $subject['subject_section_id'] ?>"
+                                                class="d-flex gap-3 py-3 pe-2 submenu-item" style="padding-left: 2rem;">
+                                                <i class="bi bi-journal-text"></i>
+                                                <span class="submenu-item-text">
+                                                    <?= htmlspecialchars($subjectInfo['data']['subject_name']) ?>
+                                                </span>
+                                            </a>
+                                        </li>
                             <?php endforeach;
+                                }
                             endif; ?>
 
 
@@ -107,7 +65,7 @@ $fakedata_enrolled_subjects = [
                 </li>
             <?php else: ?>
                 <li class="border border-top-0">
-                    <a href="<?= isset($single_user['link']) ? $single_user['link'] : '#' ?>"
+                    <a href="<?= isset($single_user['link']) ? BASE_PATH_LINK . 'src/views/users/' . strtolower(str_replace(' ', '_', $_SESSION['role'])) . '/' . $single_user['link'] : '#' ?>"
                         class="sidebar-item <?= $CURRENT_PAGE == $key ? 'active' : '' ?>">
                         <div class="sidebar-item-icon">
                             <i class="bi <?= htmlspecialchars($single_user['icon']) ?>" aria-hidden="true"></i>
@@ -126,7 +84,7 @@ $fakedata_enrolled_subjects = [
         <h6 class="px-3">Others</h6>
         <ul class="p-0 ul_no-design">
             <li class="border border-top-0">
-                <a href="#" class="sidebar-item <?= $CURRENT_PAGE == $key ? 'active' : '' ?>">
+                <a href="<?php echo BASE_PATH_LINK . 'src/views/users/viewprofile.php?viewProfile=' . $_SESSION['user_id'] ?>" class="sidebar-item <?= $CURRENT_PAGE == $key ? 'active' : '' ?>">
                     <div class="sidebar-item-icon">
                         <i class="bi bi-person" aria-hidden="true"></i>
                     </div>

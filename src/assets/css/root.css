@@ -1,4 +1,6 @@
 @import url(widths.css);
+@import url(fonts.css);
+@import url(select2-config.css);
 
 :root { 
     /* COLORS */
@@ -67,6 +69,8 @@
     --c-brand-primary-a60:      #639573;
     --c-brand-primary-a80:      #7ca689;
     --c-brand-primary-a100:     #96b7a0;
+
+    --c-brand-secondary-rgb-a0:       200, 177, 45;
     
     --c-brand-secondary-a0:       #c8b12d;
     --c-brand-secondary-a20:      #d0b949;
@@ -87,6 +91,9 @@
 
     /* GRADIENTS */
     --c-brand-primary-linear-gradient: linear-gradient(to bottom, var(--c-brand-primary-a60), var(--c-brand-primary-a0));
+
+    /* FONTS */
+    --bs-font-sans-serif: Roboto, system-ui, -apple-system, "Segoe UI", "Helvetica Neue", "Noto Sans", "Liberation Sans", Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
 }
 /* General thin scrollbar style for WebKit browsers (Chrome, Safari, Edge) */
 ::-webkit-scrollbar {
@@ -121,22 +128,76 @@ body[data-theme="dark"] {
     --surface-primary-color: var(--c-surface-dark-a40);
 }
 
+.text-critical {
+    color: orangered !important;
+}
 
 .transition-1 {
     transition: var(--c-transition-1);
 }
 
 .cbg-primary {
-    background-color: var(--c-brand-primary-a0);
+    background-color: var(--c-brand-primary-a0) !important;
 }
+.cbg-primary-a50 {
+    background-color: rgba(var(--c-brand-primary-a0), 0.5) !important;
+}
+
+.btn-primary {
+    --bs-btn-color: #fff;
+    --bs-btn-bg: var(--c-brand-secondary-a0);
+    --bs-btn-border-color: var(--c-brand-secondary-a0);
+    --bs-btn-hover-color: #fff;
+    --bs-btn-hover-bg: var(--c-brand-secondary-a20);
+    --bs-btn-hover-border-color: var(--c-brand-secondary-a40);
+    --bs-btn-focus-shadow-rgb: 49, 132, 253;
+    --bs-btn-active-color: #fff;
+    --bs-btn-active-bg: var(--c-brand-secondary-a0);
+    --bs-btn-active-border-color: var(--c-brand-secondary-a0);
+    --bs-btn-active-shadow: inset 0 3px 5px rgba(0, 0, 0, 0.125);
+    --bs-btn-disabled-color: #fff;
+    --bs-btn-disabled-bg: var(--c-brand-secondary-a0);
+    --bs-btn-disabled-border-color: var(--c-brand-secondary-a0);
+}
+
+.cbtn-secondary {
+    background-color: var(--c-brand-secondary-a0) !important;
+    color: white !important;
+}
+.cbtn-secondary:hover {
+    background-color: var(--c-brand-secondary-a40) !important;
+    color: white !important;
+}
+
 .c-border {
     border-color: var(--c-brand-primary-a0);
 }
 .ctxt-primary {
-    color: var(--c-brand-primary-a0);
+    color: var(--c-brand-primary-a0) !important;
+}
+.ctxt-secondary {
+    color: var(--c-brand-secondary-a0) !important;
 }
 .c-text-danger {
     color: var(--c-danger-a0);
+}
+
+.bg-brand-secondary {
+    background-color: rgba(var(--c-brand-secondary-rgb-a0), var(--bs-bg-opacity)) !important;
+}
+
+.table-brand-secondary {
+    --bs-table-color: #fff;
+    --bs-table-bg: var(--c-brand-primary-a60);
+    --bs-table-border-color: var(--c-brand-primary-a60);
+    --bs-table-striped-bg: #2c3034;
+    --bs-table-striped-color: #fff;
+    --bs-table-active-bg: #373b3e;
+    --bs-table-active-color: #fff;
+    --bs-table-hover-bg: #323539;
+    --bs-table-hover-color: #fff;
+    color: var(--bs-table-color);
+    border-color: var(--bs-table-border-color);
 }
 
 /* CUSTOM BOOTSTRAP */
@@ -244,4 +305,58 @@ a {
 
 .no-scroll {
     overflow: hidden;
+}
+
+/* BADGES */
+/* Styling for log type badges */
+.badge {
+    font-size: 0.9rem;
+    padding: 5px 10px;
+    border-radius: 0.5rem;
+    color: #fff;
+}
+
+.badge-primary {
+    background-color: #007bff;
+}
+
+.badge-success {
+    background-color: #28a745;
+}
+
+.badge-secondary {
+    background-color: #6c757d;
+}
+
+.badge-warning {
+    background-color: #ffc107;
+    color: #212529;
+}
+
+.badge-danger {
+    background-color: #dc3545;
+}
+
+/* Styling for user_id hyperlink */
+.user-link {
+    color: #007bff;
+    text-decoration: underline;
+    cursor: pointer;
+}
+
+.user-link:hover {
+    text-decoration: none;
+    color: #0056b3;
+}
+
+.select2-selection__rendered {
+    display: flex !important;
+    flex-wrap: wrap !important;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: clip;
+}
+
+.select2-selection__choice {
+    background-color: var(--c-brand-secondary-a20) !important;
 }

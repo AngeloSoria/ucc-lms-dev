@@ -26,8 +26,9 @@ try {
                     aria-label="Slide <?= $index + 1 ?>"></button>
             <?php endforeach; ?>
         <?php else: ?>
-            <button type="button" data-bs-target="#dashboardCarousel" data-bs-slide-to="0" class="active"
-                aria-current="true" aria-label="Slide 1"></button>
+            <button type="button" data-bs-target="#dashboardCarousel" data-bs-slide-to="1" class="active" aria-current="true" aria-label="Slide 1"></button>
+            <button type="button" data-bs-target="#dashboardCarousel" data-bs-slide-to="2" class="active" aria-current="true" aria-label="Slide 2"></button>
+            <button type="button" data-bs-target="#dashboardCarousel" data-bs-slide-to="1" class="active" aria-current="true" aria-label="Slide 3"></button>
         <?php endif; ?>
     </div>
     <!-- images -->
@@ -41,7 +42,13 @@ try {
             <?php endforeach; ?>
         <?php else: ?>
             <div class="carousel-item active">
-                <img src="https://via.placeholder.com/1000x500" class="d-block w-100" alt="No images available" />
+                <img src="<?php echo UPLOAD_PATH['System'] . "/img/placeholder-1.jpg" ?>" class="d-block" alt="No images available" />
+            </div>
+            <div class="carousel-item">
+                <img src="<?php echo UPLOAD_PATH['System'] . "/img/placeholder-2.jpg" ?>" class="d-block" alt="No images available" />
+            </div>
+            <div class="carousel-item">
+                <img src="<?php echo UPLOAD_PATH['System'] . "/img/placeholder-3.jpg" ?>" class="d-block" alt="No images available" />
             </div>
         <?php endif; ?>
     </div>

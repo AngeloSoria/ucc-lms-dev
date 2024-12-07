@@ -2,6 +2,9 @@
 
 function makeToast($data)
 {
+    // Sanitize
+    $data['message'] = htmlspecialchars($data['message']);
+
     // Store each toast in a session array
     $_SESSION['_toasts'][] = $data;
 }
@@ -16,8 +19,7 @@ function outputToasts()
         // Output a single <script> tag with all the toasts
         echo <<<HTML
         <script>
-            const toastData = $toastData;
-            toastData.forEach(({type, message, delay}) => {
+            $toastData.forEach(({type, message, delay}) => {
                 makeToast(type, message, delay);
             });
         </script>

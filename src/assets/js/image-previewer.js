@@ -11,55 +11,61 @@
  * The image data is then used to create an img element and append it to the preview container.
  * Finally, the 'no-scroll' class is added to the body to prevent scrolling while the preview panel is open.
  */
-function openPreview(imagePath) {
-  console.log("test");
+let openPreview
+$(document).ready(function () {
+  openPreview = function (imagePath) {
+    const footer = document.querySelector("footer");
+    // Check for existing preview panel.
+    if (document.querySelector(".image-preview-panel")) {
+      return;
+    }
 
-  const footer = document.querySelector("footer");
-  // Check for existing preview panel.
-  if (document.querySelector(".image-preview-panel")) {
-    return;
+    let previewPanel = document.createElement("div");
+    previewPanel.classList.add("image-preview-panel");
+    previewPanel.style.zIndex = "9999";
+
+    let controls = document.createElement("div");
+    controls.classList.add("controls");
+    previewPanel.appendChild(controls);
+
+    let btnClose = document.createElement("button");
+    btnClose.classList.add("btn", "btn-transparent");
+    btnClose.innerHTML = '<i class="bi bi-x fs-1 text-white"></i>';
+    btnClose.addEventListener("click", closePreview);
+    controls.appendChild(btnClose);
+
+    let previewContainer = document.createElement("div");
+    previewContainer.classList.add("preview-container");
+    previewPanel.appendChild(previewContainer);
+
+    let imgPreview = document.createElement("img");
+    imgPreview.src = imagePath;
+    previewContainer.appendChild(imgPreview);
+
+    console.log(footer);
+
+    if (!footer) {
+      document.body.appendChild(previewPanel);
+    } else {
+      document.body.appendChild(previewPanel);
+      // document.body.insertBefore(previewPanel, document.body);
+    }
+    document.body.classList.add("no-scroll");
   }
 
-  let previewPanel = document.createElement("div");
-  previewPanel.classList.add("image-preview-panel", "z-10");
-
-  let controls = document.createElement("div");
-  controls.classList.add("controls");
-  previewPanel.appendChild(controls);
-
-  let btnClose = document.createElement("button");
-  btnClose.classList.add("btn", "btn-transparent");
-  btnClose.innerHTML = '<i class="bi bi-x fs-1 text-white"></i>';
-  btnClose.addEventListener("click", closePreview);
-  controls.appendChild(btnClose);
-
-  let previewContainer = document.createElement("div");
-  previewContainer.classList.add("preview-container");
-  previewPanel.appendChild(previewContainer);
-
-  let imgPreview = document.createElement("img");
-  imgPreview.src = imagePath;
-  previewContainer.appendChild(imgPreview);
-
-  if (!footer) {
-    document.body.appendChild(previewPanel);
-  } else {
-    document.body.insertBefore(previewPanel, footer);
+  /**
+   * Closes the image preview panel and removes the 'no-scroll' class from the body.
+   *
+   * @returns {void}
+   *
+   * This function is responsible for removing the image preview panel from the DOM and
+   * restoring the scrolling functionality of the page. It does this by selecting the
+   * '.image-preview-panel' element, removing it from the body, and then removing the
+   * 'no-scroll' class from the body.
+   */
+  function closePreview() {
+    document.querySelector(".image-preview-panel").remove();
+    document.body.classList.remove("no-scroll");
   }
-  document.body.classList.add("no-scroll");
-}
 
-/**
- * Closes the image preview panel and removes the 'no-scroll' class from the body.
- *
- * @returns {void}
- *
- * This function is responsible for removing the image preview panel from the DOM and
- * restoring the scrolling functionality of the page. It does this by selecting the
- * '.image-preview-panel' element, removing it from the body, and then removing the
- * 'no-scroll' class from the body.
- */
-function closePreview() {
-  document.querySelector(".image-preview-panel").remove();
-  document.body.classList.remove("no-scroll");
-}
+});

@@ -7,30 +7,7 @@
             </button>
 
             <!-- Logo on the left -->
-            <a class="navbar-brand" href="<?php
-                                            // Check user role and set the appropriate dashboard link
-                                            if (isset($_SESSION['role'])) {
-                                                switch ($_SESSION['role']) {
-                                                    case 'Admin':
-                                                        echo 'dashboard_admin.php'; // Change to your admin dashboard path
-                                                        break;
-                                                    case 'Teacher':
-                                                        echo 'dashboard_teacher.php'; // Change to your teacher dashboard path
-                                                        break;
-                                                    case 'Level Coordinator':
-                                                        echo 'dashboard_level_coordinator.php'; // Change to your teacher dashboard path
-                                                        break;
-                                                    case 'Student':
-                                                        echo 'dashboard_student.php'; // Change to your student dashboard path
-                                                        break;
-                                                    default:
-                                                        header('Location: ' . BASE_PATH_LINK); // Fallback to home if role is unknown
-                                                        break;
-                                                }
-                                            } else {
-                                                header('Location: ' . BASE_PATH_LINK); // Redirect to home if no role is set
-                                            }
-                                            ?>">
+            <a class="navbar-brand" href="<?php echo BASE_PATH_LINK ?>">
                 <img src="<?php echo asset('img/ucc-logo.png'); ?>" alt="UCC Logo" class="d-inline-block align-text-top" />
             </a>
         </section>
@@ -64,8 +41,8 @@
                         aria-expanded="false">
                         <!-- User Profile Picture -->
                         <?php if (isset($_SESSION['profile_pic'])): ?>
-                            <img src="<?php echo $_SESSION['profile_pic']; ?>" alt="Profile Picture" class="rounded-circle"
-                                width="30" height="30">
+                            <img src="<?php echo $_SESSION['profile_pic']; ?>" alt="Profile Picture" class="rounded-circle object-fit-fill"
+                                width="28" height="30">
                         <?php else: ?>
                             <i class="bi bi-person-circle fs-5"></i>
                         <?php endif; ?>
@@ -76,11 +53,11 @@
                         ?>
                     </a>
                     <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
-                        <li><a class="dropdown-item" href="#">My Profile</a></li>
+                        <li><a class="dropdown-item" href="<?php echo BASE_PATH_LINK . 'src/views/users/viewprofile.php?viewProfile=' . $_SESSION['user_id'] ?>">My Profile</a></li>
                         <li>
                             <hr class="dropdown-divider">
                         </li>
-                        <li><a class="dropdown-item" href="../../../controllers/LogoutController.php">Logout</a></li>
+                        <li><a class="dropdown-item" href="<?php echo BASE_PATH_LINK . 'src/controllers/LogoutController.php' ?>">Logout</a></li>
                     </ul>
                 </div>
             </div>
