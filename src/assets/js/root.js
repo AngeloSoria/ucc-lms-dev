@@ -62,6 +62,18 @@ $(".modal").on("hide.bs.modal", function (e) {
   $(this).find('input[type="radio"]:not([disabled]):not([readonly]):not(:hidden), input[type="checkbox"]:not([disabled]):not([readonly]):not(:hidden)').prop("checked", false);
 });
 
+$(document).on('shown.bs.modal', function (e) {
+  const modal = $(e.target);
+
+  // Detect when a TinyMCE popup is open and disable focus trapping
+  $(document).on('focusin', function (event) {
+    if ($(event.target).closest('.tox').length) {
+      // Stop Bootstrap's focusin from trapping focus in the modal
+      event.stopPropagation();
+    }
+  });
+});
+
 
 
 function runFunctionByStringName(functionName) {

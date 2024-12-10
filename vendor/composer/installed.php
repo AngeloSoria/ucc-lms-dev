@@ -1,9 +1,9 @@
 <?php return array(
     'root' => array(
         'name' => '__root__',
-        'pretty_version' => 'dev-master',
-        'version' => 'dev-master',
-        'reference' => '46d00e5befa5109b0e3738f7435476a4cb3c24d3',
+        'pretty_version' => 'dev-main',
+        'version' => 'dev-main',
+        'reference' => '2ac354d80052087b1fccb780312534e15ef0d230',
         'type' => 'library',
         'install_path' => __DIR__ . '/../../',
         'aliases' => array(),
@@ -11,9 +11,9 @@
     ),
     'versions' => array(
         '__root__' => array(
-            'pretty_version' => 'dev-master',
-            'version' => 'dev-master',
-            'reference' => '46d00e5befa5109b0e3738f7435476a4cb3c24d3',
+            'pretty_version' => 'dev-main',
+            'version' => 'dev-main',
+            'reference' => '2ac354d80052087b1fccb780312534e15ef0d230',
             'type' => 'library',
             'install_path' => __DIR__ . '/../../',
             'aliases' => array(),
@@ -133,6 +133,15 @@
             'reference' => '60328e362d4c2c802a54fcbf04f9d3fb892b4cf8',
             'type' => 'library',
             'install_path' => __DIR__ . '/../symfony/polyfill-php80',
+            'aliases' => array(),
+            'dev_requirement' => false,
+        ),
+        'tinymce/tinymce' => array(
+            'pretty_version' => '7.5.1',
+            'version' => '7.5.1.0',
+            'reference' => '3ba28fd6a4037849dbdaf7f6341493b23db9e13c',
+            'type' => 'component',
+            'install_path' => __DIR__ . '/../tinymce/tinymce',
             'aliases' => array(),
             'dev_requirement' => false,
         ),

@@ -39,6 +39,9 @@ if (isset($_SESSION['user_id'])) {
     <script defer src="<?php echo asset('js/DynamicFormEditData.js') ?>"></script>
     <script defer src="<?php echo asset('js/image-previewer.js') ?>"></script>
 
+    <!-- PopperJS -->
+    <script defer src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.3/dist/umd/popper.min.js"></script>
+
     <!-- Data Table JS -->
     <script defer src="https://cdn.datatables.net/1.13.5/js/jquery.dataTables.min.js"></script>
     <script defer src="https://cdn.datatables.net/responsive/2.1.0/js/dataTables.responsive.min.js"></script>
@@ -48,10 +51,11 @@ if (isset($_SESSION['user_id'])) {
     <script defer src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 
     <!-- TinyMCE -->
-    <script src="https://cdn.tiny.cloud/1/tftwj8ejo21qbbt7jzz53ityv0j42ooyr713pf6xrqsshstg/tinymce/6/tinymce.min.js" referrerpolicy="origin"></script>
-
+    <script src="https://cdn.tiny.cloud/1/tftwj8ejo21qbbt7jzz53ityv0j42ooyr713pf6xrqsshstg/tinymce/7/tinymce.min.js" referrerpolicy="origin"></script>
     <script defer src="<?php echo asset("js/tinymce.js") ?>"></script>
 
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="<?php echo asset('js/toast.js') ?>"></script>
 
     <title>LMS | Unida Christian College - Cavite</title>
 </head>

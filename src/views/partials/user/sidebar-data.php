@@ -117,18 +117,18 @@ $sidebar_content = [
                 ],
             ],
         ],
-        'misc' => [
-            'title' => 'Miscellaneous',
-            'icon' => 'bi-bar-chart-steps',
-            'isGroup' => true,
-            'sublinks' => [
-                'content' => [
-                    'title' => 'My Uploads',
-                    'icon' => 'bi-images',
-                    'link' => 'content_admin.php',
-                ],
-            ],
-        ],
+        // 'misc' => [
+        //     'title' => 'Miscellaneous',
+        //     'icon' => 'bi-bar-chart-steps',
+        //     'isGroup' => true,
+        //     'sublinks' => [
+        //         'content' => [
+        //             'title' => 'My Uploads',
+        //             'icon' => 'bi-images',
+        //             'link' => 'content_admin.php',
+        //         ],
+        //     ],
+        // ],
     ],
     'Teacher' => [
         'dashboard' => [
@@ -153,17 +153,17 @@ $sidebar_content = [
                 ],
             ],
         ],
-        'misc' => [
-            'title' => 'Miscellaneous',
-            'icon' => 'bi-bar-chart-steps',
-            'isGroup' => true,
-            'sublinks' => [
-                'content' => [
-                    'title' => 'My Uploads',
-                    'icon' => 'bi-images',
-                    'link' => 'content_admin.php',
-                ],
-            ],
-        ],
+        // 'misc' => [
+        //     'title' => 'Miscellaneous',
+        //     'icon' => 'bi-bar-chart-steps',
+        //     'isGroup' => true,
+        //     'sublinks' => [
+        //         'content' => [
+        //             'title' => 'My Uploads',
+        //             'icon' => 'bi-images',
+        //             'link' => 'content_admin.php',
+        //         ],
+        //     ],
+        // ],
     ],
 ];

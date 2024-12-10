@@ -1,127 +1,46 @@
 $(document).ready(function () {
-    $("#confirmDeleteBtn").on('click', function () {
-        $("#inputAction").val("deleteSubjectModule");
-        $("#formModuleInformation").submit();
-    });
-});
+    // Constants
+    const $contentType = $('#contentType');
+    const $moduleContentForm = $('#moduleContentForm');
 
-// For Module Content's controls.
-$(document).ready(function () {
-    // $("#toggleFileInput").on("click", function () {
-    //     const isChecked = $("#toggleFileInput").prop("checked");
-
-    //     // Toggle visibility and disabled state
-    //     if (isChecked) {
-    //         $("#fileInput").removeClass("d-none").prop("disabled", false);
-    //     } else {
-    //         $("#fileInput").addClass("d-none").prop("disabled", true);
-    //     }
-    // });
-
-    $(".contentButton_ToggleVisibity").on("click", function (e) {
-        $.ajax({
-            url: "",
-            type: "POST",
-            data: {
-                action: "updateModuleContentVisibility",
-                content_id: $(this).attr("id"),
-            }, // Data to send to the server
-            success: function (response) {
-                // console.log(response); // Handle success
-                location.reload();
-            },
-            error: function (xhr, status, error) {
-                console.error(error); // Handle error
-            }
-        });
-    });
-    $(".contentButton_Delete").on("click", function () {
-        const this_content_id = $(this).attr("id");
-        $("#confirmDeleteContentBtn").on("click", function () {
-            $.ajax({
-                url: "",
-                type: "POST",
-                data: {
-                    action: "deleteModuleContent",
-                    content_id: this_content_id,
-                }, // Data to send to the server
-                success: function (response) {
-                    // console.log(response); // Handle success
-                    location.reload();
-                },
-                error: function (xhr, status, error) {
-                    console.error(error); // Handle error
-                }
-            });
-        });
-    });
-});
-
-
-$(document).ready(function () {
-    // Function to toggle fields based on Content Type selection
+    // Utility Functions
     function toggleFields() {
-        const selectedType = $('#contentType').val();
+        const selectedType = $contentType.val();
+        const config = {
+            information: {
+                show: ['#descriptionContainer', '#fileInputContainer', '#visibilityContainer'],
+                hide: ['#dateContainer', '#maxAttemptsContainer', '#assignmentTypeContainer', '#allowLateContainer', '#maxScoreContainer'],
+                fileRequired: false,
+            },
+            handout: {
+                show: ['#descriptionContainer', '#visibilityContainer', '#fileInputContainer'],
+                hide: ['#dateContainer', '#maxAttemptsContainer', '#assignmentTypeContainer', '#allowLateContainer', '#maxScoreContainer'],
+                fileRequired: true,
+            },
+            assignment: {
+                show: ['#descriptionContainer', '#dateContainer', '#maxAttemptsContainer', '#assignmentTypeContainer', '#allowLateContainer', '#visibilityContainer', '#maxScoreContainer', '#fileInputContainer'],
+                hide: [],
+                fileRequired: false,
+            },
+        }[selectedType] || {
+            show: ['#dateContainer', '#visibilityContainer', '#maxAttemptsContainer', '#allowLateContainer'],
+            hide: ['#descriptionContainer', '#fileInputContainer', '#assignmentTypeContainer', '#maxScoreContainer'],
+            fileRequired: false,
+        };
 
-        // $("#fileInput").addClass("d-none").prop("disabled", true);
-
-        // Show/hide fields and set required attributes
-        if (selectedType === 'information') {
-            $('#descriptionContainer').removeClass('d-none').find('textarea').attr('required', false);
-            $('#fileInputContainer').removeClass('d-none').find('input[type="file"]').attr('required', true);
-            $('#visibilityContainer').removeClass('d-none');
-
-            $('#dateContainer').addClass('d-none');
-            $('#maxAttemptsContainer').addClass('d-none');
-            $('#assignmentTypeContainer').addClass('d-none');
-            $('#allowLateContainer').addClass('d-none');
-            $('#maxScoreContainer').addClass('d-none'); // Hide for handout
-
-        } else if (selectedType === 'handout') {
-            $('#descriptionContainer').removeClass('d-none').find('textarea').attr('required', false);
-            $('#fileInputContainer').removeClass('d-none').find('input[type="file"]').attr('required', true);
-            $('#visibilityContainer').removeClass('d-none');
-            $('#dateContainer').addClass('d-none');
-            $('#maxAttemptsContainer').addClass('d-none');
-            $('#assignmentTypeContainer').addClass('d-none');
-            $('#allowLateContainer').addClass('d-none');
-            $('#maxScoreContainer').addClass('d-none'); // Hide for handout
-        } else if (selectedType === 'assignment') {
-            $('#descriptionContainer').removeClass('d-none').find('textarea').attr('required', false);
-            $('#dateContainer').removeClass('d-none').find('input').attr('required', true);
-            $('#maxAttemptsContainer').removeClass('d-none').find('input[type="number"]').attr('required', true);
-            $('#assignmentTypeContainer').removeClass('d-none').find('select').attr('required', true);
-            $('#allowLateContainer').removeClass('d-none');
-            $('#visibilityContainer').removeClass('d-none');
-            $('#maxScoreContainer').removeClass('d-none').find('input').attr('required', true); // Show for assignment
-
-            $('#fileInputContainer').removeClass('d-none').find('input[type="file"]').attr('required', true);
-
-            // $('#fileInputContainer').addClass('d-none');
-        } else {
-            $('#descriptionContainer').addClass('d-none').find('textarea').attr('required', false);
-            $('#dateContainer').removeClass('d-none').find('input').attr('required', true);
-            $('#visibilityContainer').removeClass('d-none');
-            $('#maxScoreContainer').addClass('d-none'); // Hide for other types
-            $('#allowLateContainer').removeClass('d-none');
-            $('#maxAttemptsContainer').removeClass('d-none');
-
-            $('#fileInputContainer').addClass('d-none').find('input[type="file"]').attr('required', false);
-            $('#assignmentTypeContainer').addClass('d-none');
-        }
+        $(config.show.join(',')).removeClass('d-none');
+        $(config.hide.join(',')).addClass('d-none');
+        $('#fileInputContainer input[type="file"]').attr('required', config.fileRequired);
     }
 
-    // Function to validate Start Date and Due Date
     function validateDates() {
-        if ($('#startDate').prop('disabled') || $('#dueDate').prop('disabled')) {
-            return true;
-        }
+        if ($('#startDate').prop('disabled') || $('#dueDate').prop('disabled')) return true;
         const now = new Date();
         const startDate = new Date($('#startDate').val());
         const dueDate = new Date($('#dueDate').val());
         let isValid = true;
 
-        // Start Date Validation
+        // Validate Start Date
         if (startDate < now) {
             $('#startDate').addClass('is-invalid').siblings('.invalid-feedback').text('Start Date must be today or later.');
             isValid = false;
@@ -129,7 +48,7 @@ $(document).ready(function () {
             $('#startDate').removeClass('is-invalid');
         }
 
-        // Due Date Validation
+        // Validate Due Date
         if (dueDate <= startDate) {
             $('#dueDate').addClass('is-invalid').siblings('.invalid-feedback').text('Due Date must be after Start Date and time.');
             isValid = false;
@@ -140,53 +59,60 @@ $(document).ready(function () {
         return isValid;
     }
 
-    // Function to validate required fields
     function validateRequiredFields() {
         let isValid = true;
-
-        // Validate inputs, selects, and textareas with the 'required' attribute
-        $('#moduleContentForm input[required], #moduleContentForm select[required], #moduleContentForm textarea[required]').each(function () {
-
-            // Skip disabled or hidden fields (e.g., file input)
-            if ($(this).prop('disabled') || $(this).closest('div').hasClass('d-none')) {
-                return; // Skip this field
-            }
-
-            // If it's a checkbox, validate its checked state
-            if ($(this).is(':checkbox') && !$(this).prop('checked')) {
-                $(this).addClass('is-invalid').siblings('.invalid-feedback').text('This field is required.');
-                isValid = false;
-            }
-            // For other fields, check if they have a value
-            else if (!$(this).val()) {
+        $moduleContentForm.find('input[required], select[required], textarea[required]').each(function () {
+            if ($(this).prop('disabled') || $(this).closest('div').hasClass('d-none')) return;
+            if ($(this).is(':checkbox') && !$(this).prop('checked') || !$(this).val()) {
                 $(this).addClass('is-invalid').siblings('.invalid-feedback').text('This field is required.');
                 isValid = false;
             } else {
                 $(this).removeClass('is-invalid');
             }
         });
-
         return isValid;
     }
 
+    // Event Listeners
+    $contentType.on('change', toggleFields);
 
-
-
-    // Bind to Content Type change event
-    $('#contentType').on('change', toggleFields);
-
-    // Validate dates and required fields before form submission
-    $('#moduleContentForm').on('submit', function (e) {
-        const isDatesValid = validateDates();
-        const areFieldsValid = validateRequiredFields();
-
-        if (!isDatesValid || !areFieldsValid) {
-            e.preventDefault(); // Prevent form submission if validation fails
-        }
+    $moduleContentForm.on('submit', function (e) {
+        if (!validateDates() || !validateRequiredFields()) e.preventDefault();
     });
 
-    // Trigger the change event on modal open to ensure correct state
     $('#addModuleContentModal').on('show.bs.modal', function () {
-        $('#contentType').trigger('change');
+        $contentType.trigger('change');
+    });
+
+    // Ajax Handlers
+    $("#confirmDeleteBtn").on('click', function () {
+        $("#inputAction").val("deleteSubjectModule");
+        $("#formModuleInformation").submit();
+    });
+
+    $(".contentButton_ToggleVisibity").on("click", function () {
+        const contentId = $(this).attr("id");
+        $.post("", { action: "updateModuleContentVisibility", content_id: contentId }, function () {
+            location.reload();
+        }).fail(function (xhr, status, error) {
+            console.error(error);
+        });
+    });
+
+    $(".contentButton_Delete").on("click", function () {
+        const contentId = $(this).attr("id");
+        $("#confirmDeleteContentBtn").off('click').on("click", function () {
+            $.post("", { action: "deleteModuleContent", content_id: contentId }, function () {
+                location.reload();
+            }).fail(function (xhr, status, error) {
+                console.error(error);
+            });
+        });
+    });
+
+    $("#toggleFileInput").on("click", function () {
+        const $fileInput = $("#fileInput");
+        const isChecked = $(this).prop("checked");
+        $fileInput.toggleClass("d-none", !isChecked).prop("disabled", !isChecked);
     });
 });

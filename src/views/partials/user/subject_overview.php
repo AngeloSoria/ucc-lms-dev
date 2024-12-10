@@ -7,7 +7,7 @@
                 </h5>
             </div>
             <div class="col-lg-4 d-flex justify-content-end align-items-center">
-                <?php if (userHasPerms(["Teacher", "Admin"]) && !isset($_GET['module_id'])): ?>
+                <?php if (userHasPerms(["Teacher", "Admin"]) && !isset($_GET['module_id']) && !isset($_GET['assignments'])): ?>
                     <button class="btn btn-success shadow-sm d-flex gap-2" data-bs-toggle="modal"
                         data-bs-target="#modal_addModule">
                         <i class="bi bi-plus-circle"></i>
@@ -17,9 +17,16 @@
             </div>
         </div>
         <hr>
-        <?php if (!isset($_GET['module_id'])): ?>
+        <?php if (isset($_GET['module_id'], $_GET['content_id'], $_GET['students_submission'])): ?>
             <section id="modules_container" class="d-flex flex-column gap-3 mb-3">
-
+                <?php require_once PARTIALS . 'user/partial_subject-overview-moduleContent-studentsubmission.php' ?>
+            </section>
+        <?php elseif (isset($_GET['assignments'])): ?>
+            <section id="modules_container" class="d-flex flex-column gap-3 mb-3">
+                <?php require_once PARTIALS . 'user/partial_subject-overview_assignments.php' ?>
+            </section>
+        <?php elseif (!isset($_GET['module_id'])): ?>
+            <section id="modules_container" class="d-flex flex-column gap-3 mb-3">
                 <?php
                 // Load All Modules from this Subject
                 $getAllModules = $moduleContentController->getModules($_GET['subject_section_id']);
@@ -135,98 +142,8 @@
             </section>
         <?php elseif (isset($_GET['module_id'], $_GET['content_id'])): ?>
             <?php
-            $module_contentInfo = $moduleContentController->getContentById($_GET['content_id']);
-            if (!$module_contentInfo['success'] || empty($module_contentInfo['data'])) {
-                $_SESSION['_ResultMessage'] = ["success" => false, "message" => "No content id found inside the module."];
-                echo '<script>window.location = \'' . BASE_PATH_LINK . '\'</script>';
-                exit;
-            }
+            require_once PARTIALS . 'user/partial_subject-overview_module&content.php';
             ?>
-            <section id="content_view" class="p-2 mb-3">
-                <div>
-                    <?php
-                    $rolePath = ["subject_section_id" => $_GET['subject_section_id']];
-                    if (userHasPerms(['Teacher', 'Admin'])) {
-                        $rolePath = ["subject_section_id" => $_GET['subject_section_id'], "module_id" => $_GET['module_id']];
-                    }
-                    ?>
-                    <a href="<?php echo updateUrlParams($rolePath) ?>">
-                        <button class="btn btn-sm btn-transparent text-success">
-                            <i class="bi bi-arrow-bar-left"></i>
-                            Go Back
-                        </button>
-                    </a>
-                </div>
-                <div class="fw-semibold fs-5 text-center mb-3"><?php echo $getModuleByModuleId['data'][0]['title'] ?></div>
-
-                <div class="row">
-                    <div class="row col-md-12">
-                        <p class="fs-5">
-                            <?php echo sanitizeInput($module_contentInfo['data'][0]['content_title']) ?>
-                        </p>
-                    </div>
-
-                    <div class="col-md-12 border p-3 rounded">
-                        <p class="fw-semibold">Description</p>
-                        <hr>
-                        <div>
-                            <?php echo $module_contentInfo['data'][0]['description'] ?>
-                        </div>
-                    </div>
-                    <div class="col-md-12 border mt-2 p-3 rounded">
-                        <p class="fw-semibold">Files</p>
-                        <hr>
-                        <section class="bg-light">
-
-                            <div class="row justify-content-start">
-                                <?php
-                                $getAllContentFilesByContentId = $moduleContentController->getContentFiles($_GET['content_id']);
-                                if (!$getAllContentFilesByContentId['success']) {
-                                    $_SESSION['_ResultMessage'] = $getAllContentFilesByContentId;
-                                    // echo '<script>window.location = \'' . BASE_PATH_LINK . '\'</script>';
-                                    exit;
-                                }
-                                foreach ($getAllContentFilesByContentId['data'] as $contentFile):
-                                    // Onsite preview files.
-                                    $previewFileMimeTypes = ["image/jpeg", "image/png", "image/gif", "audio/mpeg", "audio/wav", "video/mp4"];
-                                ?>
-                                    <!-- video preview -->
-                                    <?php if ($contentFile['mime_type'] == 'video/mp4'):
-                                        $base64Video = "data:" . $contentFile['mime_type'] . ";base64," . base64_encode($contentFile['file_data']);
-                                    ?>
-                                        <div class="col-md-4 mb-4">
-                                            <div class="card">
-                                                <video class="card-img-top" controls>
-                                                    <source src="<?php echo $base64Video ?>" type="<?php echo $contentFile['mime_type'] ?>">
-                                                    Your browser does not support the video tag.
-                                                </video>
-                                                <div class="card-body">
-                                                    <h5 class="card-title"><?php echo sanitizeInput($contentFile['file_name']) ?></h5>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    <?php elseif (in_array($contentFile['mime_type'], ["image/jpeg", "image/png", "image/gif", "audio/mpeg"])): ?>
-                                        <div class="col-sm-6 col-md-4 col-lg-3 mb-4">
-                                            <?php
-                                            $base64Image = "data:" . $contentFile['mime_type'] . ";base64," . base64_encode($contentFile['file_data']);
-                                            ?>
-                                            <div class="card">
-                                                <img src="data:<?php echo $base64Image ?>" class="card-img-top" alt="<?php echo sanitizeInput($contentFile['file_name']) ?>">
-                                                <div class="card-body">
-                                                    <h5 class="card-title"><?php echo sanitizeInput($contentFile['file_name']) ?></h5>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    <?php else: ?>
-                                    <?php endif; ?>
-                                <?php endforeach; ?>
-                            </div>
-
-                        </section>
-                    </div>
-                </div>
-
-            </section>
         <?php else: ?>
             <?php
             if (!userHasPerms(['Teacher', 'Admin'])) {

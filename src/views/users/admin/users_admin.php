@@ -75,7 +75,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
                 // Password update check
                 if (isset($_POST['password'])) {
-                    $userData['password']  = $_POST['password'];
+                    $userData['password'] = $_POST['password'];
                 }
 
                 $_SESSION["_ResultMessage"] = $userController->updateUserProfile($userData['user_id'], $userData);
@@ -86,6 +86,18 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 $_SESSION["_ResultMessage"] = $userController->deleteUser($_POST['user_id']);
                 header("Location: " . clearUrlParams());
                 exit();
+            case 'importUser':
+                if (isset($_FILES['userFile']['tmp_name'])) {
+                    $filePath = $_FILES['userFile']['tmp_name'];
+                    $result = $userController->uploadUsersFromExcel($filePath);
+
+                    // Log the result or display a success/failure message
+                    $_SESSION["_ResultMessage"] = $result;
+                    msgLog('result message', $_SESSION["_ResultMessage"][0]['message']);
+                    // Redirect to prevent form resubmission
+                    header("Location: " . $_SERVER['REQUEST_URI']);
+                    exit();
+                }
         }
     }
 }
@@ -125,27 +137,65 @@ if (isset($_GET['viewRole']) && isset($_GET['user_id'])) {
                         <div class="container-fluid bg-white rounded p-3 shadow-sm border">
                             <!-- Headers -->
                             <div class="mb-3 row align-items-start">
-                                <div class="col-md-4 d-flex gap-3">
+                                <div class="col-4 d-flex gap-3">
                                     <h5 class="ctxt-primary">Users</h5>
                                 </div>
-                                <div class="col-md-8 d-flex justify-content-end gap-2">
+                                <div class="col-8 d-flex justify-content-end gap-2">
                                     <!-- Tools -->
 
                                     <!-- Add New Button -->
                                     <button
-                                        class="btn btn-success btn-lg rounded fs-6 px-3 d-flex gap-3 align-items-center"
+                                        class="btn btn-primary btn-lg rounded fs-6 px-3 c-primary d-flex gap-3 align-items-center"
                                         data-bs-toggle="modal" data-bs-target="#userFormModal" apply_section_modal>
-                                        <i class="bi bi-plus-circle"></i>
-                                        Add User
+                                        <i class="bi bi-plus-circle"></i> Add User
                                     </button>
 
-                                    <!-- Bulk Upload -->
+                                    <!-- Import Button -->
                                     <button
-                                        class="btn btn-outline-success btn-lg rounded fs-6 px-3 d-flex gap-3 align-items-center"
-                                        data-bs-toggle="modal" data-bs-target="#userFormModal" apply_section_modal>
-                                        <i class="bi bi-upload"></i>
-                                        Import
+                                        class="btn btn-secondary btn-lg rounded fs-6 px-3 c-primary d-flex gap-3 align-items-center"
+                                        data-bs-toggle="modal" data-bs-target="#importModal">
+                                        <i class="bi bi-upload"></i> Import
                                     </button>
+                                    <div class="modal fade" id="importModal" tabindex="-1"
+                                        aria-labelledby="importModalLabel" aria-hidden="true">
+                                        <div class="modal-dialog">
+                                            <div class="modal-content">
+                                                <form method="POST" enctype="multipart/form-data" action="">
+                                                    <!-- Modal Header -->
+                                                    <input type="hidden" name="action" value="importUser">
+
+                                                    <div class="modal-header">
+                                                        <h5 class="modal-title" id="importModalLabel">Import Data</h5>
+                                                        <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                                            aria-label="Close"></button>
+                                                    </div>
+
+                                                    <!-- Modal Body -->
+                                                    <div class="modal-body">
+                                                        <input type="file" class="form-control" id="importFile"
+                                                            name="userFile" required />
+                                                        <small class="text-muted">Upload a CSV or Excel file to import
+                                                            users.</small>
+                                                    </div>
+
+                                                    <!-- Modal Footer -->
+                                                    <div class="modal-footer">
+                                                        <button type="button" class="btn btn-secondary"
+                                                            data-bs-dismiss="modal">Close</button>
+                                                        <button type="submit" class="btn btn-primary">Import</button>
+                                                    </div>
+                                                </form>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- <button
+                                        class="btn btn-success btn-lg rounded fs-6 px-3 c-primary d-flex gap-3 align-items-center"
+                                        onclick="exportData()">
+                                        <i class="bi bi-download"></i> Export
+                                    </button> -->
+
+
 
                                     <!-- Preview Type -->
                                     <div class="btn-group" id="previewTypeContainer">
@@ -228,7 +278,8 @@ if (isset($_GET['viewRole']) && isset($_GET['user_id'])) {
                                 if ($getAllUsers['success'] == true) { ?>
                                     <!-- =============================================== -->
                                     <!-- DATA TABLE -->
-                                    <div class="actionControls mb-2 p-1 bg-transparent d-flex gap-2 justify-content-end align-items-center">
+                                    <div
+                                        class="actionControls mb-2 p-1 bg-transparent d-flex gap-2 justify-content-end align-items-center">
                                         <button class="btn btn-danger" onclick="javascript:alert(1)">
                                             <i class="bi bi-trash"></i>
                                             Remove Selection
@@ -483,10 +534,13 @@ if (isset($_GET['viewRole']) && isset($_GET['user_id'])) {
                                                         <td><?php echo htmlspecialchars($user['user_id']); ?></td>
                                                         <td><?php echo htmlspecialchars($user['role']); ?></td>
                                                         <td><?php echo htmlspecialchars($user['username']); ?></td>
-                                                        <td><?php echo htmlspecialchars($user['first_name'] . ' ' . $user['middle_name'] . ' ' . $user['last_name']); ?></td>
+                                                        <td><?php echo htmlspecialchars($user['first_name'] . ' ' . $user['middle_name'] . ' ' . $user['last_name']); ?>
+                                                        </td>
                                                         <td><?php echo htmlspecialchars($user['gender']); ?></td>
                                                         <td><?php echo htmlspecialchars($user['status']); ?></td>
-                                                        <td><a href="<?php echo updateUrlParams(['viewRole' => $_GET['viewRole'], 'user_id' => $user['user_id']]) ?>"><button class="btn btn-primary">Edit</button></a></td>
+                                                        <td><a
+                                                                href="<?php echo updateUrlParams(['viewRole' => $_GET['viewRole'], 'user_id' => $user['user_id']]) ?>"><button
+                                                                    class="btn btn-primary">Edit</button></a></td>
                                                     </tr>
                                                 <?php endforeach; ?>
                                             </tbody>
@@ -622,7 +676,16 @@ if (isset($_GET['viewRole']) && isset($_GET['user_id'])) {
 <script src="<?php echo asset('js/preview-handler.js') ?>"></script>
 
 <?php
-include_once PARTIALS . 'user/toastHandler.php'
+// Show Toast
+if (isset($_SESSION["_ResultMessage"])) {
+    makeToast([
+        'type' => $_SESSION["_ResultMessage"]['success'] ? 'success' : 'error',
+        'message' => $_SESSION["_ResultMessage"]['message'],
+    ]);
+    outputToasts(); // Execute toast on screen.
+    unset($_SESSION["_ResultMessage"]); // Dispose
+}
+
 ?>
 
 </html>

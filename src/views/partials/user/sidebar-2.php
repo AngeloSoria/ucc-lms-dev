@@ -11,43 +11,6 @@
         </div>
     </div>
     <ul class="p-0 ul_no-design">
-        <!-- <li class="border border-top-0 submenu-main">
-            <a href="javascript:void(0);" class="sidebar-item submenu-toggle">
-                <div class="sidebar-item-icon">
-                    <i class="bi bi-people"></i>
-                </div>
-                <div class="sidebar-item-title">
-                    asdasda
-                </div>
-                <div class="dropdownIcon">
-                    <i class="icon bi bi-chevron-left fs-6 ms-auto fw-medium"></i>
-                </div>
-            </a>
-            <div class="submenu submenu-content transition-1">
-                <ul class="ul_no-design">
-                    <li>
-                        <a href="#"
-                            class="d-flex gap-3 py-3 pe-2 submenu-item" style=" padding-left: 2rem;">
-                            <i class="bi bi-people"></i>
-                            <span class="submenu-item-text">
-                                qq
-                            </span>
-                        </a>
-                    </li>
-                    <hr class="p-0 m-0">
-                    <li>
-                        <a href="#"
-                            class="d-flex gap-3 py-3 pe-2 submenu-item" style="padding-left: 2rem;">
-                            <i class="bi bi-journal-text"></i>
-                            <span class="submenu-item-text">
-                                qweqwe
-                            </span>
-                        </a>
-                    </li>
-
-                </ul>
-            </div>
-        </li> -->
         <li class="border border-top-0">
             <a href="<?php echo BASE_PATH_LINK ?>" class="sidebar-item">
                 <div class="sidebar-item-icon">
@@ -60,7 +23,7 @@
         </li>
         <li class="border border-top-0">
             <a href="<?php echo updateUrlParams(['subject_section_id' => $_GET['subject_section_id']]); ?>"
-                class="sidebar-item">
+                class="sidebar-item <?php echo count($_GET) === 1 && isset($_GET['subject_section_id']) ? 'active' : '' ?>">
                 <div class="sidebar-item-icon">
                     <i class="bi bi-folder2" aria-hidden="true"></i>
                 </div>
@@ -70,7 +33,7 @@
             </a>
         </li>
         <li class="border border-top-0">
-            <a href="#" class="sidebar-item">
+            <a href="<?php echo updateUrlParams(['subject_section_id' => $_GET['subject_section_id'], 'assignments' => 'view']) ?>" class="sidebar-item <?php echo isset($_GET['assignments']) ? 'active' : '' ?>">
                 <div class="sidebar-item-icon">
                     <i class="bi bi-clipboard2-check" aria-hidden="true"></i>
                 </div>
@@ -79,6 +42,20 @@
                 </div>
             </a>
         </li>
+
+        <?php if (userHasPerms(['Teacher'])): ?>
+            <li class="border border-top-0">
+                <a href="#" class="sidebar-item">
+                    <div class="sidebar-item-icon">
+                        <i class="bi bi-journal-text" aria-hidden="true"></i>
+                    </div>
+                    <div class="sidebar-item-title">
+                        Gradebook
+                    </div>
+                </a>
+            </li>
+        <?php endif; ?>
+
         <li class="border border-top-0">
             <a href="#" class="sidebar-item">
                 <div class="sidebar-item-icon">

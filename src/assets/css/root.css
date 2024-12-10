@@ -360,3 +360,21 @@ a {
 .select2-selection__choice {
     background-color: var(--c-brand-secondary-a20) !important;
 }
+
+/* Make sure TinyMCE popup is above the modal */
+.tox {
+    z-index: 1060 !important; /* Must be higher than Bootstrap modal's z-index */
+}
+
+.tox-dialog {
+    z-index: 1070 !important; /* Make sure dialog popups like link editor are above modal */
+}
+
+/* Ensure the TinyMCE container is responsive */
+.tox-tinymce {
+    width: 100% !important; /* Allow resizing */
+}
+
+.tox-edit-area {
+    width: 100% !important; /* Ensure the area inside TinyMCE resizes */
+}

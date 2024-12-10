@@ -113,6 +113,7 @@ class ModuleContentController
                 throw new Exception("Something went wrong adding content to a module.");
             }
         } catch (Exception $e) {
+            msgLog("123", $e->getMessage());
             return ["success" => false, "message" => $e->getMessage()];
         }
     }
@@ -208,6 +209,16 @@ class ModuleContentController
         }
     }
 
+    public function getFileByContentFileId($content_id, $content_file_id)
+    {
+        try {
+            $result = $this->moduleContentModel->getFileByContentFileId($content_id, $content_file_id);
+            return ['success' => true, 'data' => $result];
+        } catch (Exception $e) {
+            return ['success' => false, 'message' => $e->getMessage()];
+        }
+    }
+
     // Handle deleting a file from content
     public function deleteContentFile($file_id)
     {
@@ -224,24 +235,74 @@ class ModuleContentController
     }
 
     // Handle adding a student submission
-    public function addSubmission($submissionData)
+    public function addSubmission($submissionData, $fileInputs)
     {
-        $result = $this->moduleContentModel->addSubmission($submissionData);
-        return $this->jsonResponse($result);
+        try {
+            $this->moduleContentModel->addSubmission($submissionData, $fileInputs);
+            return ['success' => true, "message" => "Submission success."];
+        } catch (Exception $e) {
+            return ['success' => false, 'message' => $e->getMessage()];
+        }
     }
 
-    // Handle adding a file to a submission
-    public function addSubmissionFile($fileData)
+
+    public function getSubmissionsByContent($content_id, $student_id = null)
     {
-        $result = $this->moduleContentModel->addSubmissionFile($fileData);
-        return $this->jsonResponse($result);
+        try {
+            $result = $this->moduleContentModel->getSubmissionsByContent($content_id, $student_id);
+            return ['success' => true, 'data' => $result];
+        } catch (Exception $e) {
+            return ["success" => false, "message" => $e->getMessage()];
+        }
     }
 
-    // Helper function to format JSON response
-    private function jsonResponse($data)
+    public function getLatestSubmission($content_id, $student_id)
     {
-        header('Content-Type: application/json');
-        echo json_encode($data);
-        exit;
+        try {
+            $result = $this->moduleContentModel->getLatestSubmission($content_id, $student_id);
+            return ['success' => true, 'data' => $result];
+        } catch (Exception $e) {
+            return ["success" => false, "message" => $e->getMessage()];
+        }
+    }
+
+    public function getFilesBySubmission($submission_id)
+    {
+        try {
+            $result = $this->moduleContentModel->getFilesBySubmission($submission_id);
+            return ["success" => true, "data" => $result];
+        } catch (Exception $e) {
+            return ["success" => false, "message" => "Error fetching submitted files:" . $e->getMessage()];
+        }
+    }
+
+    public function getFileBySubmissionFilesId($submission_files_id)
+    {
+        try {
+            $result = $this->moduleContentModel->getFileBySubmissionFilesId($submission_files_id);
+            return ["success" => true, "data" => $result];
+        } catch (Exception $e) {
+            return ["success" => false, "message" => "Error fetching submitted file:" . $e->getMessage()];
+        }
+    }
+
+    public function getStudentsSubmission($content_id)
+    {
+        try {
+            $result = $this->moduleContentModel->getStudentsSubmission($content_id);
+            return ['success' => true, 'data' => $result];
+        } catch (Exception $e) {
+            return ['success' => false, 'message' => $e->getMessage()];
+        }
+    }
+
+    public function getAllContentsFromSubjectSection($subject_section_id)
+    {
+        try {
+            $result = $this->moduleContentModel->getAllContentsFromSubjectSection($subject_section_id);
+            return ['success' => true, 'data' => $result];
+        } catch (Exception $e) {
+            return ['success' => false, 'message' => $e->getMessage()];
+        }
     }
 }

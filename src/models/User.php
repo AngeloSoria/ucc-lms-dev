@@ -20,6 +20,21 @@ class User
         $this->uploadsController = new UploadsController();
         $this->generalLogsController = new GeneralLogsController();
     }
+    // Generate User ID
+    public function generateUserId()
+    {
+        try {
+            $query = "SELECT MAX(user_id) AS last_id FROM {$this->table_name}";
+            $stmt = $this->conn->prepare($query);
+            $stmt->execute();
+            $result = $stmt->fetch(PDO::FETCH_ASSOC);
+
+            $lastId = $result['last_id'] ?? 1000; // Start from 1001 if no users exist
+            return $lastId + 1;
+        } catch (PDOException $e) {
+            throw new Exception("Failed to generate User ID: " . $e->getMessage());
+        }
+    }
 
     // ADD user to DATABASE
     public function addUser($userData)
@@ -116,7 +131,7 @@ class User
     public function getAllUsersByRole($role)
     {
         try {
-            $query = "SELECT * FROM users WHERE role = :role";
+            $query = "SELECT * FROM users WHERE role = :role ORDER BY user_id DESC";
             $stmt = $this->conn->prepare($query);
             $stmt->bindParam(':role', $role, PDO::PARAM_STR);
             $stmt->execute();
@@ -189,7 +204,7 @@ class User
     {
         try {
             // Use a placeholder :limit for the limit value
-            $query = "SELECT * FROM users LIMIT :limit OFFSET 0";
+            $query = "SELECT * FROM users ORDER BY user_id DESC LIMIT :limit OFFSET 0";
             $stmt = $this->conn->prepare($query);
 
             // Bind the $limit parameter to the :limit placeholder

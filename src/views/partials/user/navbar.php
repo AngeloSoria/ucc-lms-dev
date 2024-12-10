@@ -24,12 +24,12 @@
                 </div>
 
                 <!-- Mail Icon -->
-                <div class="nav-item">
+                <!-- <div class="nav-item">
                     <a id="navEmail" href="#" title="Messages" class="nav-link nav-link-icon">
-                        <i class="bi bi-envelope"></i> <!-- Envelope icon for mail -->
+                        <i class="bi bi-envelope"></i>
                         <span id="unreadIndicator" class="nav-item-unread-indicator"></span>
                     </a>
-                </div>
+                </div> -->
 
                 <span class="nav-mobile_line"
                     style="height: 30px; width: 1.5px; background-color: black; opacity: 0.35;"></span>
