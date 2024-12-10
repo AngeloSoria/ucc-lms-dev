@@ -40,76 +40,102 @@ if (!$module_contentInfo['success'] || empty($module_contentInfo['data'])) {
                     <p>
                         <?php echo $module_contentInfo['data'][0]['description'] ?>
                     </p>
-
+                    <hr>
                     <?php if (!in_array($module_contentInfo['data'][0]['content_type'], ['information', 'handout'])): ?>
-                        <div class="mt-4">
-                            <?php if ($totalSubmissionAttemps >= 1 && $totalSubmissionAttemps < $module_contentInfo['data'][0]['max_attempts']): ?>
-                                <button class="btn btn-sm btn-success" data-bs-toggle="modal" data-bs-target="#uploadSubmissionModal">
-                                    <i class="bi bi-plus"></i>
-                                    Prepare Another Answer
-                                </button>
-                            <?php elseif ($totalSubmissionAttemps < $module_contentInfo['data'][0]['max_attempts']): ?>
-                                <button class="btn btn-sm btn-success" data-bs-toggle="modal" data-bs-target="#uploadSubmissionModal">
-                                    <i class="bi bi-plus"></i>
-                                    Prepare Answer
-                                </button>
-                            <?php endif; ?>
-                        </div>
+
+                        <?php if (!in_array($module_contentInfo['data'][0]['content_type'], ['quiz'])): ?>
+                            <div class="mt-4">
+                                <?php if ($totalSubmissionAttemps >= 1 && $totalSubmissionAttemps < $module_contentInfo['data'][0]['max_attempts']): ?>
+                                    <button class="btn btn-sm btn-success" data-bs-toggle="modal" data-bs-target="#uploadSubmissionModal">
+                                        <i class="bi bi-plus"></i>
+                                        Prepare Another Answer
+                                    </button>
+                                <?php elseif ($totalSubmissionAttemps < $module_contentInfo['data'][0]['max_attempts']): ?>
+                                    <button class="btn btn-sm btn-success" data-bs-toggle="modal" data-bs-target="#uploadSubmissionModal">
+                                        <i class="bi bi-plus"></i>
+                                        Prepare Answer
+                                    </button>
+                                <?php endif; ?>
+                            </div>
+                        <?php else: ?>
+                            <div class="mt-4">
+                                <?php if ($totalSubmissionAttemps >= 1 && $totalSubmissionAttemps < $module_contentInfo['data'][0]['max_attempts']): ?>
+                                    <button class="btn btn-sm btn-success" data-bs-toggle="modal" data-bs-target="#uploadSubmissionModal">
+                                        <i class="bi bi-plus"></i>
+                                        Take Another Quiz
+                                    </button>
+                                <?php elseif ($totalSubmissionAttemps < $module_contentInfo['data'][0]['max_attempts']): ?>
+                                    <button class="btn btn-sm btn-success" data-bs-toggle="modal" data-bs-target="#uploadSubmissionModal">
+                                        <i class="bi bi-plus"></i>
+                                        Take Quiz
+                                    </button>
+                                <?php endif; ?>
+                                <?php if (userHasPerms(['Teacher'])): ?>
+                                    <button class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#aa">
+                                        <i class="bi bi-plus"></i>
+                                        Add question
+                                    </button>
+                                <?php endif; ?>
+                            </div>
+                        <?php endif; ?>
+
                     <?php endif; ?>
                 </div>
                 <br>
-                <div class="mt-4">
-                    <p class="fw-semibold">Files</p>
-                    <hr>
-                    <section class="bg-light">
-                        <div class="row justify-content-start">
-                            <?php
-                            $getAllContentFilesByContentId = $moduleContentController->getContentFiles($_GET['content_id']);
-                            if (!$getAllContentFilesByContentId['success']) {
-                                $_SESSION['_ResultMessage'] = $getAllContentFilesByContentId;
-                                echo '<script>window.location = \'' . BASE_PATH_LINK . '\'</script>';
-                                exit;
-                            } else {
-                                if ($getAllContentFilesByContentId['data']) {
-                                    foreach ($getAllContentFilesByContentId['data'] as $contentFile):
-                                        $previewFileMimeTypes = ["image/jpeg", "image/png", "image/gif", "audio/mpeg", "audio/wav", "video/mp4"];
-                            ?>
-                                        <!-- video preview -->
-                                        <?php if (in_array($contentFile['mime_type'], ['video/mp4'])):
-                                            $base64Video = "data:" . $contentFile['mime_type'] . ";base64," . base64_encode($contentFile['file_data']);
-                                        ?>
-                                            <div class="col-md-4 mb-4">
-                                                <div class="card">
-                                                    <video class="card-img-top" controls>
-                                                        <source src="<?php echo $base64Video ?>" type="<?php echo $contentFile['mime_type'] ?>">
-                                                        Your browser does not support the video tag.
-                                                    </video>
-                                                    <div class="card-body">
-                                                        <h5 class="card-title"><?php echo sanitizeInput($contentFile['file_name']) ?></h5>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        <?php else: ?>
-                                            <div class="col-sm-6 col-md-4 col-lg-3 mb-4">
-                                                <a href="<?php echo BASE_PATH_LINK . 'src/models/DownloadFile.php?content_id=' . $contentFile['content_id'] . '&content_file_id=' . $contentFile['content_file_id'] ?>" target="_blank" class="card-link text-decoration-none">
-                                                    <div class="card hover-shadow">
-                                                        <div class="card-body text-center">
-                                                            <!-- Bootstrap Icon -->
-                                                            <i class="bi <?php echo getBootstrapIcon($contentFile['mime_type']) ?>" style="font-size: 30px;"></i>
-                                                            <h6 class="card-title"><?php echo sanitizeInput($contentFile['file_name']) ?></h6>
+                <?php if (!in_array($module_contentInfo['data'][0]['content_type'], ['quiz'])): ?>
+                    <div class="mt-4">
+                        <p class="fw-semibold">Files</p>
+                        <hr>
+                        <section class="bg-light">
+                            <div class="row justify-content-start">
+                                <?php
+                                $getAllContentFilesByContentId = $moduleContentController->getContentFiles($_GET['content_id']);
+                                if (!$getAllContentFilesByContentId['success']) {
+                                    $_SESSION['_ResultMessage'] = $getAllContentFilesByContentId;
+                                    echo '<script>window.location = \'' . BASE_PATH_LINK . '\'</script>';
+                                    exit;
+                                } else {
+                                    if ($getAllContentFilesByContentId['data']) {
+                                        foreach ($getAllContentFilesByContentId['data'] as $contentFile):
+                                            $previewFileMimeTypes = ["image/jpeg", "image/png", "image/gif", "audio/mpeg", "audio/wav", "video/mp4"];
+                                ?>
+                                            <!-- video preview -->
+                                            <?php if (in_array($contentFile['mime_type'], ['video/mp4'])):
+                                                $base64Video = "data:" . $contentFile['mime_type'] . ";base64," . base64_encode($contentFile['file_data']);
+                                            ?>
+                                                <div class="col-md-4 mb-4">
+                                                    <div class="card">
+                                                        <video class="card-img-top" controls>
+                                                            <source src="<?php echo $base64Video ?>" type="<?php echo $contentFile['mime_type'] ?>">
+                                                            Your browser does not support the video tag.
+                                                        </video>
+                                                        <div class="card-body">
+                                                            <h5 class="card-title"><?php echo sanitizeInput($contentFile['file_name']) ?></h5>
                                                         </div>
                                                     </div>
-                                                </a>
-                                            </div>
-                                        <?php endif; ?>
-                            <?php endforeach;
-                                } else {
-                                    echo '<p class="text-center fw-semibold opacity-50">No File Added.</p>';
-                                }
-                            } ?>
-                        </div>
-                    </section>
-                </div>
+                                                </div>
+                                            <?php else: ?>
+                                                <div class="col-sm-6 col-md-4 col-lg-3 mb-4">
+                                                    <a href="<?php echo BASE_PATH_LINK . 'src/models/DownloadFile.php?content_id=' . $contentFile['content_id'] . '&content_file_id=' . $contentFile['content_file_id'] ?>" target="_blank" class="card-link text-decoration-none">
+                                                        <div class="card hover-shadow">
+                                                            <div class="card-body text-center">
+                                                                <!-- Bootstrap Icon -->
+                                                                <i class="bi <?php echo getBootstrapIcon($contentFile['mime_type']) ?>" style="font-size: 30px;"></i>
+                                                                <h6 class="card-title"><?php echo sanitizeInput($contentFile['file_name']) ?></h6>
+                                                            </div>
+                                                        </div>
+                                                    </a>
+                                                </div>
+                                            <?php endif; ?>
+                                <?php endforeach;
+                                    } else {
+                                        echo '<p class="text-center fw-semibold opacity-50">No File Added.</p>';
+                                    }
+                                } ?>
+                            </div>
+                        </section>
+                    </div>
+                <?php endif; ?>
             </div>
         </div>
 
