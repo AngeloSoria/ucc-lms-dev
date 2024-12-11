@@ -13,6 +13,8 @@ require_once(FILE_PATHS['Functions']['ToastLogger']);
 require_once(FILE_PATHS['Functions']['UpdateURLParams']);
 require_once(FILE_PATHS['Functions']['PHPLogger']);
 
+require_once CONTROLLERS . 'QuizController.php';
+
 require_once UTILS;
 
 checkUserAccess(['Teacher', 'Student']);
@@ -25,6 +27,7 @@ $subjectSectionController = new SubjectSectionController($db);
 $subjectController = new SubjectController();
 $sectionController = new SectionController();
 $moduleContentController = new ModuleContentController();
+$quizController = new QuizController();
 
 // Create an instance of the UserController
 $userController = new UserController();

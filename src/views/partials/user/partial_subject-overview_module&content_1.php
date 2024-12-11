@@ -6,11 +6,6 @@ if (!$module_contentInfo['success'] || empty($module_contentInfo['data'])) {
     exit;
 }
 
-if ($module_contentInfo['data'][0]['visibility'] == 'hidden' && userHasPerms(['Student'])) {
-    echo redirectViaJS(BASE_PATH_LINK);
-    $_SESSION['_ResultMessage'] = ['success' => false, 'message' => 'You don\'t have permission to view this page.'];
-    exit();
-}
 ?>
 
 <div class="w-100 px-2 pb-4">
@@ -98,7 +93,7 @@ if ($module_contentInfo['data'][0]['visibility'] == 'hidden' && userHasPerms(['S
                             <ul class="list-group">
                                 <?php $questions = $quizController->getQuestionsByContentID($_GET['content_id'])
 
-                                ?>
+                                    ?>
 
                                 <?php if ($questions['success']): ?>
                                     <?php foreach ($questions['data'] as $index => $question): ?>
@@ -112,9 +107,9 @@ if ($module_contentInfo['data'][0]['visibility'] == 'hidden' && userHasPerms(['S
                                                     class="badge bg-secondary me-3"><?= htmlspecialchars($question['question_type']) ?></span>
 
                                                 <!-- Edit Button -->
-                                                <?php $quiz_question_id = $question['quiz_question_id'] ?>
                                                 <button class="btn btn-sm btn-primary me-2" data-bs-toggle="modal"
-                                                    data-bs-target="#editQuestionModal" data-id="<?php echo $quiz_question_id ?>">
+                                                    data-bs-target="#editQuestionModal" data-id="<?= $quiz_question_id ?>">
+                                                    <?php $quiz_question_id = $question['quiz_question_id'] ?>
                                                     <i class="bi bi-pencil-square"></i>
                                                     Edit
                                                 </button>
@@ -162,36 +157,42 @@ if ($module_contentInfo['data'][0]['visibility'] == 'hidden' && userHasPerms(['S
                                     if ($getAllContentFilesByContentId['data']) {
                                         foreach ($getAllContentFilesByContentId['data'] as $contentFile):
                                             $previewFileMimeTypes = ["image/jpeg", "image/png", "image/gif", "audio/mpeg", "audio/wav", "video/mp4"];
-                                ?>
+                                            ?>
                                             <!-- video preview -->
                                             <?php if (in_array($contentFile['mime_type'], ['video/mp4'])):
                                                 $base64Video = "data:" . $contentFile['mime_type'] . ";base64," . base64_encode($contentFile['file_data']);
-                                            ?>
+                                                ?>
                                                 <div class="col-md-4 mb-4">
                                                     <div class="card">
                                                         <video class="card-img-top" controls>
-                                                            <source src="<?php echo $base64Video ?>" type="<?php echo $contentFile['mime_type'] ?>">
+                                                            <source src="<?php echo $base64Video ?>"
+                                                                type="<?php echo $contentFile['mime_type'] ?>">
                                                             Your browser does not support the video tag.
                                                         </video>
                                                         <div class="card-body">
-                                                            <h5 class="card-title"><?php echo sanitizeInput($contentFile['file_name']) ?></h5>
+                                                            <h5 class="card-title"><?php echo sanitizeInput($contentFile['file_name']) ?>
+                                                            </h5>
                                                         </div>
                                                     </div>
                                                 </div>
                                             <?php else: ?>
                                                 <div class="col-sm-6 col-md-4 col-lg-3 mb-4">
-                                                    <a href="<?php echo BASE_PATH_LINK . 'src/models/DownloadFile.php?content_id=' . $contentFile['content_id'] . '&content_file_id=' . $contentFile['content_file_id'] ?>" target="_blank" class="card-link text-decoration-none">
+                                                    <a href="<?php echo BASE_PATH_LINK . 'src/models/DownloadFile.php?content_id=' . $contentFile['content_id'] . '&content_file_id=' . $contentFile['content_file_id'] ?>"
+                                                        target="_blank" class="card-link text-decoration-none">
                                                         <div class="card hover-shadow">
                                                             <div class="card-body text-center">
                                                                 <!-- Bootstrap Icon -->
-                                                                <i class="bi <?php echo getBootstrapIcon($contentFile['mime_type']) ?>" style="font-size: 30px;"></i>
-                                                                <h6 class="card-title"><?php echo sanitizeInput($contentFile['file_name']) ?></h6>
+                                                                <i class="bi <?php echo getBootstrapIcon($contentFile['mime_type']) ?>"
+                                                                    style="font-size: 30px;"></i>
+                                                                <h6 class="card-title">
+                                                                    <?php echo sanitizeInput($contentFile['file_name']) ?>
+                                                                </h6>
                                                             </div>
                                                         </div>
                                                     </a>
                                                 </div>
                                             <?php endif; ?>
-                                <?php endforeach;
+                                        <?php endforeach;
                                     } else {
                                         echo '<p class="text-center fw-semibold opacity-50">No File Added.</p>';
                                     }
@@ -231,47 +232,58 @@ if ($module_contentInfo['data'][0]['visibility'] == 'hidden' && userHasPerms(['S
                                     if ($getLatestSubmissionFiles['data']) {
                                         foreach ($getLatestSubmissionFiles['data'] as $contentFile):
                                             $previewFileMimeTypes = ["image/jpeg", "image/png", "image/gif", "audio/mpeg", "audio/wav", "video/mp4"];
-                                ?>
+                                            ?>
                                             <!-- video preview -->
                                             <?php if (in_array($contentFile['mime_type'], ['video/mp4'])):
                                                 $base64Video = "data:" . $contentFile['mime_type'] . ";base64," . base64_encode($contentFile['file_data']);
-                                            ?>
+                                                ?>
                                                 <div class="col-md-4 mb-4">
                                                     <div class="card">
                                                         <video class="card-img-top" controls>
-                                                            <source src="<?php echo $base64Video ?>" type="<?php echo $contentFile['mime_type'] ?>">
+                                                            <source src="<?php echo $base64Video ?>"
+                                                                type="<?php echo $contentFile['mime_type'] ?>">
                                                             Your browser does not support the video tag.
                                                         </video>
                                                         <div class="card-body">
-                                                            <h5 class="card-title"><?php echo sanitizeInput($contentFile['file_name']) ?></h5>
+                                                            <h5 class="card-title"><?php echo sanitizeInput($contentFile['file_name']) ?>
+                                                            </h5>
                                                         </div>
                                                     </div>
                                                 </div>
                                             <?php elseif (in_array($contentFile['mime_type'], ["image/jpeg", "image/png", "image/gif"])): ?>
                                                 <div class="col-sm-6 col-md-4 col-lg-3 mb-4">
-                                                    <a href="<?php echo BASE_PATH_LINK . 'src/models/DownloadFile.php?submission_files_id=' . $contentFile['submission_files_id'] ?>" target="_blank" class="card-link text-decoration-none">
+                                                    <a href="<?php echo BASE_PATH_LINK . 'src/models/DownloadFile.php?submission_files_id=' . $contentFile['submission_files_id'] ?>"
+                                                        target="_blank" class="card-link text-decoration-none">
                                                         <div class="card">
-                                                            <img src="data:<?php echo "data:" . $contentFile['mime_type'] . ";base64," . base64_encode($contentFile['file_data']) ?>" class="card-img-top" alt="<?php echo sanitizeInput($contentFile['file_name']) ?>">
+                                                            <img src="data:<?php echo "data:" . $contentFile['mime_type'] . ";base64," . base64_encode($contentFile['file_data']) ?>"
+                                                                class="card-img-top"
+                                                                alt="<?php echo sanitizeInput($contentFile['file_name']) ?>">
                                                             <div class="card-body">
-                                                                <h5 class="card-title"><?php echo sanitizeInput($contentFile['file_name']) ?></h5>
+                                                                <h5 class="card-title">
+                                                                    <?php echo sanitizeInput($contentFile['file_name']) ?>
+                                                                </h5>
                                                             </div>
                                                         </div>
                                                     </a>
                                                 </div>
                                             <?php else: ?>
                                                 <div class="col-sm-6 col-md-4 col-lg-3 mb-4">
-                                                    <a href="<?php echo BASE_PATH_LINK . 'src/models/DownloadFile.php?submission_files_id=' . $contentFile['submission_files_id'] ?>" target="_blank" class="card-link text-decoration-none">
+                                                    <a href="<?php echo BASE_PATH_LINK . 'src/models/DownloadFile.php?submission_files_id=' . $contentFile['submission_files_id'] ?>"
+                                                        target="_blank" class="card-link text-decoration-none">
                                                         <div class="card hover-shadow">
                                                             <div class="card-body text-center">
                                                                 <!-- Bootstrap Icon -->
-                                                                <i class="bi <?php echo getBootstrapIcon($contentFile['mime_type']) ?>" style="font-size: 30px;"></i>
-                                                                <h6 class="card-title"><?php echo sanitizeInput($contentFile['file_name']) ?></h6>
+                                                                <i class="bi <?php echo getBootstrapIcon($contentFile['mime_type']) ?>"
+                                                                    style="font-size: 30px;"></i>
+                                                                <h6 class="card-title">
+                                                                    <?php echo sanitizeInput($contentFile['file_name']) ?>
+                                                                </h6>
                                                             </div>
                                                         </div>
                                                     </a>
                                                 </div>
                                             <?php endif; ?>
-                                <?php endforeach;
+                                        <?php endforeach;
                                     } else {
                                         echo '<p class="text-center fw-semibold opacity-50">No File Added.</p>';
                                     }
