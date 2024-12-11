@@ -607,20 +607,29 @@ class ModuleContent
                 }
             }
 
+            $getCurrentSubmissionRow = $this->getLatestSubmission($submissionData['content_id'], $submissionData['student_id']);
+            if ($getCurrentSubmissionRow) {
+                $query = "UPDATE
+                                student_submissions
+                            SET
+                                score = :score,
+                                status = :status
+                            WHERE
+                                content_id = :content_id
+                            AND
+                                submission_id = :submission_id
+                            AND
+                                student_id = :student_id";
+            } else {
+                $query = "INSERT INTO 
+                                student_submissions (score, status, content_id, submission_id, student_id) 
+                            VALUES 
+                                (:score, :status, :content_id, :submission_id, :student_id)";
+            }
+
             // Begin the transaction
             $this->conn->beginTransaction();
             // Prepare the SQL query
-            $query = "UPDATE 
-                    student_submissions
-                  SET
-                    score = :score,
-                    status = :status
-                  WHERE
-                    content_id = :content_id
-                  AND
-                    submission_id = :submission_id
-                  AND
-                    student_id = :student_id";
             $stmt = $this->conn->prepare($query);
 
             // Bind parameters
@@ -880,12 +889,21 @@ class ModuleContent
     {
         try {
             // Base query to select submissions by content_id and student_id
-            $query = "
-                        SELECT ss.*, u.*, sf.*
-                        FROM student_submissions ss
-                        INNER JOIN users u ON ss.student_id = u.user_id
-                        INNER JOIN submission_files sf ON sf.submission_id = ss.submission_id
-                        WHERE ss.content_id = :content_id AND ss.student_id = :student_id
+            $query = "SELECT 
+                            ss.*, 
+                            u.*, 
+                            sf.*
+                        FROM 
+                            student_submissions ss
+                        INNER JOIN 
+                            users u ON ss.student_id = u.user_id
+                        LEFT JOIN 
+                            submission_files sf ON sf.submission_id = ss.submission_id
+                        WHERE 
+                            ss.content_id = :content_id 
+                        AND 
+                            ss.student_id = :student_id;
+
                     ";
 
 

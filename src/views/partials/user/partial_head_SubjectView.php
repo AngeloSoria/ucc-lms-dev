@@ -141,7 +141,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                     "submission_id" => $_POST['submission_id'],
                     "status" => "graded",
                     "student_id" => $_GET['student_id'],
-                    "score" => $_POST['input_submissionScore'],
+                    "score" => $_POST['input_submissionScore'] == null ? 0 : $_POST['input_submissionScore'],
                 ];
 
                 msgLog('DATA', json_encode($submissionData));
