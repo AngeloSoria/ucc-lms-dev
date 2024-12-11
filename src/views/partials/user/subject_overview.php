@@ -17,7 +17,21 @@
             </div>
         </div>
         <hr>
-        <?php if (isset($_GET['module_id'], $_GET['content_id'], $_GET['students_submission'])): ?>
+        <?php if (isset($_GET['module_id'], $_GET['content_id'], $_GET['students_submission'], $_GET['student_id'])): ?>
+            <?php if (userHasPerms(['Student'])) {
+                echo redirectViaJS(BASE_PATH_LINK);
+                $_SESSION['_ResultMessage'] = ['success' => false, 'message' => 'You don\'t have permission to view this page.'];
+                exit();
+            } ?>
+            <section id="modules_container" class="d-flex flex-column gap-3 mb-3">
+                <?php require_once PARTIALS . 'user/partial_subject-overview_studentsubmission_selected.php' ?>
+            </section>
+        <?php elseif (isset($_GET['module_id'], $_GET['content_id'], $_GET['students_submission']) && !isset($_GET['student_id'])): ?>
+            <?php if (userHasPerms(['Student'])) {
+                echo redirectViaJS(BASE_PATH_LINK);
+                $_SESSION['_ResultMessage'] = ['success' => false, 'message' => 'You don\'t have permission to view this page.'];
+                exit();
+            } ?>
             <section id="modules_container" class="d-flex flex-column gap-3 mb-3">
                 <?php require_once PARTIALS . 'user/partial_subject-overview-moduleContent-studentsubmission.php' ?>
             </section>

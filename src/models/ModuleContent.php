@@ -3,6 +3,7 @@ require_once(__DIR__ . '../../../src/config/PathsHandler.php');
 require_once(FILE_PATHS['DATABASE']);
 require_once(FILE_PATHS['Functions']['PHPLogger']);
 require_once(FILE_PATHS['Controllers']['GeneralLogs']);
+require_once CONTROLLERS . 'SubjectSectionController.php';
 
 use Dotenv\Dotenv;
 
@@ -10,6 +11,7 @@ class ModuleContent
 {
     private $conn;
     private $generalLogsController;
+    private $subjectSectionController;
 
     public function __construct()
     {
@@ -19,6 +21,7 @@ class ModuleContent
         $db = new Database();
         $this->conn = $db->getConnection();
         $this->generalLogsController = new GeneralLogsController();
+        $this->subjectSectionController = new SubjectSectionController($db);
     }
 
 
@@ -593,6 +596,56 @@ class ModuleContent
         }
     }
 
+    public function updateSubmissionGrade($submissionData)
+    {
+        try {
+            // Validate required fields
+            $requiredFields = ['score', 'status', 'content_id', 'student_id', 'submission_id'];
+            foreach ($requiredFields as $field) {
+                if (!isset($submissionData[$field])) {
+                    throw new Exception("Missing required field: $field");
+                }
+            }
+
+            // Begin the transaction
+            $this->conn->beginTransaction();
+            // Prepare the SQL query
+            $query = "UPDATE 
+                    student_submissions
+                  SET
+                    score = :score,
+                    status = :status
+                  WHERE
+                    content_id = :content_id
+                  AND
+                    submission_id = :submission_id
+                  AND
+                    student_id = :student_id";
+            $stmt = $this->conn->prepare($query);
+
+            // Bind parameters
+            $stmt->bindParam(":score", $submissionData['score'], PDO::PARAM_INT);
+            $stmt->bindParam(":status", $submissionData['status'], PDO::PARAM_STR);
+            $stmt->bindParam(":content_id", $submissionData['content_id'], PDO::PARAM_INT);
+            $stmt->bindParam(":submission_id", $submissionData['submission_id'], PDO::PARAM_INT);
+            $stmt->bindParam(":student_id", $submissionData['student_id'], PDO::PARAM_INT);
+
+            // Execute the statement
+            $stmt->execute();
+
+            // Commit the transaction
+            $this->conn->commit();
+
+            // Return success with affected rows count
+            return ['success' => true];
+        } catch (Exception $e) {
+            // Rollback on failure
+            $this->conn->rollBack();
+            throw new Exception("Error updating submission grade: " . $e->getMessage());
+        }
+    }
+
+
     // Get all submissions by content id for all, and for specific student id so 2nd argument can be null
     public function getSubmissionsByContent($content_id, $student_id = null)
     {
@@ -637,6 +690,54 @@ class ModuleContent
             throw new PDOException("Failed to get files: " . $e->getMessage());
         }
     }
+
+    public function getSubmittedFilesByContentIdStudentId($content_id, $student_id, $submission_id = null)
+    {
+        try {
+            // Base query
+            $query = "
+            SELECT 
+                sf.*, 
+                ss.*
+            FROM 
+                submission_files AS sf
+            INNER JOIN
+                student_submissions AS ss
+            ON
+                sf.submission_id = ss.submission_id
+            WHERE 
+                ss.content_id = :content_id
+                AND ss.student_id = :student_id";
+
+            // Add submission_id condition if provided
+            if ($submission_id !== null) {
+                $query .= " AND sf.submission_id = :submission_id";
+            }
+
+            // Prepare the statement
+            $stmt = $this->conn->prepare($query);
+
+            // Bind parameters
+            $stmt->bindParam(':content_id', $content_id);
+            $stmt->bindParam(':student_id', $student_id);
+
+            if ($submission_id !== null) {
+                $stmt->bindParam(':submission_id', $submission_id);
+            }
+
+            // Execute the statement
+            $stmt->execute();
+
+            // Fetch results
+            $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+            // Return result
+            return $result ? $result : [];
+        } catch (PDOException $e) {
+            throw new PDOException("Failed to get files: " . $e->getMessage());
+        }
+    }
+
     public function getFileBySubmissionFilesId($submission_files_id)
     {
         try {
@@ -717,48 +818,53 @@ class ModuleContent
     {
         try {
             $query = "
-            SELECT
-                u.user_id,
-                u.profile_pic,
-                u.first_name,
-                u.last_name,
-                ss.submission_date,
-                ss.content_id,
-                ss.submission_id,
-                ss.status,
-                ss.score,
-                c.*
-            FROM
-                student_subject_section AS sss
-            JOIN
-                users AS u
-            ON
-                sss.user_id = u.user_id
-            JOIN
-                modules AS m
-            ON
-                sss.subject_section_id = m.subject_section_id
-            JOIN
-                contents AS c
-            ON
-                m.module_id = c.module_id
-            LEFT JOIN
-                student_submissions AS ss
-            ON
-                ss.student_id = u.user_id AND ss.content_id = c.content_id
-            WHERE
-                c.content_id = :content_id
-            AND (
-                ss.submission_date IS NULL OR
-                ss.submission_date = (
-                    SELECT MAX(submission_date)
-                    FROM student_submissions
-                    WHERE student_id = ss.student_id AND content_id = ss.content_id
-                )
-            )
-            GROUP BY
-                c.content_id, u.user_id; -- Ensure uniqueness by content_id and user_id
-            ";
+                    SELECT
+                        u.user_id,
+                        u.profile_pic,
+                        u.first_name,
+                        u.last_name,
+                        ss.submission_date,
+                        ss.attempt_number,
+                        ss.content_id,
+                        ss.submission_id,
+                        ss.status,
+                        ss.score,
+                        c.*
+                    FROM
+                        student_subject_section AS sss
+                    JOIN
+                        users AS u
+                    ON
+                        sss.user_id = u.user_id
+                    JOIN
+                        modules AS m
+                    ON
+                        sss.subject_section_id = m.subject_section_id
+                    JOIN
+                        contents AS c
+                    ON
+                        m.module_id = c.module_id
+                    LEFT JOIN
+                        student_submissions AS ss
+                    ON
+                        ss.student_id = u.user_id AND ss.content_id = c.content_id
+                    WHERE
+                        c.content_id = :content_id
+                    AND (
+                        ss.submission_date IS NULL OR
+                        ss.attempt_number = (
+                            SELECT MAX(submission_attempt.attempt_number)
+                            FROM student_submissions AS submission_attempt
+                            WHERE submission_attempt.student_id = ss.student_id
+                            AND submission_attempt.content_id = ss.content_id
+                        )
+                    )
+                    GROUP BY
+                        u.user_id, c.content_id
+                    ORDER BY
+                        ss.attempt_number DESC;
+                ";
+
 
             $stmt = $this->conn->prepare($query);
             $stmt->bindParam(":content_id", $content_id);
@@ -767,6 +873,44 @@ class ModuleContent
             return $result;
         } catch (Exception $e) {
             throw new Exception($e->getMessage());
+        }
+    }
+
+    public function getStudentSubmission($content_id, $student_id, $isLatestOnly)
+    {
+        try {
+            // Base query to select submissions by content_id and student_id
+            $query = "
+                        SELECT ss.*, u.*, sf.*
+                        FROM student_submissions ss
+                        INNER JOIN users u ON ss.student_id = u.user_id
+                        INNER JOIN submission_files sf ON sf.submission_id = ss.submission_id
+                        WHERE ss.content_id = :content_id AND ss.student_id = :student_id
+                    ";
+
+
+            // If we need only the latest submission, add an ORDER BY clause to sort by submission date
+            if ($isLatestOnly) {
+                $query .= " ORDER BY ss.attempt_number DESC LIMIT 1";
+            }
+
+            // Prepare and execute the query
+            $stmt = $this->conn->prepare($query);
+            $stmt->bindParam(':content_id', $content_id, PDO::PARAM_INT);
+            $stmt->bindParam(':student_id', $student_id, PDO::PARAM_INT);
+            $stmt->execute();
+
+            // Fetch the result
+            $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+            // Return the result (either the latest submission or all submissions)
+            return $result ? $result : [];
+        } catch (PDOException $e) {
+            // Catch any database-related exceptions
+            throw new PDOException("Database error: " . $e->getMessage());
+        } catch (Exception $e) {
+            // Catch any other exceptions
+            throw new Exception("Error: " . $e->getMessage());
         }
     }
 }

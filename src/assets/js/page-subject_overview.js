@@ -23,8 +23,8 @@ $(document).ready(function () {
                 fileRequired: false,
             },
         }[selectedType] || {
-            show: ['#dateContainer', '#visibilityContainer', '#maxAttemptsContainer', '#allowLateContainer'],
-            hide: ['#descriptionContainer', '#fileInputContainer', '#assignmentTypeContainer', '#maxScoreContainer'],
+            show: ['#dateContainer', '#visibilityContainer', '#maxAttemptsContainer', '#allowLateContainer', '#descriptionContainer'],
+            hide: ['#fileInputContainer', '#assignmentTypeContainer', '#maxScoreContainer'],
             fileRequired: false,
         };
 

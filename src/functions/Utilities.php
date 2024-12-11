@@ -1,5 +1,8 @@
 <?php
+require_once __DIR__ . '../../../src/config/PathsHandler.php';
 require_once(FILE_PATHS['Functions']['PHPLogger']);
+
+require_once FUNCTIONS . 'UnixTimeStampManager.php';
 
 function sanitizeInput($input)
 {
@@ -110,4 +113,9 @@ function convertProperDate($date, $date_filter)
     $formatted_date = $datetime->format($date_filter);
 
     return $formatted_date;
+}
+
+function redirectViaJS($link)
+{
+    return "<script>window.location = '$link';</script>";
 }

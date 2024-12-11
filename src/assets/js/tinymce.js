@@ -1,7 +1,7 @@
 tinymce.init({
     selector: 'textarea.tinyMCE',
     height: 300,
-    plugins: 'file advlist autolink link charmap preview searchreplace wordcount fullscreen insertdatetime table codesample lists image link media mediaembed code image',
+    plugins: 'advlist autolink link charmap preview searchreplace wordcount fullscreen insertdatetime table codesample lists image link media mediaembed code image',
     toolbar: 'styles | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | fullscreen preview link code image media',
     menubar: 'edit format tools table',
     content_style: `

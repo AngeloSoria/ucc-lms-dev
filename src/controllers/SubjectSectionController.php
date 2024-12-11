@@ -220,4 +220,18 @@ class SubjectSectionController
             return ['success' => false, 'message' => $e->getMessage()];
         }
     }
+
+    public function isStudentEnrolledFromSubjectSection($student_id, $subject_section_id)
+    {
+        try {
+            $result = $this->subjectSectionModel->isStudentEnrolledFromSubjectSection($student_id, $subject_section_id);
+            return [
+                'success' => true,
+                'message' => 'Success in retrieving students enrolled to student_subject_section.',
+                'data' => $result
+            ];
+        } catch (Exception $e) {
+            return ['success' => false, 'message' => $e->getMessage()];
+        }
+    }
 }

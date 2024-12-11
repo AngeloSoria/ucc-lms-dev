@@ -108,7 +108,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             case "addContentSubmission":
                 //Prevent other role except Student from submitting.
                 if (!userHasPerms(['Student'])) {
-                    $_SESSION['_ResultMessage'] = ['success' => false, 'message' => 'Invalid submission, whitelisted role does not match.'];
+                    $_SESSION['_ResultMessage'] = ['success' => false, 'message' => 'Only students can submit.'];
                     // Redirect to the same page to prevent resubmission
                     header("Location: " . $_SERVER['REQUEST_URI']);
                     exit();
@@ -123,6 +123,32 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 // echo json_encode($submissionData);
 
                 $_SESSION["_ResultMessage"] = $moduleContentController->addSubmission($submissionData, $_FILES['submission_Files']);
+
+                // Redirect to the same page to prevent resubmission
+                header("Location: " . $_SERVER['REQUEST_URI']);
+                exit();
+            case "setSubmissionGrade":
+                //Prevent other role except Student from submitting.
+                if (!userHasPerms(['Teacher'])) {
+                    $_SESSION['_ResultMessage'] = ['success' => false, 'message' => 'You don\'t have perms to do this action.'];
+                    // Redirect to the same page to prevent resubmission
+                    header("Location: " . $_SERVER['REQUEST_URI']);
+                    exit();
+                }
+
+                $submissionData = [
+                    "content_id" => $_GET['content_id'],
+                    "submission_id" => $_POST['submission_id'],
+                    "status" => "graded",
+                    "student_id" => $_GET['student_id'],
+                    "score" => $_POST['input_submissionScore'],
+                ];
+
+                msgLog('DATA', json_encode($submissionData));
+
+                // echo json_encode($submissionData);
+
+                $_SESSION["_ResultMessage"] = $moduleContentController->updateSubmissionGrade($submissionData);
 
                 // Redirect to the same page to prevent resubmission
                 header("Location: " . $_SERVER['REQUEST_URI']);

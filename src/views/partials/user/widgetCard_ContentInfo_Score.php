@@ -1,7 +1,12 @@
 <?php
 if (userHasPerms(['Student', 'Teacher'])) {
-    $getSubmissionInfo = $moduleContentController->getSubmissionsByContent($_GET['content_id'], $_SESSION['user_id']);
+    if (isset($_GET['students_submission'], $_GET['student_id'])) {
+        $getSubmissionInfo = $getStudentLatestSubmissionInfo;
+    } else {
+        $getSubmissionInfo = $moduleContentController->getSubmissionsByContent($_GET['content_id'], $_SESSION['user_id']);
+    }
 }
+
 ?>
 <div class="mt-sm-2 mt-md-0 widget-card p-3 shadow-sm rounded border" id="myTasks">
     <div class="d-flex justify-content-between align-items-center">
@@ -11,52 +16,69 @@ if (userHasPerms(['Student', 'Teacher'])) {
     <div>
         <!-- Your task list goes here -->
         <ul class="list-group list-group-flush">
-            <?php if ($getSubmissionInfo['success']): ?>
-                <?php if (!$getSubmissionInfo['data']): ?>
-                    <li class="list-group-item px-0 d-flex justify-content-center align-items-center gap-2">
-                        <p class="fs-7 fw-semibold opacity-75 text-center">
-                            Nothing submitted yet
-                        </p>
-                    </li>
-                <?php else: ?>
-                    <?php
-                    $maxScore = $module_contentInfo['data'][0]['max_score'];
+            <?php if (isset($_GET['students_submission'], $_GET['student_id'])): ?>
+                <li class="list-group-item px-0 d-flex justify-content-center align-items-center gap-2">
+                    <form method="POST" class="container-fluid d-flex flex-column gap-2 justify-content-center align-items-end">
+                        <input type="hidden" name="action" value="setSubmissionGrade">
+                        <input type="hidden" name="submission_id" value="<?php echo $getSubmissionInfo['data'][0]['submission_id'] ?>">
+                        <input type="number" name="input_submissionScore" id="" value="<?php echo $getSubmissionInfo['data'][0]['score'] ?>" min="1" max="<?php echo $module_contentInfo['data'][0]['max_score'] ?>" class="form-control fw-semibold fs-4 text-success text-center">
 
-                    // Filter only graded rows
-                    $gradedSubmissions = array_filter($getSubmissionInfo['data'], function ($submission) {
-                        return $submission['status'] === 'graded';
-                    });
+                        <button type="submit" class="btn btn-sm btn-success d-flex gap-2 justify-content-center align-items-center">
+                            <i class="bi bi-floppy-fill"></i>
+                            Set score
+                        </button>
+                    </form>
+                </li>
+            <?php else: ?>
 
-                    // Determine what to display
-                    if (!empty($gradedSubmissions)) {
-                        // Sort the graded submissions by their submission date or ID (assuming 'submission_date' exists)
-                        usort($gradedSubmissions, function ($a, $b) {
-                            return strtotime($b['submission_date']) - strtotime($a['submission_date']); // Newest first
+                <?php if ($getSubmissionInfo['success']): ?>
+                    <?php if (!$getSubmissionInfo['data']): ?>
+                        <li class="list-group-item px-0 d-flex justify-content-center align-items-center gap-2">
+                            <p class="fs-7 fw-semibold opacity-75 text-center">
+                                Nothing submitted yet
+                            </p>
+                        </li>
+                    <?php else: ?>
+                        <?php
+                        $maxScore = $module_contentInfo['data'][0]['max_score'];
+
+                        // Filter only graded rows
+                        $gradedSubmissions = array_filter($getSubmissionInfo['data'], function ($submission) {
+                            return $submission['status'] === 'graded';
                         });
 
-                        // Get the score from the latest graded submission
-                        $submissionScore = $gradedSubmissions[0]['score'];
-                        $displayText = sprintf('%d / %d', $submissionScore, $maxScore);
-                        $displayClass = 'fs-1 text-success fw-semibold';
-                    } else {
-                        // No graded submissions yet
-                        $displayText = "Waiting to be graded";
-                        $displayClass = 'fs-7 text-center text-secondary fw-semibold';
-                    }
-                    ?>
+                        // Determine what to display
+                        if (!empty($gradedSubmissions)) {
+                            // Sort the graded submissions by their submission date or ID (assuming 'submission_date' exists)
+                            usort($gradedSubmissions, function ($a, $b) {
+                                return strtotime($b['submission_date']) - strtotime($a['submission_date']); // Newest first
+                            });
+
+                            // Get the score from the latest graded submission
+                            $submissionScore = $gradedSubmissions[0]['score'];
+                            $displayText = sprintf('%d / %d', $submissionScore, $maxScore);
+                            $displayClass = 'fs-1 text-success fw-semibold';
+                        } else {
+                            // No graded submissions yet
+                            $displayText = "Waiting to be graded";
+                            $displayClass = 'fs-7 text-center text-secondary fw-semibold';
+                        }
+                        ?>
+                        <li class="list-group-item px-0 d-flex justify-content-center align-items-center gap-2">
+                            <p class="<?php echo $displayClass; ?>">
+                                <?php echo $displayText; ?>
+                            </p>
+                        </li>
+                    <?php endif; ?>
+                <?php else: ?>
+                    <!-- Handle error if submissions couldn't be retrieved -->
                     <li class="list-group-item px-0 d-flex justify-content-center align-items-center gap-2">
-                        <p class="<?php echo $displayClass; ?>">
-                            <?php echo $displayText; ?>
+                        <p class="fs-7 fw-semibold text-danger text-center">
+                            Error retrieving submissions
                         </p>
                     </li>
                 <?php endif; ?>
-            <?php else: ?>
-                <!-- Handle error if submissions couldn't be retrieved -->
-                <li class="list-group-item px-0 d-flex justify-content-center align-items-center gap-2">
-                    <p class="fs-7 fw-semibold text-danger text-center">
-                        Error retrieving submissions
-                    </p>
-                </li>
+
             <?php endif; ?>
         </ul>
     </div>

@@ -463,4 +463,25 @@ class SubjectSectionModel
             throw new Exception($e->getMessage());
         }
     }
+
+    public function isStudentEnrolledFromSubjectSection($student_id, $subject_section_id)
+    {
+        try {
+            $query = "SELECT COUNT(*) AS count 
+                      FROM enrollments
+                      WHERE student_id = :student_id 
+                      AND subject_section_id = :subject_section_id";
+
+            $stmt = $this->conn->prepare($query);
+            $stmt->bindParam(':student_id', $student_id, PDO::PARAM_INT);
+            $stmt->bindParam(':subject_section_id', $subject_section_id, PDO::PARAM_INT);
+            $stmt->execute();
+
+            $result = $stmt->fetch(PDO::FETCH_ASSOC);
+            return $result['count'] > 0; // Returns true if the student is enrolled, otherwise false.
+
+        } catch (Exception $e) {
+            throw new Exception($e->getMessage());
+        }
+    }
 }

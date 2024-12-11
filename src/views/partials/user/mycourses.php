@@ -57,11 +57,11 @@ $moduleContentController = new ModuleContentController();
                                 <div class="col-sm-3 col-md-4 col-lg-6 d-flex align-items-center justify-content-end">
                                     <div class="d-flex gap-3 fw-semibold">
                                         <?php if (userHasPerms(['Student'])): ?>
-                                            <div class="d-flex gap-1 fs-7 align-items-center bg-primary bg-opacity-75 px-2 rounded-pill text-white"
+                                            <!-- <div class="d-flex gap-1 fs-7 align-items-center bg-primary bg-opacity-75 px-2 rounded-pill text-white"
                                                 title="Grades">
                                                 <p>0</p>
                                                 <div class="icon"><i class="bi bi-percent"></i></div>
-                                            </div>
+                                            </div> -->
                                         <?php endif; ?>
                                         <div class="d-flex gap-1 fs-7 align-items-center bg-danger bg-opacity-75 px-2 rounded-pill text-white"
                                             title="Number of Modules">

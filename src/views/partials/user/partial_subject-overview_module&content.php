@@ -6,6 +6,11 @@ if (!$module_contentInfo['success'] || empty($module_contentInfo['data'])) {
     exit;
 }
 
+if ($module_contentInfo['data'][0]['visibility'] == 'hidden' && userHasPerms(['Student'])) {
+    echo redirectViaJS(BASE_PATH_LINK);
+    $_SESSION['_ResultMessage'] = ['success' => false, 'message' => 'You don\'t have permission to view this page.'];
+    exit();
+}
 ?>
 
 <div class="w-100 px-2 pb-4">
@@ -77,8 +82,8 @@ if (!$module_contentInfo['success'] || empty($module_contentInfo['data'])) {
                                     </button>
                                 <?php endif; ?>
                             </div>
-                        <?php endif; ?>
 
+                        <?php endif; ?>
                     <?php endif; ?>
                 </div>
                 <br>

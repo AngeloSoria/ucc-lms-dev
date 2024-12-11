@@ -219,6 +219,16 @@ class ModuleContentController
         }
     }
 
+    public function getSubmittedFilesByContentIdStudentId($content_id, $student_id, $submission_id = null)
+    {
+        try {
+            $result = $this->moduleContentModel->getSubmittedFilesByContentIdStudentId($content_id, $student_id, $submission_id);
+            return ['success' => true, 'data' => $result];
+        } catch (Exception $e) {
+            return ['success' => false, 'message' => $e->getMessage()];
+        }
+    }
+
     // Handle deleting a file from content
     public function deleteContentFile($file_id)
     {
@@ -240,6 +250,16 @@ class ModuleContentController
         try {
             $this->moduleContentModel->addSubmission($submissionData, $fileInputs);
             return ['success' => true, "message" => "Submission success."];
+        } catch (Exception $e) {
+            return ['success' => false, 'message' => $e->getMessage()];
+        }
+    }
+
+    public function updateSubmissionGrade($submissionData)
+    {
+        try {
+            $this->moduleContentModel->updateSubmissionGrade($submissionData);
+            return ['success' => true, 'message' => "Score has been set to this submission."];
         } catch (Exception $e) {
             return ['success' => false, 'message' => $e->getMessage()];
         }
@@ -300,6 +320,16 @@ class ModuleContentController
     {
         try {
             $result = $this->moduleContentModel->getAllContentsFromSubjectSection($subject_section_id);
+            return ['success' => true, 'data' => $result];
+        } catch (Exception $e) {
+            return ['success' => false, 'message' => $e->getMessage()];
+        }
+    }
+
+    public function getStudentSubmission($content_id, $student_id, $isLatestOnly = false)
+    {
+        try {
+            $result = $this->moduleContentModel->getStudentSubmission($content_id, $student_id, $isLatestOnly);
             return ['success' => true, 'data' => $result];
         } catch (Exception $e) {
             return ['success' => false, 'message' => $e->getMessage()];
