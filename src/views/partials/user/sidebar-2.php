@@ -66,6 +66,7 @@
                 </div>
             </a>
         </li>
+
         <li class="border border-top-0">
             <a href="#" class="sidebar-item">
                 <div class="sidebar-item-icon">

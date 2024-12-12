@@ -1,4 +1,7 @@
 <?php
+require_once __DIR__ . '../../config/PathsHandler.php';
+require_once FILE_PATHS['DATABASE'];
+
 header('Content-Type: application/json');
 
 // Set the timezone to Asia/Manila
@@ -14,15 +17,11 @@ if (!$studentId || !$contentId || !is_numeric($score) || $score < 0) {
     exit;
 }
 
-// Ensure the user_id (teacher) is available in the session
-if (!isset($_SESSION['user_id'])) {
-    echo json_encode(['success' => false, 'message' => 'User not logged in.']);
-    exit;
-}
-
-$senderId = $_SESSION['user_id']; // Get the teacher's user_id from the session
+$senderId = $_POST['sender_id']; // Get the teacher's user_id from the session
 
 try {
+    $db = new Database();
+    $pdo = $db->getConnection();
     // Find the latest attempt number for the student and content_id
     $stmt = $pdo->prepare("SELECT MAX(attempt_number) AS max_attempt, score FROM student_submissions WHERE student_id = ? AND content_id = ?");
     $stmt->execute([$studentId, $contentId]);
@@ -30,7 +29,42 @@ try {
 
     // If no submission exists, return an error
     if (!$result['max_attempt']) {
-        echo json_encode(['success' => false, 'message' => 'No submissions found for this student and content.']);
+
+        $stmt = $pdo->prepare("INSERT INTO student_submissions 
+                                        (content_id, student_id, attempt_number, status, score, graded_date)
+                                        VALUES
+                                        (?, ?, 1, ?, ?, CURRENT_TIMESTAMP)");
+
+        $stmt->execute([$contentId, $studentId, 'graded', $score]);
+
+        // Fetch content details (content_type, content_title, subject_name)
+        $stmt = $pdo->prepare("SELECT c.content_type, c.content_title, s.subject_name
+                                        FROM contents c
+                                        JOIN modules m ON c.module_id = m.module_id
+                                        JOIN subject_section ss ON m.subject_section_id = ss.subject_section_id
+                                        JOIN subjects s ON ss.subject_id = s.subject_id
+                                        WHERE c.content_id = ?");
+        $stmt->execute([$contentId]);
+        $contentDetails = $stmt->fetch(PDO::FETCH_ASSOC);
+
+        if ($contentDetails) {
+            $contentType = $contentDetails['content_type'];
+            $contentTitle = $contentDetails['content_title'];
+            $subjectName = $contentDetails['subject_name'];
+
+            // Format the notification message
+            $notificationMessage = "Graded: $contentType '$contentTitle' in subject '$subjectName'";
+
+            // Insert the notification for the student
+            $stmt = $pdo->prepare("INSERT INTO notifications (user_id, content_id, message, sender_id, is_read, created_at) VALUES (?, ?, ?, ?, 0, NOW())");
+            $stmt->execute([$studentId, $contentId, $notificationMessage, $senderId]); // Use senderId from session
+
+            echo json_encode(['success' => true, 'message' => 'Score updated successfully and notification sent.']);
+            exit;
+        } else {
+            echo json_encode(['success' => false, 'message' => 'Content details not found.']);
+            exit;
+        }
     }
 
     $latestAttemptNumber = $result['max_attempt']; // Get the latest attempt number
@@ -39,6 +73,7 @@ try {
     // If the score hasn't changed, no need to update or notify
     if ($score == $currentScore) {
         echo json_encode(['success' => true, 'message' => 'Score is the same, no update needed.']);
+        exit;
     }
 
     // Set the current date and time for graded_date
@@ -71,9 +106,12 @@ try {
         $stmt->execute([$studentId, $contentId, $notificationMessage, $senderId]); // Use senderId from session
 
         echo json_encode(['success' => true, 'message' => 'Score updated successfully and notification sent.']);
+        exit;
     } else {
         echo json_encode(['success' => false, 'message' => 'Content details not found.']);
+        exit;
     }
 } catch (Exception $e) {
     echo json_encode(['success' => false, 'message' => 'Error updating score: ' . $e->getMessage()]);
+    exit;
 }

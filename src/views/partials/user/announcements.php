@@ -14,17 +14,23 @@
             $announcements = [];
             if (isset($_GET['subject_section_id'])) {
                 $announcements = $announcementController->getAnnouncements($_GET['subject_section_id']);
+                $link_base = updateUrlParams(['subject_section_id' => $_GET['subject_section_id'], 'announcements' => 1]);
             } else {
                 $announcements = $announcementController->getAnnouncements();
+                $link_base = BASE_PATH_LINK . 'src/views/users/' . lcfirst($_SESSION['role']) . '/announcement_view.php';
             }
             ?>
             <?php if ($announcements['success']): ?>
-                <?php foreach ($announcements['data'] as $announcement): ?>
-                    <li class="list-group-item d-flex justify-content-start align-items-center gap-2 fw-semibold p-0">
-                        <i class="bi bi-megaphone-fill ctxt-secondary"></i>
-                        <p class="title bg-transparent text-truncate fs-7">
-                            <?php echo sanitizeInput($announcement['title']) ?>
-                        </p>
+                <?php foreach ($announcements['data'] as $announcement):
+                    $link = $link_base . '#announcement_' . $announcement['id'];
+                ?>
+                    <li class="list-group-item p-0">
+                        <a href="<?php echo $link ?>" class="d-flex justify-content-start align-items-center gap-2 fw-semibold p-0" title="<?php echo sanitizeInput($announcement['title']) ?>">
+                            <i class="bi bi-megaphone-fill ctxt-secondary"></i>
+                            <p class="title bg-transparent text-truncate fs-7">
+                                <?php echo sanitizeInput($announcement['title']) ?>
+                            </p>
+                        </a>
                     </li>
                 <?php endforeach; ?>
             <?php else: ?>

@@ -36,7 +36,11 @@ class Announcements
         try {
             $query = "SELECT
                         a.*,
-                        CONCAT(u.last_name, ', ', u.first_name, ' ', u.middle_name) as announcer_name
+                        CONCAT(
+                            IFNULL(u.last_name, ''), ', ',
+                            IFNULL(u.first_name, ''), ' ',
+                            IFNULL(u.middle_name, '')
+                        ) AS announcer_name
                         FROM announcements as a
                         JOIN users as u
                         ON u.user_id = a.announcer_id
@@ -93,7 +97,19 @@ class Announcements
     public function getGlobalAnnouncements()
     {
         try {
-            $query = "SELECT * FROM announcements WHERE is_global = 1 ORDER BY created_at DESC";
+            $query = "SELECT
+                        a.*,
+                        CONCAT(
+                            IFNULL(u.last_name, ''), ', ',
+                            IFNULL(u.first_name, ''), ' ',
+                            IFNULL(u.middle_name, '')
+                        ) AS announcer_name
+                    FROM announcements AS a
+                    JOIN users AS u
+                    ON u.user_id = a.announcer_id
+                    WHERE is_global = 1
+                    ORDER BY created_at DESC;
+                    ";
             $stmt = $this->conn->prepare($query);
             $stmt->execute();
             $result = $stmt->fetchAll(PDO::FETCH_ASSOC);

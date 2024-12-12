@@ -77,6 +77,11 @@ $sidebar_content = [
                     'icon' => 'bi-clipboard-data',
                     'link' => 'general_logs_admin.php',
                 ],
+                'announcements' => [
+                    'title' => 'Announcements',
+                    'icon' => 'bi-megaphone',
+                    'link' => 'announcement_view.php',
+                ],
             ],
         ],
     ],
@@ -117,6 +122,11 @@ $sidebar_content = [
                 ],
             ],
         ],
+        'announcements' => [
+            'title' => 'Announcements',
+            'icon' => 'bi-megaphone',
+            'link' => 'announcement_view.php',
+        ],
         // 'misc' => [
         //     'title' => 'Miscellaneous',
         //     'icon' => 'bi-bar-chart-steps',
@@ -152,6 +162,11 @@ $sidebar_content = [
                     'link' => 'enrolled_subjects.php',
                 ],
             ],
+        ],
+        'announcements' => [
+            'title' => 'Announcements',
+            'icon' => 'bi-megaphone',
+            'link' => 'announcement_view.php',
         ],
         // 'misc' => [
         //     'title' => 'Miscellaneous',

@@ -98,10 +98,11 @@
 /* General thin scrollbar style for WebKit browsers (Chrome, Safari, Edge) */
 ::-webkit-scrollbar {
     width: 6px; /* Thin scrollbar */
+    height: 6px;
 }
 
 ::-webkit-scrollbar-track {
-    background: transparent; /* Default track */
+    background: white; /* Default track */
 }
 
 ::-webkit-scrollbar-thumb {

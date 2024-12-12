@@ -144,16 +144,14 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 }
 
                 $submissionData = [
-                    "content_id" => $_GET['content_id'],
-                    "submission_id" => $_POST['submission_id'],
-                    "status" => "graded",
-                    "student_id" => $_GET['student_id'],
                     "score" => $_POST['input_submissionScore'] == null ? 0 : $_POST['input_submissionScore'],
+                    "status" => "graded",
+                    "content_id" => $_GET['content_id'],
+                    "student_id" => $_GET['student_id'],
+                    "submission_id" => $_POST['submission_id'],
                 ];
 
                 msgLog('DATA', json_encode($submissionData));
-
-                // echo json_encode($submissionData);
 
                 $_SESSION["_ResultMessage"] = $moduleContentController->updateSubmissionGrade($submissionData);
 
@@ -267,23 +265,24 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 // Redirect to the same page after deletion
                 header("Location: " . $_SERVER['REQUEST_URI']);
                 exit();
-            case "addAnnouncement_global":
+            case "deleteAnnouncement_subjectsection":
                 //Prevent other role except Student from submitting.
-                if (!userHasPerms(['Admin'])) {
+                if (!userHasPerms(['Teacher'])) {
                     $_SESSION['_ResultMessage'] = ['success' => false, 'message' => 'You don\'t have perms to do this action.'];
                     // Redirect to the same page to prevent resubmission
                     header("Location: " . $_SERVER['REQUEST_URI']);
                     exit();
                 }
 
-                $announcementData = [
-                    'announcer_id' => $_SESSION['user_id'],
-                    'title' => $_POST['input_announcementTitle'],
-                    'message' => $_POST['input_announcementMessage'],
-                    'is_global' => 1
-                ];
+                $announcement_id = $_POST['announcement_id'];
+                if (!isset($announcement_id)) {
+                    $_SESSION['_ResultMessage'] = ['success' => false, 'message' => 'No announcement id passed.'];
+                    // Redirect to the same page to prevent resubmission
+                    header("Location: " . $_SERVER['REQUEST_URI']);
+                    exit();
+                }
 
-                $_SESSION["_ResultMessage"] = $announcementController->addAnnouncement($announcementData);
+                $_SESSION["_ResultMessage"] = $announcementController->deleteAnnouncement($announcement_id);
                 // Redirect to the same page to prevent resubmission
                 header("Location: " . $_SERVER['REQUEST_URI']);
                 exit();

@@ -59,7 +59,15 @@ foreach ($submissions as $submission) {
 }
 ?>
 <section class="container-fluid">
-    <p class="fs-4 my-2">Gradebook</p>
+    <div class="d-flex justify-content-between align-items-center">
+        <p class="fs-4 my-2">Gradebook</p>
+        <div>
+            <button class="btn btn-sm btn-secondary d-flex justify-content-center align-items-center gap-3">
+                <i class="bi bi-upload"></i>
+                Export
+            </button>
+        </div>
+    </div>
     <section id="gradebook-container" class="container-fluid row m-0 p-0 border">
         <div id="students_panel" class="col-3 p-0">
             <div class="p-2 border border-black-subtle border-bottom-0 d-flex justify-content-center align-items-center" style="height: <?php echo $AssignmentColumnHeight ?>;">Assignments</div>
@@ -83,10 +91,10 @@ foreach ($submissions as $submission) {
                         </a>
                     </div>
                     <div id="content_start-date" class="px-2 text-center border border-black-subtle border-bottom-0">
-                        <?php echo convertProperDate(sanitizeInput($content['start_date']), 'M j (g:i A)') ?>
+                        <?php echo convertProperDate(sanitizeInput($content['start_date']), 'M j') ?>
                     </div>
                     <div id="content_due-date" class="px-2 text-center border border-black-subtle border-bottom-0">
-                        <?php echo convertProperDate(sanitizeInput($content['due_date']), 'M j (g:i A)') ?>
+                        <?php echo convertProperDate(sanitizeInput($content['due_date']), 'M j') ?>
                     </div>
                     <div id="content_max-score" class="px-2 text-center border border-black-subtle">
                         <?php echo sanitizeInput($content['max_score']) ?>
@@ -139,13 +147,14 @@ foreach ($submissions as $submission) {
 
             // Send the updated score to the server
             $.ajax({
-                url: '<?php MODELS . 'Gradebook.SaveScore.php' ?>',
+                url: '<?php echo BASE_PATH_LINK . 'src/models/Gradebook_SaveScore.php' ?>',
                 type: 'POST',
                 data: {
                     action: 'save_score',
                     student_id: studentId,
                     content_id: contentId,
-                    score: score
+                    score: score,
+                    sender_id: <?php echo $_SESSION['user_id'] ?>,
                 },
                 dataType: 'json',
                 success: function(response) {
@@ -162,6 +171,7 @@ foreach ($submissions as $submission) {
                     $(this).text(originalValue); // Restore original value if there was an error
                 }
             });
+
         });
     });
 </script>

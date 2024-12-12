@@ -173,7 +173,6 @@ if ($module_contentInfo['data'][0]['visibility'] == 'hidden' && userHasPerms(['S
                                 } else {
                                     if ($getAllContentFilesByContentId['data']) {
                                         foreach ($getAllContentFilesByContentId['data'] as $contentFile):
-                                            $previewFileMimeTypes = ["image/jpeg", "image/png", "image/gif", "audio/mpeg", "audio/wav", "video/mp4"];
                                 ?>
                                             <!-- video preview -->
                                             <?php if (in_array($contentFile['mime_type'], ['video/mp4'])):
@@ -189,6 +188,24 @@ if ($module_contentInfo['data'][0]['visibility'] == 'hidden' && userHasPerms(['S
                                                             <h5 class="card-title"><?php echo sanitizeInput($contentFile['file_name']) ?></h5>
                                                         </div>
                                                     </div>
+                                                </div>
+                                            <?php elseif (in_array($contentFile['mime_type'], ["image/jpeg", "image/png", "image/gif"])): ?>
+                                                <div class="col-sm-6 col-md-4 col-lg-3 mb-4">
+                                                    <a href="<?php echo BASE_PATH_LINK . 'src/models/DownloadFile.php?content_id=' . $contentFile['content_id'] . '&content_file_id=' . $contentFile['content_file_id'] ?>" target="_blank" class="card-link text-decoration-none">
+                                                        <div class="card hover-shadow">
+                                                            <div class="card-body text-center">
+                                                                <!-- Image Preview -->
+                                                                <img
+                                                                    src="<?php echo convertImageBlobToSrc($contentFile['file_data']) ?>"
+                                                                    alt="<?php echo sanitizeInput($contentFile['file_name']) ?>"
+                                                                    class="img-fluid mb-3"
+                                                                    style="max-height: 100px; object-fit: contain;">
+                                                                <!-- Bootstrap Icon -->
+                                                                <i class="bi <?php echo getBootstrapIcon($contentFile['mime_type']) ?>" style="font-size: 30px;"></i>
+                                                                <h6 class="card-title"><?php echo sanitizeInput($contentFile['file_name']) ?></h6>
+                                                            </div>
+                                                        </div>
+                                                    </a>
                                                 </div>
                                             <?php else: ?>
                                                 <div class="col-sm-6 col-md-4 col-lg-3 mb-4">

@@ -613,7 +613,8 @@ class ModuleContent
                                 student_submissions
                             SET
                                 score = :score,
-                                status = :status
+                                status = :status,
+                                graded_date = CURRENT_TIMESTAMP
                             WHERE
                                 content_id = :content_id
                             AND
@@ -622,9 +623,9 @@ class ModuleContent
                                 student_id = :student_id";
             } else {
                 $query = "INSERT INTO 
-                                student_submissions (score, status, content_id, submission_id, student_id) 
+                                student_submissions (score, status, content_id, submission_id, student_id, graded_date) 
                             VALUES 
-                                (:score, :status, :content_id, :submission_id, :student_id)";
+                                (:score, :status, :content_id, :submission_id, :student_id, CURRENT_TIMESTAMP)";
             }
 
             // Begin the transaction
@@ -771,7 +772,7 @@ class ModuleContent
                             student_submissions 
                         WHERE 
                             content_id = :content_id AND student_id = :student_id 
-                        ORDER BY attempt_number DESC LIMIT 1";
+                        ORDER BY submission_date DESC LIMIT 1";
             $stmt = $this->conn->prepare($query);
             $stmt->bindParam(":content_id", $content_id);
             $stmt->bindParam(":student_id", $student_id);
