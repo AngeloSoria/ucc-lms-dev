@@ -23,17 +23,13 @@ require_once PARTIALS . 'user/partial_head_SubjectView.php';
                 <div class="col p-0 box-sizing-border-box">
                     <?php require_once PARTIALS . 'user/subject_overview.php' ?>
                 </div>
-
                 <!-- sidebar -->
                 <?php if (isset($_GET['subject_section_id'], $_GET['module_id'], $_GET['content_id'])): ?>
                     <?php
                     $getContentInfo = $moduleContentController->getContentById($_GET['content_id']);
                     if (
                         !in_array($getContentInfo['data'][0]['content_type'], ['handout', 'information'])
-                        && (
-                            !isset($_GET['students_submission'])
-                            || (isset($_GET['students_submission']) && isset($_GET['student_id']))
-                        )
+                        && (!isset($_GET['students_submission']) || (isset($_GET['students_submission']) && isset($_GET['student_id'])))
                     ):
                     ?>
                         <div class="col-lg-3 mt-md-2 mt-lg-0 px-sm-0 px-md-1 d-flex flex-column gap-1 sticky-top overflow-y-auto">
@@ -43,10 +39,12 @@ require_once PARTIALS . 'user/partial_head_SubjectView.php';
                         </div>
                     <?php endif; ?>
                 <?php else: ?>
-                    <div class="col-lg-3 mt-md-2 mt-lg-0 px-sm-0 px-md-1 d-flex flex-column gap-1">
-                        <?php require_once PARTIALS . 'user/mytasks.php' ?>
-                        <?php require_once PARTIALS . 'user/announcements.php' ?>
-                    </div>
+                    <?php if (!isset($_GET['assignments']) && (!isset($_GET['subject_section_id']) || !isset($_GET['gradebook']))): ?>
+                        <div class="col-lg-3 mt-md-2 mt-lg-0 px-sm-0 px-md-1 d-flex flex-column gap-1">
+                            <?php require_once PARTIALS . 'user/mytasks.php' ?>
+                            <?php require_once PARTIALS . 'user/announcements.php' ?>
+                        </div>
+                    <?php endif; ?>
                 <?php endif; ?>
             </section>
 

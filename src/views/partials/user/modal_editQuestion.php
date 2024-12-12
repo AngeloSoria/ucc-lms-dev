@@ -1,14 +1,11 @@
-
-
 <?php
+$a_db = new Database();
+$db = $a_db->getConnection();
 // Fetch the question details from the database
 $stmt = $db->prepare("SELECT * FROM quiz_questions WHERE quiz_question_id = ?");
 $stmt->execute([$quiz_question_id]);
 $question = $stmt->fetch(PDO::FETCH_ASSOC);
 
-if (!$question) {
-    die("Question not found.");
-}
 
 $question_text = $question['question_text'];
 $question_type = $question['question_type'];
@@ -139,12 +136,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     <div class="row mb-3">
                         <div class="col">
                             <label for="editQuestionModal_questionType" class="form-label">Question Type</label>
-                            <input id="editQuestionModal_questionType" type="text" class="form-control" 
+                            <input id="editQuestionModal_questionType" type="text" class="form-control"
                                 value="<?= htmlspecialchars($question_type) ?>" readonly>
                         </div>
                         <div class="col">
                             <label for="editQuestionModal_questionPoints" class="form-label">Points</label>
-                            <input id="editQuestionModal_questionPoints" type="number" name="question_points" 
+                            <input id="editQuestionModal_questionPoints" type="number" name="question_points"
                                 class="form-control" value="<?= $question['question_points'] ?>" required>
                         </div>
                     </div>
@@ -156,13 +153,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                             <label for="editQuestionModal_choicesContainer" class="form-label">Choices (for MCQ)</label>
                             <div id="editQuestionModal_choicesContainer">
                                 <?php foreach ($choicesContext as $choice): ?>
-                                    <div class="input-group mb-2 choice-group" 
-                                         data-choice-id="<?= $choice['quiz_question_option_id'] ?>">
-                                        <input type="radio" name="correct_choice" 
-                                               value="<?= $choice['quiz_question_option_id'] ?>" 
-                                               <?= $choice['is_correct'] ? 'checked' : '' ?> class="me-2">
-                                        <input type="text" name="choices[<?= $choice['quiz_question_option_id'] ?>]" 
-                                               class="form-control" value="<?= htmlspecialchars($choice['option_text']) ?>" required>
+                                    <div class="input-group mb-2 choice-group"
+                                        data-choice-id="<?= $choice['quiz_question_option_id'] ?>">
+                                        <input type="radio" name="correct_choice"
+                                            value="<?= $choice['quiz_question_option_id'] ?>"
+                                            <?= $choice['is_correct'] ? 'checked' : '' ?> class="me-2">
+                                        <input type="text" name="choices[<?= $choice['quiz_question_option_id'] ?>]"
+                                            class="form-control" value="<?= htmlspecialchars($choice['option_text']) ?>" required>
                                         <button type="button" class="btn btn-danger remove-choice">Remove</button>
                                     </div>
                                 <?php endforeach; ?>
@@ -175,13 +172,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                             <label for="editQuestionModal_choicesContainer" class="form-label">Choices (True/False)</label>
                             <div id="editQuestionModal_choicesContainer">
                                 <div class="input-group mb-2 choice-group" data-choice-id="1">
-                                    <input type="radio" name="correct_choice" value="1" 
-                                           <?= $choicesContext[0]['is_correct'] ? 'checked' : '' ?> class="me-2">
+                                    <input type="radio" name="correct_choice" value="1"
+                                        <?= $choicesContext[0]['is_correct'] ? 'checked' : '' ?> class="me-2">
                                     <input type="text" name="choices[1]" class="form-control" value="True" readonly>
                                 </div>
                                 <div class="input-group mb-2 choice-group" data-choice-id="2">
-                                    <input type="radio" name="correct_choice" value="2" 
-                                           <?= $choicesContext[1]['is_correct'] ? 'checked' : '' ?> class="me-2">
+                                    <input type="radio" name="correct_choice" value="2"
+                                        <?= $choicesContext[1]['is_correct'] ? 'checked' : '' ?> class="me-2">
                                     <input type="text" name="choices[2]" class="form-control" value="False" readonly>
                                 </div>
                             </div>
@@ -190,9 +187,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         <!-- Fill in the Blanks -->
                         <div class="mb-3">
                             <label for="editQuestionModal_correctAnswer" class="form-label">Answer (Fill in the Blank)</label>
-                            <input id="editQuestionModal_correctAnswer" type="text" 
-                                   name="choices[<?= $quiz_question_id ?>]" class="form-control" 
-                                   value="<?= htmlspecialchars($correct_answer_text) ?>" required>
+                            <input id="editQuestionModal_correctAnswer" type="text"
+                                name="choices[<?= $quiz_question_id ?>]" class="form-control"
+                                value="<?= htmlspecialchars($correct_answer_text) ?>" required>
                         </div>
                     <?php endif; ?>
                 </div>
@@ -207,74 +204,73 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 </div>
 
 <script>
-  document.addEventListener('DOMContentLoaded', function () {
-    const editButtons = document.querySelectorAll('.edit-question-btn');
-    const modal = document.querySelector('#editQuestionModal');
-    const modalQuestionText = modal.querySelector('#editQuestionModal_questionText');
-    const modalQuestionPoints = modal.querySelector('#editQuestionModal_questionPoints');
-    const modalQuestionType = modal.querySelector('#editQuestionModal_questionType');
-    const choicesContainer = modal.querySelector('#editQuestionModal_choicesContainer');
-    const modalCorrectAnswer = modal.querySelector('#editQuestionModal_correctAnswer');
+    document.addEventListener('DOMContentLoaded', function() {
+        const editButtons = document.querySelectorAll('.edit-question-btn');
+        const modal = document.querySelector('#editQuestionModal');
+        const modalQuestionText = modal.querySelector('#editQuestionModal_questionText');
+        const modalQuestionPoints = modal.querySelector('#editQuestionModal_questionPoints');
+        const modalQuestionType = modal.querySelector('#editQuestionModal_questionType');
+        const choicesContainer = modal.querySelector('#editQuestionModal_choicesContainer');
+        const modalCorrectAnswer = modal.querySelector('#editQuestionModal_correctAnswer');
 
-    editButtons.forEach(button => {
-        button.addEventListener('click', async function () {
-            const questionId = this.getAttribute('data-id');
+        editButtons.forEach(button => {
+            button.addEventListener('click', async function() {
+                const questionId = this.getAttribute('data-id');
 
-            // Clear previous content
-            if (choicesContainer) choicesContainer.innerHTML = '';
-            if (modalCorrectAnswer) modalCorrectAnswer.value = '';
+                // Clear previous content
+                if (choicesContainer) choicesContainer.innerHTML = '';
+                if (modalCorrectAnswer) modalCorrectAnswer.value = '';
 
-            // Fetch question details dynamically
-            try {
-                const response = await fetch(`/fetch-question.php?quiz_question_id=${questionId}`);
-                if (!response.ok) throw new Error('Failed to fetch question data');
-                const data = await response.json();
+                // Fetch question details dynamically
+                try {
+                    const response = await fetch(`/fetch-question.php?quiz_question_id=${questionId}`);
+                    if (!response.ok) throw new Error('Failed to fetch question data');
+                    const data = await response.json();
 
-                // Populate modal fields
-                modal.querySelector('[name="quiz_question_id"]').value = data.quiz_question_id;
-                modalQuestionText.value = data.question_text;
-                modalQuestionPoints.value = data.question_points;
-                modalQuestionType.value = data.question_type;
+                    // Populate modal fields
+                    modal.querySelector('[name="quiz_question_id"]').value = data.quiz_question_id;
+                    modalQuestionText.value = data.question_text;
+                    modalQuestionPoints.value = data.question_points;
+                    modalQuestionType.value = data.question_type;
 
-                if (data.question_type === 'MCQ' || data.question_type === 'TRUE_FALSE') {
-                    data.choices.forEach(choice => {
-                        const choiceGroup = document.createElement('div');
-                        choiceGroup.classList.add('input-group', 'mb-2', 'choice-group');
-                        choiceGroup.setAttribute('data-choice-id', choice.quiz_question_option_id);
+                    if (data.question_type === 'MCQ' || data.question_type === 'TRUE_FALSE') {
+                        data.choices.forEach(choice => {
+                            const choiceGroup = document.createElement('div');
+                            choiceGroup.classList.add('input-group', 'mb-2', 'choice-group');
+                            choiceGroup.setAttribute('data-choice-id', choice.quiz_question_option_id);
 
-                        const correctRadioButton = document.createElement('input');
-                        correctRadioButton.type = 'radio';
-                        correctRadioButton.name = 'correct_choice';
-                        correctRadioButton.value = choice.quiz_question_option_id;
-                        correctRadioButton.checked = choice.is_correct;
-                        correctRadioButton.classList.add('me-2');
+                            const correctRadioButton = document.createElement('input');
+                            correctRadioButton.type = 'radio';
+                            correctRadioButton.name = 'correct_choice';
+                            correctRadioButton.value = choice.quiz_question_option_id;
+                            correctRadioButton.checked = choice.is_correct;
+                            correctRadioButton.classList.add('me-2');
 
-                        const choiceTextInput = document.createElement('input');
-                        choiceTextInput.type = 'text';
-                        choiceTextInput.name = `choices[${choice.quiz_question_option_id}]`;
-                        choiceTextInput.classList.add('form-control');
-                        choiceTextInput.value = choice.option_text;
+                            const choiceTextInput = document.createElement('input');
+                            choiceTextInput.type = 'text';
+                            choiceTextInput.name = `choices[${choice.quiz_question_option_id}]`;
+                            choiceTextInput.classList.add('form-control');
+                            choiceTextInput.value = choice.option_text;
 
-                        const removeButton = document.createElement('button');
-                        removeButton.type = 'button';
-                        removeButton.classList.add('btn', 'btn-danger', 'remove-choice');
-                        removeButton.textContent = 'Remove';
+                            const removeButton = document.createElement('button');
+                            removeButton.type = 'button';
+                            removeButton.classList.add('btn', 'btn-danger', 'remove-choice');
+                            removeButton.textContent = 'Remove';
 
-                        choiceGroup.append(correctRadioButton, choiceTextInput, removeButton);
-                        choicesContainer.appendChild(choiceGroup);
+                            choiceGroup.append(correctRadioButton, choiceTextInput, removeButton);
+                            choicesContainer.appendChild(choiceGroup);
 
-                        // Add remove functionality
-                        removeButton.addEventListener('click', () => choiceGroup.remove());
-                    });
-                } else if (data.question_type === 'FILL_IN_THE_BLANKS') {
-                    modalCorrectAnswer.value = data.correct_answer_text;
+                            // Add remove functionality
+                            removeButton.addEventListener('click', () => choiceGroup.remove());
+                        });
+                    } else if (data.question_type === 'FILL_IN_THE_BLANKS') {
+                        modalCorrectAnswer.value = data.correct_answer_text;
+                    }
+                } catch (error) {
+                    console.error('Error fetching question data:', error);
+                    alert('An error occurred while loading question details.');
                 }
-            } catch (error) {
-                console.error('Error fetching question data:', error);
-                alert('An error occurred while loading question details.');
-            }
+            });
         });
     });
-});
-
 </script>

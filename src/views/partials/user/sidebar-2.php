@@ -33,7 +33,7 @@
             </a>
         </li>
         <li class="border border-top-0">
-            <a href="<?php echo updateUrlParams(['subject_section_id' => $_GET['subject_section_id'], 'assignments' => 'view']) ?>" class="sidebar-item <?php echo isset($_GET['assignments']) ? 'active' : '' ?>">
+            <a href="<?php echo updateUrlParams(['subject_section_id' => $_GET['subject_section_id'], 'assignments' => '1']) ?>" class="sidebar-item <?php echo isset($_GET['subject_section_id'], $_GET['assignments']) ? 'active' : '' ?>">
                 <div class="sidebar-item-icon">
                     <i class="bi bi-clipboard2-check" aria-hidden="true"></i>
                 </div>
@@ -45,7 +45,7 @@
 
         <?php if (userHasPerms(['Teacher'])): ?>
             <li class="border border-top-0">
-                <a href="#" class="sidebar-item">
+                <a href="<?php echo updateUrlParams(['subject_section_id' => $_GET['subject_section_id'], 'gradebook' => '1']) ?>" class="sidebar-item <?php echo isset($_GET['subject_section_id'], $_GET['gradebook']) ? 'active' : '' ?>">
                     <div class="sidebar-item-icon">
                         <i class="bi bi-journal-text" aria-hidden="true"></i>
                     </div>
@@ -56,6 +56,16 @@
             </li>
         <?php endif; ?>
 
+        <li class="border border-top-0">
+            <a href="<?php echo updateUrlParams(['subject_section_id' => $_GET['subject_section_id'], 'announcements' => '1']) ?>" class="sidebar-item <?php echo isset($_GET['subject_section_id'], $_GET['announcements']) ? 'active' : '' ?>">
+                <div class="sidebar-item-icon">
+                    <i class="bi bi-megaphone" aria-hidden="true"></i>
+                </div>
+                <div class="sidebar-item-title">
+                    Announcements
+                </div>
+            </a>
+        </li>
         <li class="border border-top-0">
             <a href="#" class="sidebar-item">
                 <div class="sidebar-item-icon">

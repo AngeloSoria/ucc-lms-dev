@@ -1,5 +1,5 @@
 <div class="d-flex flex-column gap-2 flex-grow-1">
-    <div class="bg-white shadow-sm rounded px-2 pt-3">
+    <div class="container-fluid bg-light shadow-sm rounded px-2 pt-3">
         <div id="top-controls" class="row m-0">
             <div class="col-lg-8">
                 <h5 class="text-success">
@@ -7,7 +7,7 @@
                 </h5>
             </div>
             <div class="col-lg-4 d-flex justify-content-end align-items-center">
-                <?php if (userHasPerms(["Teacher", "Admin"]) && !isset($_GET['module_id']) && !isset($_GET['assignments'])): ?>
+                <?php if (userHasPerms(["Teacher", "Admin"]) && !isset($_GET['module_id']) && !isset($_GET['assignments']) && !isset($_GET['subject_section_id'], $_GET['gradebook']) && !isset($_GET['subject_section_id'], $_GET['announcements'])): ?>
                     <button class="btn btn-success shadow-sm d-flex gap-2" data-bs-toggle="modal"
                         data-bs-target="#modal_addModule">
                         <i class="bi bi-plus-circle"></i>
@@ -17,7 +17,24 @@
             </div>
         </div>
         <hr>
-        <?php if (isset($_GET['module_id'], $_GET['content_id'], $_GET['students_submission'], $_GET['student_id'])): ?>
+        <?php if (isset($_GET['subject_section_id'], $_GET['assignments'])): ?>
+            <section id="modules_container" class="d-flex flex-column gap-3 mb-3">
+                <?php require_once PARTIALS . 'user/partial_subject-overview_assignments.php' ?>
+            </section>
+        <?php elseif (isset($_GET['subject_section_id'], $_GET['announcements'])): ?>
+            <section id="modules_container" class="d-flex flex-column gap-3 mb-3">
+                <?php require_once PARTIALS . 'user/partial_subjectsection_announcements.php' ?>
+            </section>
+        <?php elseif (isset($_GET['subject_section_id'], $_GET['gradebook'])): ?>
+            <?php if (userHasPerms(['Student'])) {
+                echo redirectViaJS(BASE_PATH_LINK);
+                $_SESSION['_ResultMessage'] = ['success' => false, 'message' => 'You don\'t have permission to view this page.'];
+                exit();
+            } ?>
+            <section id="modules_container" class="d-flex flex-column gap-3 mb-3">
+                <?php require_once PARTIALS . 'user/partial_subject-overview_gradebook.php' ?>
+            </section>
+        <?php elseif (isset($_GET['module_id'], $_GET['content_id'], $_GET['students_submission'], $_GET['student_id'])): ?>
             <?php if (userHasPerms(['Student'])) {
                 echo redirectViaJS(BASE_PATH_LINK);
                 $_SESSION['_ResultMessage'] = ['success' => false, 'message' => 'You don\'t have permission to view this page.'];
@@ -34,10 +51,6 @@
             } ?>
             <section id="modules_container" class="d-flex flex-column gap-3 mb-3">
                 <?php require_once PARTIALS . 'user/partial_subject-overview-moduleContent-studentsubmission.php' ?>
-            </section>
-        <?php elseif (isset($_GET['assignments'])): ?>
-            <section id="modules_container" class="d-flex flex-column gap-3 mb-3">
-                <?php require_once PARTIALS . 'user/partial_subject-overview_assignments.php' ?>
             </section>
         <?php elseif (!isset($_GET['module_id'])): ?>
             <section id="modules_container" class="d-flex flex-column gap-3 mb-3">
@@ -156,10 +169,12 @@
             </section>
         <?php elseif (isset($_GET['module_id'], $_GET['content_id'])): ?>
             <?php
+            // Module Content View
             require_once PARTIALS . 'user/partial_subject-overview_module&content.php';
             ?>
         <?php else: ?>
             <?php
+            // MODULE CONFIGURATION
             if (!userHasPerms(['Teacher', 'Admin'])) {
                 echo '<script>window.location = \'' . BASE_PATH_LINK . '\'</script>';
                 exit;

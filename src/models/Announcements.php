@@ -13,12 +13,14 @@ class Announcements
     public function addAnnouncement($announcementData)
     {
         try {
-            $query = "INSERT INTO announcements (subject_section_id, title, message) 
-                      VALUES (:subject_section_id, :title, :message)";
+            $query = "INSERT INTO announcements (announcer_id, subject_section_id, title, message, is_global) 
+                      VALUES (:announcer_id, :subject_section_id, :title, :message, :is_global)";
             $stmt = $this->conn->prepare($query);
+            $stmt->bindParam(':announcer_id', $announcementData['announcer_id'], PDO::PARAM_INT);
             $stmt->bindParam(':subject_section_id', $announcementData['subject_section_id'], PDO::PARAM_INT);
             $stmt->bindParam(':title', $announcementData['title']);
             $stmt->bindParam(':message', $announcementData['message']);
+            $stmt->bindParam(':is_global', $announcementData['is_global'], PDO::PARAM_INT);
 
             $stmt->execute(); // Execute statement
 
@@ -32,7 +34,14 @@ class Announcements
     public function getAnnouncementsBySubjectSection($subject_section_id)
     {
         try {
-            $query = "SELECT * FROM announcements WHERE subject_section_id = :subject_section_id ORDER BY created_at DESC";
+            $query = "SELECT
+                        a.*,
+                        CONCAT(u.last_name, ', ', u.first_name, ' ', u.middle_name) as announcer_name
+                        FROM announcements as a
+                        JOIN users as u
+                        ON u.user_id = a.announcer_id
+                        WHERE subject_section_id = :subject_section_id 
+                        ORDER BY created_at DESC";
             $stmt = $this->conn->prepare($query);
             $stmt->bindParam(':subject_section_id', $subject_section_id, PDO::PARAM_INT);
             $stmt->execute();
@@ -94,6 +103,4 @@ class Announcements
             throw new PDOException("Failed to get global announcements: " . $e->getMessage());
         }
     }
-
 }
-?>

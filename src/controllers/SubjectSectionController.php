@@ -186,6 +186,15 @@ class SubjectSectionController
         }
     }
 
+    public function getAllEnrolledStudentsBySubjectSectionId($subject_section_id)
+    {
+        try {
+            return $this->subjectSectionModel->getAllEnrolledStudentsBySubjectSectionId($subject_section_id);
+        } catch (Exception $e) {
+            return ['success' => false, 'message' => $e->getMessage()];
+        }
+    }
+
     public function getAllEnrolledSubjectsFromSectionByTeacherId($teacher_id)
     {
         try {

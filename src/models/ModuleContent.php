@@ -766,7 +766,12 @@ class ModuleContent
     public function getLatestSubmission($content_id, $student_id)
     {
         try {
-            $query = "SELECT * FROM student_submissions WHERE content_id = :content_id AND student_id = :student_id ORDER BY submission_date DESC LIMIT 1";
+            $query = "SELECT * 
+                        FROM 
+                            student_submissions 
+                        WHERE 
+                            content_id = :content_id AND student_id = :student_id 
+                        ORDER BY attempt_number DESC LIMIT 1";
             $stmt = $this->conn->prepare($query);
             $stmt->bindParam(":content_id", $content_id);
             $stmt->bindParam(":student_id", $student_id);
@@ -826,7 +831,16 @@ class ModuleContent
     public function getStudentsSubmission($content_id)
     {
         try {
-            $query = "
+            $query = "WITH LatestAttempts AS (
+                        SELECT
+                            student_id,
+                            content_id,
+                            MAX(attempt_number) AS latest_attempt_number
+                        FROM
+                            student_submissions
+                        GROUP BY
+                            student_id, content_id
+                    )
                     SELECT
                         u.user_id,
                         u.profile_pic,
@@ -856,23 +870,19 @@ class ModuleContent
                     LEFT JOIN
                         student_submissions AS ss
                     ON
-                        ss.student_id = u.user_id AND ss.content_id = c.content_id
-                    WHERE
-                        c.content_id = :content_id
-                    AND (
-                        ss.submission_date IS NULL OR
-                        ss.attempt_number = (
-                            SELECT MAX(submission_attempt.attempt_number)
-                            FROM student_submissions AS submission_attempt
-                            WHERE submission_attempt.student_id = ss.student_id
-                            AND submission_attempt.content_id = ss.content_id
+                        ss.student_id = u.user_id
+                        AND ss.content_id = c.content_id
+                        AND ss.attempt_number = (
+                            SELECT
+                                latest_attempt_number
+                            FROM
+                                LatestAttempts
+                            WHERE
+                                LatestAttempts.student_id = ss.student_id
+                                AND LatestAttempts.content_id = ss.content_id
                         )
-                    )
-                    GROUP BY
-                        u.user_id, c.content_id
-                    ORDER BY
-                        ss.attempt_number DESC;
-                ";
+                    WHERE
+                        c.content_id = :content_id";
 
 
             $stmt = $this->conn->prepare($query);
@@ -902,7 +912,7 @@ class ModuleContent
                         WHERE 
                             ss.content_id = :content_id 
                         AND 
-                            ss.student_id = :student_id;
+                            ss.student_id = :student_id
 
                     ";
 

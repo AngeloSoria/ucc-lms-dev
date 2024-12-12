@@ -117,5 +117,27 @@ function convertProperDate($date, $date_filter)
 
 function redirectViaJS($link)
 {
-    return "<script>window.location = '$link';</script>";
+    return "<script>window.location.href = '$link';</script>";
+}
+
+function timeElapsed($datetime)
+{
+    $timezone = new DateTimeZone('Asia/Manila'); // Set the timezone to Asia/Manila
+    $now = new DateTime('now', $timezone); // Current time in Asia/Manila
+    $givenTime = new DateTime($datetime, $timezone); // Given time in Asia/Manila
+    $interval = $now->diff($givenTime); // Difference between the two times
+
+    if ($interval->y > 0) {
+        return $interval->y . ' year' . ($interval->y > 1 ? 's' : '') . ' ago';
+    } elseif ($interval->m > 0) {
+        return $interval->m . ' month' . ($interval->m > 1 ? 's' : '') . ' ago';
+    } elseif ($interval->d > 0) {
+        return $interval->d . ' day' . ($interval->d > 1 ? 's' : '') . ' ago';
+    } elseif ($interval->h > 0) {
+        return $interval->h . ' hour' . ($interval->h > 1 ? 's' : '') . ' ago';
+    } elseif ($interval->i > 0) {
+        return $interval->i . ' minute' . ($interval->i > 1 ? 's' : '') . ' ago';
+    } else {
+        return $interval->s . ' second' . ($interval->s > 1 ? 's' : '') . ' ago';
+    }
 }

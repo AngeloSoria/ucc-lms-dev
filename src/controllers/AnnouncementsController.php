@@ -25,12 +25,16 @@ class AnnouncementController
     {
         try {
             // Check if the announcement is global
-            $announcementData['is_global'] = isset($announcementData['is_global']) ? $announcementData['is_global'] : false;
+            $announcementData['is_global'] = isset($announcementData['is_global']) ? $announcementData['is_global'] : 0;
 
             // Add the announcement to the database
             $addResult = $this->announcementModel->addAnnouncement($announcementData);
 
-            return $addResult['success'] == true ? $addResult : ['success' => false, 'message' => 'Something went wrong while adding the announcement.'];
+            msgLog("Ann Data", json_encode($announcementData));
+            msgLog("Ann", json_encode($addResult));
+
+            $addResult['message'] = "Announcement has been posted.";
+            return $addResult;
         } catch (Exception $e) {
             return ['success' => false, 'message' => $e->getMessage()];
         }
@@ -109,4 +113,3 @@ class AnnouncementController
         }
     }
 }
-?>

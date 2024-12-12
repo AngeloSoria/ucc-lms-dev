@@ -44,9 +44,9 @@ if ($module_contentInfo['data'][0]['visibility'] == 'hidden' && userHasPerms(['S
             <div class="p-1">
 
                 <div class="mt-3 mb-3">
-                    <p>
+                    <section id="content_description">
                         <?php echo $module_contentInfo['data'][0]['description'] ?>
-                    </p>
+                    </section>
                     <hr>
                     <?php if (!in_array($module_contentInfo['data'][0]['content_type'], ['information', 'handout'])): ?>
 
@@ -67,81 +67,93 @@ if ($module_contentInfo['data'][0]['visibility'] == 'hidden' && userHasPerms(['S
                                 <?php endif; ?>
                             </div>
                         <?php else: ?>
-                            <div class="mt-4">
-                                <?php if ($totalSubmissionAttemps >= 1 && $totalSubmissionAttemps < $module_contentInfo['data'][0]['max_attempts']): ?>
-                                    <button class="btn btn-sm btn-success">
-                                        <i class="bi bi-plus"></i>
-                                        Take Another Quiz
-                                    </button>
-                                <?php elseif ($totalSubmissionAttemps < $module_contentInfo['data'][0]['max_attempts']): ?>
-                                    <a
-                                        href="<?php echo updateUrlParams(['subject_section_id' => $_GET['subject_section_id'], 'module_id' => $_GET['module_id'], 'content_id' => $_GET['content_id'], 'quiz_id' => $_GET]) ?>">
-                                        <button class="btn btn-sm btn-success">
-                                            <i class="bi bi-plus"></i>
-                                            Take Quiz
-                                        </button>
-                                    </a>
-                                <?php endif; ?>
-                                <?php if (userHasPerms(['Teacher'])): ?>
-                                    <button class="btn btn-sm btn-primary" data-bs-toggle="modal"
-                                        data-bs-target="#addNewQuestionModal">
-                                        <i class="bi bi-plus"></i>
-                                        Add question
-                                    </button>
-                                <?php endif; ?>
-
-                            </div>
-
-                            <hr>
-
-                            <h5>Questions</h5>
-                            <ul class="list-group">
-                                <?php $questions = $quizController->getQuestionsByContentID($_GET['content_id'])
-
-                                ?>
-
-                                <?php if ($questions['success']): ?>
-                                    <?php foreach ($questions['data'] as $index => $question): ?>
-                                        <li class="list-group-item d-flex justify-content-between align-items-center">
-                                            <div>
-                                                <strong><?= $index + 1 ?>. </strong>
-                                                <?= htmlspecialchars($question['question_text']) ?>
-                                            </div>
-                                            <div class="d-flex align-items-center">
-                                                <span
-                                                    class="badge bg-secondary me-3"><?= htmlspecialchars($question['question_type']) ?></span>
-
-                                                <!-- Edit Button -->
-                                                <?php $quiz_question_id = $question['quiz_question_id'] ?>
-                                                <button class="btn btn-sm btn-primary me-2" data-bs-toggle="modal"
-                                                    data-bs-target="#editQuestionModal" data-id="<?php echo $quiz_question_id ?>">
-                                                    <i class="bi bi-pencil-square"></i>
-                                                    Edit
+                            <?php if (isset($_GET['take_quiz'])): ?>
+                                <?php require_once PARTIALS . 'user/partial_takequiz_overview.php'; ?>
+                            <?php else: ?>
+                                <div class="mt-4">
+                                    <?php $questions = $quizController->getQuestionsByContentID($_GET['content_id']); ?>
+                                    <?php if ($questions['success']): ?>
+                                        <?php if ($totalSubmissionAttemps >= 1 && $totalSubmissionAttemps < $module_contentInfo['data'][0]['max_attempts']): ?>
+                                            <a
+                                                href="<?php echo updateUrlParams(['subject_section_id' => $_GET['subject_section_id'], 'module_id' => $_GET['module_id'], 'content_id' => $_GET['content_id'], 'take_quiz' => '']) ?>">
+                                                <button class="btn btn-sm btn-success">
+                                                    <i class="bi bi-plus"></i>
+                                                    Take Another Quiz
                                                 </button>
+                                            </a>
+                                        <?php elseif ($totalSubmissionAttemps < $module_contentInfo['data'][0]['max_attempts']): ?>
+                                            <a
+                                                href="<?php echo updateUrlParams(['subject_section_id' => $_GET['subject_section_id'], 'module_id' => $_GET['module_id'], 'content_id' => $_GET['content_id'], 'take_quiz' => '']) ?>">
+                                                <button class="btn btn-sm btn-success">
+                                                    <i class="bi bi-plus"></i>
+                                                    Take Quiz
+                                                </button>
+                                            </a>
+                                        <?php endif; ?>
+                                    <?php endif; ?>
 
+                                    <?php if (userHasPerms(['Teacher'])): ?>
+                                        <button class="btn btn-sm btn-primary" data-bs-toggle="modal"
+                                            data-bs-target="#addNewQuestionModal">
+                                            <i class="bi bi-plus"></i>
+                                            Add question
+                                        </button>
+                                    <?php endif; ?>
 
-                                                <!-- Delete Button -->
-                                                <form method="post"
-                                                    onsubmit="return confirm('Are you sure you want to delete this question?');">
-                                                    <input type="hidden" name="action" value="deleteQuestion">
-                                                    <input type="hidden" name="quiz_question_id"
-                                                        value="<?= htmlspecialchars($question['quiz_question_id']) ?>">
-                                                    <input type="hidden" name="content_id" value="<?= htmlspecialchars($content_id) ?>">
-                                                    <button type="submit" class="btn btn-sm btn-danger">
-                                                        <i class="bi bi-trash"></i> Delete
+                                </div>
+
+                                <hr>
+
+                                <h5>Questions</h5>
+                                <ul class="list-group">
+                                    <?php $questions = $quizController->getQuestionsByContentID($_GET['content_id'])
+                                    ?>
+
+                                    <?php if ($questions['success']): ?>
+                                        <?php foreach ($questions['data'] as $index => $question): ?>
+                                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                                                <div>
+                                                    <strong><?= $index + 1 ?>. </strong>
+                                                    <?= htmlspecialchars($question['question_text']) ?>
+                                                </div>
+                                                <div class="d-flex align-items-center">
+                                                    <span
+                                                        class="badge bg-secondary me-3"><?= htmlspecialchars($question['question_type']) ?></span>
+
+                                                    <!-- Edit Button -->
+                                                    <?php $quiz_question_id = $question['quiz_question_id'] ?>
+                                                    <button class="btn btn-sm btn-primary me-2" data-bs-toggle="modal"
+                                                        data-bs-target="#editQuestionModal" data-question-id="<?= $quiz_question_id ?>">
+                                                        <i class="bi bi-pencil-square"></i> Edit
                                                     </button>
-                                                </form>
 
-                                            </div>
-                                        </li>
-                                    <?php endforeach; ?>
-                                <?php else: ?>
-                                    <div class="alert alert-warning">
-                                        No questions yet.
-                                    </div>
-                                <?php endif; ?>
-                            </ul>
+                                                    <!-- Delete Button -->
+                                                    <form method="post"
+                                                        onsubmit="return confirm('Are you sure you want to delete this question?');">
+                                                        <input type="hidden" name="action" value="deleteQuestion">
+                                                        <input type="hidden" name="quiz_question_id"
+                                                            value="<?= htmlspecialchars($question['quiz_question_id']) ?>">
+                                                        <input type="hidden" name="content_id" value="<?= htmlspecialchars($content_id) ?>">
+                                                        <button type="submit" class="btn btn-sm btn-danger">
+                                                            <i class="bi bi-trash"></i> Delete
+                                                        </button>
+                                                    </form>
+
+                                                </div>
+                                            </li>
+                                        <?php endforeach; ?>
+                                    <?php else: ?>
+                                        <div class="alert alert-warning">
+                                            No questions yet.
+                                        </div>
+                                    <?php endif; ?>
+                                </ul>
+                            <?php endif; ?>
+                            <?php require_once PARTIALS . 'user/modal_addNewQuestion.php' ?>
+                            <?php require_once PARTIALS . 'user/modal_editQuestion.php' ?>
                         <?php endif; ?>
+
+
 
                     <?php endif; ?>
                 </div>
@@ -284,6 +296,4 @@ if ($module_contentInfo['data'][0]['visibility'] == 'hidden' && userHasPerms(['S
         <?php endif; ?>
     </div>
     <?php require_once PARTIALS . 'user/modal_uploadSubmission.php' ?>
-    <?php require_once PARTIALS . 'user/modal_addNewQuestion.php' ?>
-    <?php require_once PARTIALS . 'user/modal_editQuestion.php' ?>
 </div>

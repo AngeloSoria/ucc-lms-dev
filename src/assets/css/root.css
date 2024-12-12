@@ -378,3 +378,8 @@ a {
 .tox-edit-area {
     width: 100% !important; /* Ensure the area inside TinyMCE resizes */
 }
+
+[contenteditable]:focus {
+    outline: 2px solid var(--c-brand-primary-a0);
+    outline-offset: -4px;
+}

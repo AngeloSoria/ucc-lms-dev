@@ -6,7 +6,6 @@ if (userHasPerms(['Student', 'Teacher'])) {
         $getSubmissionInfo = $moduleContentController->getSubmissionsByContent($_GET['content_id'], $_SESSION['user_id']);
     }
 }
-echo json_encode($getSubmissionInfo);
 ?>
 <div class="mt-sm-2 mt-md-0 widget-card p-3 shadow-sm rounded border" id="myTasks">
     <div class="d-flex justify-content-between align-items-center">

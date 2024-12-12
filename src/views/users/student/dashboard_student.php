@@ -8,6 +8,7 @@ require_once(FILE_PATHS['Controllers']['User']);
 require_once(FILE_PATHS['Controllers']['SubjectSection']);
 require_once(FILE_PATHS['Controllers']['Subject']);
 require_once(FILE_PATHS['Controllers']['Section']);
+require_once CONTROLLERS . 'AnnouncementsController.php';
 require_once(FILE_PATHS['Functions']['SessionChecker']);
 require_once(FILE_PATHS['Controllers']['StudentEnrollment']);
 require_once(FILE_PATHS['Functions']['ToastLogger']);
@@ -23,6 +24,7 @@ $subjectSectionController = new SubjectSectionController($db);
 $subjectController = new SubjectController();
 $sectionController = new SectionController();
 $studentEnrollmentController = new StudentEnrollmentController($db);
+$announcementController = new AnnouncementController();
 
 $myEnrolledSubjects = $studentEnrollmentController->getAllSubjectsEnrolledByStudentId($_SESSION['user_id']);
 

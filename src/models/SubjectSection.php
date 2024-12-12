@@ -391,6 +391,27 @@ class SubjectSectionModel
         }
     }
 
+    public function getAllEnrolledStudentsBySubjectSectionId($subject_section_id)
+    {
+        try {
+            $query = "SELECT u.user_id, CONCAT(u.last_name, ', ', u.middle_name, ' ', u.first_name) AS student_name
+                  FROM student_subject_section sss
+                  JOIN users u ON sss.user_id = u.user_id
+                  WHERE sss.subject_section_id = :subject_section_id";
+
+            $stmt = $this->conn->prepare($query);
+            $stmt->bindParam(":subject_section_id", $subject_section_id);
+            $stmt->execute();
+
+            // Get All subject_section data.
+            $retrievedEnrolledStudents = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+            return ['success' => true, 'data' => $retrievedEnrolledStudents];
+        } catch (Exception $e) {
+            throw new Exception($e->getMessage());
+        }
+    }
+
     public function getAllEnrolledSubjectsFromSectionByTeacherId($teacher_id)
     {
         try {
