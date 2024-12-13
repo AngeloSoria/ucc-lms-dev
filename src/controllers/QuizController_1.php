@@ -79,5 +79,6 @@ class QuizController
         $stmt->execute([$content_id]);
         $questions = $stmt->fetchAll(PDO::FETCH_ASSOC);
         return $questions;
+
     }
 }

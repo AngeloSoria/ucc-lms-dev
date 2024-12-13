@@ -1,110 +1,112 @@
 <?php
 $a_db = new Database();
 $db = $a_db->getConnection();
-// Fetch the question details from the database
-$stmt = $db->prepare("SELECT * FROM quiz_questions WHERE quiz_question_id = ?");
-$stmt->execute([$quiz_question_id]);
-$question = $stmt->fetch(PDO::FETCH_ASSOC);
-
-
-$question_text = $question['question_text'];
-$question_type = $question['question_type'];
-$choicesContext = [];
-$correct_answer_text = '';
-
-// Fetch choices based on question type
-if ($question_type === 'MCQ' || $question_type === 'TRUE_FALSE') {
-    $stmt = $db->prepare("SELECT * FROM quiz_question_options WHERE quiz_question_id = ?");
+if (isset($quiz_question_id)) {
+    // Fetch the question details from the database
+    $stmt = $db->prepare("SELECT * FROM quiz_questions WHERE quiz_question_id = ?");
     $stmt->execute([$quiz_question_id]);
-    $choicesContext = $stmt->fetchAll(PDO::FETCH_ASSOC);
-} elseif ($question_type === 'FILL_IN_THE_BLANKS') {
-    $stmt = $db->prepare("SELECT option_text FROM quiz_question_options WHERE quiz_question_id = ? AND is_correct = 1");
-    $stmt->execute([$quiz_question_id]);
-    $correct_answer = $stmt->fetch(PDO::FETCH_ASSOC);
-    $correct_answer_text = $correct_answer ? $correct_answer['option_text'] : '';
-}
+    $question = $stmt->fetch(PDO::FETCH_ASSOC);
 
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    try {
-        if (isset($_POST['action']) && $_POST['action'] === 'editQuestion') {
-            // Ensure quiz_question_id is available
-            $quiz_question_id = $_POST['quiz_question_id'] ?? null;
-            if (!$quiz_question_id) {
-                throw new Exception("Question ID is required.");
-            }
 
-            // Fetch updated question
-            $stmt = $db->prepare("SELECT * FROM quiz_questions WHERE quiz_question_id = ?");
-            $stmt->execute([$quiz_question_id]);
-            $question = $stmt->fetch(PDO::FETCH_ASSOC);
-            if (!$question) {
-                throw new Exception("Question not found.");
-            }
+    $question_text = $question['question_text'];
+    $question_type = $question['question_type'];
+    $choicesContext = [];
+    $correct_answer_text = '';
 
-            $updated_question_text = $_POST['question_text'] ?? null;
-            $updated_score = $_POST['question_points'] ?? null;
+    // Fetch choices based on question type
+    if ($question_type === 'MCQ' || $question_type === 'TRUE_FALSE') {
+        $stmt = $db->prepare("SELECT * FROM quiz_question_options WHERE quiz_question_id = ?");
+        $stmt->execute([$quiz_question_id]);
+        $choicesContext = $stmt->fetchAll(PDO::FETCH_ASSOC);
+    } elseif ($question_type === 'FILL_IN_THE_BLANKS') {
+        $stmt = $db->prepare("SELECT option_text FROM quiz_question_options WHERE quiz_question_id = ? AND is_correct = 1");
+        $stmt->execute([$quiz_question_id]);
+        $correct_answer = $stmt->fetch(PDO::FETCH_ASSOC);
+        $correct_answer_text = $correct_answer ? $correct_answer['option_text'] : '';
+    }
 
-            if (empty($updated_question_text) || empty($updated_score)) {
-                throw new Exception("Question text and score are required.");
-            }
-
-            // Update the question
-            $stmt = $db->prepare("UPDATE quiz_questions SET question_text = ?, question_points = ? WHERE quiz_question_id = ?");
-            $stmt->execute([$updated_question_text, $updated_score, $quiz_question_id]);
-
-            if ($question_type === 'MCQ' || $question_type === 'TRUE_FALSE') {
-                // Handle MCQ/True/False choices update
-                $updated_choices = $_POST['choices'] ?? [];
-                $correct_choice_id = $_POST['correct_choice'] ?? null;
-
-                if (empty($correct_choice_id)) {
-                    throw new Exception("Correct choice must be selected.");
+    if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+        try {
+            if (isset($_POST['action']) && $_POST['action'] === 'editQuestion') {
+                // Ensure quiz_question_id is available
+                $quiz_question_id = $_POST['quiz_question_id'] ?? null;
+                if (!$quiz_question_id) {
+                    throw new Exception("Question ID is required.");
                 }
 
-                $existing_choice_ids = array_column($choicesContext, 'quiz_question_option_id');
-                $submitted_choice_ids = array_keys($updated_choices);
-
-                // Remove choices no longer submitted
-                $removed_choices = array_diff($existing_choice_ids, $submitted_choice_ids);
-                foreach ($removed_choices as $removed_choice_id) {
-                    $stmt = $db->prepare("DELETE FROM quiz_question_options WHERE quiz_question_option_id = ?");
-                    $stmt->execute([$removed_choice_id]);
+                // Fetch updated question
+                $stmt = $db->prepare("SELECT * FROM quiz_questions WHERE quiz_question_id = ?");
+                $stmt->execute([$quiz_question_id]);
+                $question = $stmt->fetch(PDO::FETCH_ASSOC);
+                if (!$question) {
+                    throw new Exception("Question not found.");
                 }
 
-                // Insert or update choices
-                foreach ($updated_choices as $choice_id => $choice_text) {
-                    $is_correct = ($choice_id == $correct_choice_id) ? 1 : 0;
+                $updated_question_text = $_POST['question_text'] ?? null;
+                $updated_score = $_POST['question_points'] ?? null;
 
-                    if (in_array($choice_id, $existing_choice_ids)) {
-                        // Update existing choice
-                        $stmt = $db->prepare("UPDATE quiz_question_options SET option_text = ?, is_correct = ? WHERE quiz_question_option_id = ?");
-                        $stmt->execute([$choice_text, $is_correct, $choice_id]);
-                    } else {
-                        // Insert new choice
-                        $stmt = $db->prepare("INSERT INTO quiz_question_options (quiz_question_id, option_text, is_correct) VALUES (?, ?, ?)");
-                        $stmt->execute([$quiz_question_id, $choice_text, $is_correct]);
+                if (empty($updated_question_text) || empty($updated_score)) {
+                    throw new Exception("Question text and score are required.");
+                }
+
+                // Update the question
+                $stmt = $db->prepare("UPDATE quiz_questions SET question_text = ?, question_points = ? WHERE quiz_question_id = ?");
+                $stmt->execute([$updated_question_text, $updated_score, $quiz_question_id]);
+
+                if ($question_type === 'MCQ' || $question_type === 'TRUE_FALSE') {
+                    // Handle MCQ/True/False choices update
+                    $updated_choices = $_POST['choices'] ?? [];
+                    $correct_choice_id = $_POST['correct_choice'] ?? null;
+
+                    if (empty($correct_choice_id)) {
+                        throw new Exception("Correct choice must be selected.");
                     }
-                }
-            } elseif ($question_type === 'FILL_IN_THE_BLANKS') {
-                // Handle Fill in the Blank answer update
-                $updated_answer_text = $_POST['choices'][$quiz_question_id] ?? null;
 
-                if (empty($updated_answer_text)) {
-                    throw new Exception("Answer text is required.");
-                }
+                    $existing_choice_ids = array_column($choicesContext, 'quiz_question_option_id');
+                    $submitted_choice_ids = array_keys($updated_choices);
 
-                // Update the correct answer
-                $stmt = $db->prepare("UPDATE quiz_question_options SET option_text = ? WHERE quiz_question_id = ? AND is_correct = 1");
-                $stmt->execute([$updated_answer_text, $quiz_question_id]);
+                    // Remove choices no longer submitted
+                    $removed_choices = array_diff($existing_choice_ids, $submitted_choice_ids);
+                    foreach ($removed_choices as $removed_choice_id) {
+                        $stmt = $db->prepare("DELETE FROM quiz_question_options WHERE quiz_question_option_id = ?");
+                        $stmt->execute([$removed_choice_id]);
+                    }
+
+                    // Insert or update choices
+                    foreach ($updated_choices as $choice_id => $choice_text) {
+                        $is_correct = ($choice_id == $correct_choice_id) ? 1 : 0;
+
+                        if (in_array($choice_id, $existing_choice_ids)) {
+                            // Update existing choice
+                            $stmt = $db->prepare("UPDATE quiz_question_options SET option_text = ?, is_correct = ? WHERE quiz_question_option_id = ?");
+                            $stmt->execute([$choice_text, $is_correct, $choice_id]);
+                        } else {
+                            // Insert new choice
+                            $stmt = $db->prepare("INSERT INTO quiz_question_options (quiz_question_id, option_text, is_correct) VALUES (?, ?, ?)");
+                            $stmt->execute([$quiz_question_id, $choice_text, $is_correct]);
+                        }
+                    }
+                } elseif ($question_type === 'FILL_IN_THE_BLANKS') {
+                    // Handle Fill in the Blank answer update
+                    $updated_answer_text = $_POST['choices'][$quiz_question_id] ?? null;
+
+                    if (empty($updated_answer_text)) {
+                        throw new Exception("Answer text is required.");
+                    }
+
+                    // Update the correct answer
+                    $stmt = $db->prepare("UPDATE quiz_question_options SET option_text = ? WHERE quiz_question_id = ? AND is_correct = 1");
+                    $stmt->execute([$updated_answer_text, $quiz_question_id]);
+                }
             }
-        }
 
-        // After successful form processing, redirect to avoid re-submission
-        exit();
-    } catch (Exception $e) {
-        // Handle any errors that occur during the process
-        echo "Error: " . $e->getMessage();
-        exit();
+            // After successful form processing, redirect to avoid re-submission
+            exit();
+        } catch (Exception $e) {
+            // Handle any errors that occur during the process
+            echo "Error: " . $e->getMessage();
+            exit();
+        }
     }
 }
 ?>

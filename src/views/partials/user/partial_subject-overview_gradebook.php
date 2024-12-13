@@ -16,6 +16,15 @@ $stmt = $pdo->prepare($studentsQuery);
 $stmt->execute([$subject_section_id]);
 $students = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
+// Fetch students
+$studentsQuery2 = "SELECT u.user_id, CONCAT(u.last_name, ', ', u.middle_name, ' ', u.first_name) AS student_name
+                  FROM student_subject_section sss
+                  JOIN users u ON sss.user_id = u.user_id
+                  WHERE sss.subject_section_id = ?";
+$stmt = $pdo->prepare($studentsQuery2);
+$stmt->execute([$subject_section_id]);
+$students2 = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
 // Fetch modules and their contents (assignments and quizzes)
 $contentsQuery = "SELECT c.content_id, c.content_title, c.content_type, c.max_score, c.start_date, c.due_date
                   FROM modules m
@@ -57,15 +66,30 @@ $submissionData = [];
 foreach ($submissions as $submission) {
     $submissionData[$submission['student_id']][$submission['content_id']] = $submission;
 }
+
+$_SESSION['exportGradebookData'] = [
+    "subject_section" => [
+        "id" => $_GET['subject_section_id'],
+        "subject_name" => $SUBJECT_INFO['data']['subject_name'],
+    ],
+    "gradebook_data" => [
+        "contents" => $contents,
+        "students" => $students2,
+    ],
+];
 ?>
 <section class="container-fluid">
     <div class="d-flex justify-content-between align-items-center">
         <p class="fs-4 my-2">Gradebook</p>
         <div>
-            <button class="btn btn-sm btn-secondary d-flex justify-content-center align-items-center gap-3">
-                <i class="bi bi-upload"></i>
-                Export
-            </button>
+            <form method="POST">
+                <input type="hidden" name="action" value="export_Gradebook">
+                <button type="submit" class="btn btn-sm btn-secondary d-flex justify-content-center align-items-center gap-3">
+                    <i class="bi bi-upload"></i>
+                    Export
+                </button>
+            </form>
+
         </div>
     </div>
     <section id="gradebook-container" class="container-fluid row m-0 p-0 border">

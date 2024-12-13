@@ -95,7 +95,7 @@
         <ul class="p-0 ul_no-design">
             <li class="border border-top-0">
                 <a href="<?php echo BASE_PATH_LINK . 'src/views/users/viewprofile.php?viewProfile=' . $_SESSION['user_id'] ?>"
-                    class="sidebar-item <?= $CURRENT_PAGE == $key ? 'active' : '' ?>">
+                    class="sidebar-item">
                     <div class="sidebar-item-icon">
                         <i class="bi bi-person" aria-hidden="true"></i>
                     </div>

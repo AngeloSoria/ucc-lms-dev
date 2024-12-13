@@ -1,7 +1,5 @@
 <?php
 
-require_once UTILS;
-
 require_once(FILE_PATHS['DATABASE']);
 
 require_once(FILE_PATHS['Controllers']['User']);
@@ -18,8 +16,9 @@ require_once(FILE_PATHS['Functions']['PHPLogger']);
 require_once CONTROLLERS . 'QuizController.php';
 require_once CONTROLLERS . 'AnnouncementsController.php';
 
-require_once MODELS . 'ExportGradebook.php';
 
+
+require_once UTILS;
 
 checkUserAccess(['Teacher', 'Student']);
 
@@ -145,14 +144,16 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 }
 
                 $submissionData = [
-                    "score" => $_POST['input_submissionScore'] == null ? 0 : $_POST['input_submissionScore'],
-                    "status" => "graded",
                     "content_id" => $_GET['content_id'],
-                    "student_id" => $_GET['student_id'],
                     "submission_id" => $_POST['submission_id'],
+                    "status" => "graded",
+                    "student_id" => $_GET['student_id'],
+                    "score" => $_POST['input_submissionScore'] == null ? 0 : $_POST['input_submissionScore'],
                 ];
 
                 msgLog('DATA', json_encode($submissionData));
+
+                // echo json_encode($submissionData);
 
                 $_SESSION["_ResultMessage"] = $moduleContentController->updateSubmissionGrade($submissionData);
 
@@ -266,24 +267,23 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 // Redirect to the same page after deletion
                 header("Location: " . $_SERVER['REQUEST_URI']);
                 exit();
-            case "deleteAnnouncement_subjectsection":
+            case "addAnnouncement_global":
                 //Prevent other role except Student from submitting.
-                if (!userHasPerms(['Teacher'])) {
+                if (!userHasPerms(['Admin'])) {
                     $_SESSION['_ResultMessage'] = ['success' => false, 'message' => 'You don\'t have perms to do this action.'];
                     // Redirect to the same page to prevent resubmission
                     header("Location: " . $_SERVER['REQUEST_URI']);
                     exit();
                 }
 
-                $announcement_id = $_POST['announcement_id'];
-                if (!isset($announcement_id)) {
-                    $_SESSION['_ResultMessage'] = ['success' => false, 'message' => 'No announcement id passed.'];
-                    // Redirect to the same page to prevent resubmission
-                    header("Location: " . $_SERVER['REQUEST_URI']);
-                    exit();
-                }
+                $announcementData = [
+                    'announcer_id' => $_SESSION['user_id'],
+                    'title' => $_POST['input_announcementTitle'],
+                    'message' => $_POST['input_announcementMessage'],
+                    'is_global' => 1
+                ];
 
-                $_SESSION["_ResultMessage"] = $announcementController->deleteAnnouncement($announcement_id);
+                $_SESSION["_ResultMessage"] = $announcementController->addAnnouncement($announcementData);
                 // Redirect to the same page to prevent resubmission
                 header("Location: " . $_SERVER['REQUEST_URI']);
                 exit();
@@ -296,6 +296,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 $responses = $_POST;
 
                 $total_score = 0;
+
 
                 // Fetch quiz questions
                 $stmt = $db->prepare("SELECT * FROM quiz_questions WHERE content_id = ?");
@@ -375,30 +376,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
                 header("Location: " . updateUrlParams(['subject_section_id' => $_GET['subject_section_id'], 'module_id' => $_GET['module_id'], 'content_id' => $_GET['content_id']]));
                 exit();
-            case "export_Gradebook":
-                //Prevent other role except Student from submitting.
-                if (!userHasPerms(['Teacher'])) {
-                    $_SESSION['_ResultMessage'] = ['success' => false, 'message' => 'You don\'t have perms to do this action.'];
-                    // Redirect to the same page to prevent resubmission
-                    header("Location: " . $_SERVER['REQUEST_URI']);
-                    exit();
-                }
 
-                if (!isset($_SESSION['exportGradebookData'])) {
-                    $_SESSION['_ResultMessage'] = ['success' => false, 'message' => 'No Gradebook Data passed.'];
-                    // Redirect to the same page to prevent resubmission
-                    header("Location: " . $_SERVER['REQUEST_URI']);
-                    exit();
-                } else {
-                    // msgLog("test", ($_SESSION['exportGradebookData']['gradebook_data']['students']));
-                    echo exportGradebook($_SESSION['exportGradebookData']);
-                    unset($_SESSION['exportGradebookData']);
-                }
-
-
-                // Redirect to the same page to prevent resubmission
-                header("Location: " . $_SERVER['REQUEST_URI']);
-                exit();
         }
     }
 }

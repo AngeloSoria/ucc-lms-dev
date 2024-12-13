@@ -1,9 +1,4 @@
 <?php
-ob_start();
-require_once(__DIR__ . '../../../../config/PathsHandler.php');
-require_once(FILE_PATHS['DATABASE']);
-$database = new Database();
-$db = $database->getConnection(); // Establish the database connection
 
 $content_id = isset($_GET['content_id']) ? $_GET['content_id'] : null;
 $user_id = $_SESSION['user_id'];
@@ -25,135 +20,15 @@ if (($quiz['max_attempts'] !== null && $attempt_count >= $quiz['max_attempts']) 
 } else {
     $quiz_locked = false;
 }
-
-
-
 ?>
-
-<style>
-    /* .question-navigation {
-        position: fixed;
-        right: 20px;
-        top: 100px;
-        width: 200px;
-        background-color: #f8f9fa;
-        border: 1px solid #ddd;
-        padding: 15px;
-        border-radius: 5px;
-    } */
-
-    .question-navigation a {
-        display: block;
-        margin-bottom: 10px;
-        text-decoration: none;
-        padding: 5px;
-        color: #007bff;
-        text-align: center;
-        border: 1px solid #ddd;
-        border-radius: 3px;
-    }
-
-    .question-navigation a.active {
-        background-color: #007bff;
-        color: white;
-    }
-
-    .navigation-buttons {
-        display: flex;
-        justify-content: space-between;
-        margin-top: 20px;
-    }
-
-    .navigation-buttons button {
-        width: 48%;
-    }
-
-    #submitButton {
-        width: 100%;
-    }
-
-    #preview-section {
-        display: none;
-    }
-</style>
-
-<div class="container mt-5">
-    <h2>Take Quiz: <?= htmlspecialchars($quiz['content_title']) ?></h2>
-    <div id="question-container">
-        <form method="POST" id="quizForm">
-
-            <div id="questions-section">
-                <?php foreach ($questions as $index => $question): ?>
-                    <div class="question" data-question-index="<?= $index ?>"
-                        style="display: <?= $index === 0 ? 'block' : 'none'; ?>;">
-                        <h5>Question <?= $index + 1 ?> (<?= $question['question_points'] ?> points)</h5>
-                        <p><?= htmlspecialchars($question['question_text']) ?></p>
-
-                        <?php if ($question['question_type'] === 'MCQ' || $question['question_type'] === 'TRUE_FALSE'): ?>
-                            <?php
-                            $stmt = $db->prepare("SELECT * FROM quiz_question_options WHERE quiz_question_id = ?");
-                            $stmt->execute([$question['quiz_question_id']]);
-                            $options = $stmt->fetchAll(PDO::FETCH_ASSOC);
-                            ?>
-                            <?php foreach ($options as $option): ?>
-                                <div class="form-check">
-                                    <input class="form-check-input question-response" type="radio"
-                                        name="quiz_question_<?= $question['quiz_question_id'] ?>"
-                                        value="<?= $option['quiz_question_option_id'] ?>"
-                                        data-question-id="<?= $question['quiz_question_id'] ?>">
-                                    <label class="form-check-label"><?= htmlspecialchars($option['option_text']) ?></label>
-                                </div>
-                            <?php endforeach; ?>
-                        <?php elseif (strtoupper($question['question_type']) === 'FILL_IN_THE_BLANKS'): ?>
-                            <input type="text" class="form-control question-response"
-                                name="quiz_question_<?= $question['quiz_question_id'] ?>" placeholder="Your answer here"
-                                data-question-id="<?= $question['quiz_question_id'] ?>">
-                        <?php endif; ?>
-                    </div>
-                <?php endforeach; ?>
-            </div>
-
-            <!-- Preview Section -->
-            <div id="preview-section">
-                <h5>Preview Your Answers</h5>
-                <div id="preview-content">
-                    <?php foreach ($questions as $index => $question): ?>
-                        <div class="preview-question">
-                            <h6>Question <?= $index + 1 ?> (<?= $question['question_points'] ?> points)</h6>
-                            <p><?= htmlspecialchars($question['question_text']) ?></p>
-                            <p><strong>Your Answer:</strong> <span
-                                    id="preview-answer-<?= $question['quiz_question_id'] ?>">Not Answered</span></p>
-                        </div>
-                        <hr>
-                    <?php endforeach; ?>
-                </div>
-            </div>
-
-
-
-            <div class="navigation-buttons" id="questions-navigation">
-                <button type="button" id="prevButton" class="btn btn-secondary">Previous</button>
-                <button type="button" id="nextButton" class="btn btn-primary">Next</button>
-            </div>
-            <form method="POST">
-                <button type="submit" class="btn btn-success mt-3" id="submitButton">Submit Quiz</button>
-                <input type="hidden" name="action" value="submitQuiz">
-                <input type="hidden" name="attemptCount" value="<?php echo $attempt_count ?>">
-            </form>
-
-
-        </form>
-    </div>
-
-
-    <!-- <div class="question-navigation" style="z-index: 9999999">
+<div class="mt-sm-2 mt-md-0 widget-card p-3 shadow-sm rounded border" id="quiz-nav">
+    <div class="question-navigation">
         <div class="mb-3">
             <a
                 href="<?php echo updateUrlParams(['subject_section_id' => $_GET['subject_section_id'], 'module_id' => $_GET['module_id'], 'content_id' => $_GET['content_id']]) ?>">
                 <button class="btn btn-sm btn-primary me-2">
                     Cancel
                 </button>
-
             </a>
         </div>
         <h6>Questions</h6>
@@ -163,10 +38,9 @@ if (($quiz['max_attempts'] !== null && $attempt_count >= $quiz['max_attempts']) 
             </a>
         <?php endforeach; ?>
         <a href="#" id="previewButton" class="btn btn-info mt-3">Preview</a>
-    </div> -->
-
+    </div>
 </div>
-<!-- 
+
 <script>
     document.getElementById('quizForm').addEventListener('submit', function() {
 
@@ -256,4 +130,4 @@ if (($quiz['max_attempts'] !== null && $attempt_count >= $quiz['max_attempts']) 
 
     // Initialize first question as active
     showQuestion(0);
-</script> -->
+</script>

@@ -31,7 +31,7 @@ if (($quiz['max_attempts'] !== null && $attempt_count >= $quiz['max_attempts']) 
 ?>
 
 <style>
-    /* .question-navigation {
+    .question-navigation {
         position: fixed;
         right: 20px;
         top: 100px;
@@ -40,7 +40,7 @@ if (($quiz['max_attempts'] !== null && $attempt_count >= $quiz['max_attempts']) 
         border: 1px solid #ddd;
         padding: 15px;
         border-radius: 5px;
-    } */
+    }
 
     .question-navigation a {
         display: block;
@@ -146,7 +146,7 @@ if (($quiz['max_attempts'] !== null && $attempt_count >= $quiz['max_attempts']) 
     </div>
 
 
-    <!-- <div class="question-navigation" style="z-index: 9999999">
+    <div class="question-navigation" style="z-index: 9999999">
         <div class="mb-3">
             <a
                 href="<?php echo updateUrlParams(['subject_section_id' => $_GET['subject_section_id'], 'module_id' => $_GET['module_id'], 'content_id' => $_GET['content_id']]) ?>">
@@ -163,12 +163,12 @@ if (($quiz['max_attempts'] !== null && $attempt_count >= $quiz['max_attempts']) 
             </a>
         <?php endforeach; ?>
         <a href="#" id="previewButton" class="btn btn-info mt-3">Preview</a>
-    </div> -->
+    </div>
 
 </div>
-<!-- 
+
 <script>
-    document.getElementById('quizForm').addEventListener('submit', function() {
+    document.getElementById('quizForm').addEventListener('submit', function () {
 
     });
 
@@ -256,4 +256,4 @@ if (($quiz['max_attempts'] !== null && $attempt_count >= $quiz['max_attempts']) 
 
     // Initialize first question as active
     showQuestion(0);
-</script> -->
+</script>
