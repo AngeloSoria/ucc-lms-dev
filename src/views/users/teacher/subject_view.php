@@ -36,6 +36,10 @@ require_once PARTIALS . 'user/partial_head_SubjectView.php';
                             <?php require_once PARTIALS . 'user/widgetCard_ContentInfo_ContentAttr.php' ?>
                             <?php require_once PARTIALS . 'user/widgetCard_ContentInfo_Score.php' ?>
                             <?php require_once PARTIALS . 'user/widgetCard_ContentInfo_Submission.php' ?>
+
+                            <?php if (in_array($getContentInfo['data'][0]['content_type'], ['quiz']) && isset($_GET['take_quiz'])): ?>
+                                <?php require_once PARTIALS . 'user/widgetCard_QuizTakingPreview.php' ?>
+                            <?php endif; ?>
                         </div>
                     <?php endif; ?>
                 <?php else: ?>
