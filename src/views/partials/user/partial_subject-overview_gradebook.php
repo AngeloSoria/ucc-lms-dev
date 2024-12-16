@@ -8,7 +8,7 @@ $db = new Database();
 $pdo = $db->getConnection();
 
 // Fetch students
-$studentsQuery = "SELECT u.user_id, u.profile_pic, CONCAT(u.last_name, ', ', u.middle_name, ' ', u.first_name) AS student_name
+$studentsQuery = "SELECT u.user_id, u.profile_pic, CONCAT(u.last_name, ', ', u.first_name) AS student_name
                   FROM student_subject_section sss
                   JOIN users u ON sss.user_id = u.user_id
                   WHERE sss.subject_section_id = ?";
@@ -17,7 +17,7 @@ $stmt->execute([$subject_section_id]);
 $students = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
 // Fetch students
-$studentsQuery2 = "SELECT u.user_id, CONCAT(u.last_name, ', ', u.middle_name, ' ', u.first_name) AS student_name
+$studentsQuery2 = "SELECT u.user_id, CONCAT(u.last_name, ', ', u.first_name) AS student_name
                   FROM student_subject_section sss
                   JOIN users u ON sss.user_id = u.user_id
                   WHERE sss.subject_section_id = ?";
@@ -26,7 +26,7 @@ $stmt->execute([$subject_section_id]);
 $students2 = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
 // Fetch modules and their contents (assignments and quizzes)
-$contentsQuery = "SELECT c.content_id, c.content_title, c.content_type, c.max_score, c.start_date, c.due_date
+$contentsQuery = "SELECT c.content_id, c.content_title, c.content_type, c.max_score, c.start_date, c.due_date, c.module_id, m.subject_section_id
                   FROM modules m
                   JOIN contents c ON m.module_id = c.module_id
                   WHERE m.subject_section_id = ? AND c.content_type IN ('assignment', 'quiz')";
@@ -77,6 +77,7 @@ $_SESSION['exportGradebookData'] = [
         "students" => $students2,
     ],
 ];
+
 ?>
 <section class="container-fluid">
     <div class="d-flex justify-content-between align-items-center">
@@ -84,12 +85,86 @@ $_SESSION['exportGradebookData'] = [
         <div>
             <form method="POST">
                 <input type="hidden" name="action" value="export_Gradebook">
-                <button type="submit" class="btn btn-sm btn-secondary d-flex justify-content-center align-items-center gap-3">
+                <button type="button" id="exportBtn" class="btn btn-sm btn-secondary d-flex justify-content-center align-items-center gap-3">
                     <i class="bi bi-upload"></i>
                     Export
                 </button>
             </form>
+            <script>
+                // Example data
+                const gradebookData = {
+                    students: <?php echo json_encode($students2); ?>,
+                    contents: <?php echo json_encode($contents); ?>,
+                    subject_section: {
+                        id: <?php echo $_GET['subject_section_id']; ?>,
+                        subject_name: '<?php echo $SUBJECT_INFO['data']['subject_name']; ?>',
+                    },
+                    scores: <?php echo json_encode($submissionData); ?>
+                };
 
+                // Function to export the data to an Excel file
+                function exportGradebook() {
+                    // Create a new workbook
+                    const workbook = XLSX.utils.book_new();
+
+                    // Prepare headers for the sheet
+                    const headers = ['Student Name', ...gradebookData.contents.map(content => content.content_title)];
+
+                    // Initialize sheet data with the header row
+                    const sheetData = [headers];
+
+                    // Populate rows with student names and their corresponding scores
+                    gradebookData.students.forEach(student => {
+                        const studentRow = [student.student_name]; // Start row with the student's name
+
+                        gradebookData.contents.forEach(content => {
+                            const studentScores = gradebookData.scores[student.user_id]?.[content.content_id];
+                            const score = (studentScores?.score !== null && studentScores?.score !== undefined) ?
+                                studentScores.score :
+                                'N/A'; // Default to "N/A" if no score is found
+                            studentRow.push(score);
+                        });
+
+                        sheetData.push(studentRow);
+                    });
+
+                    // Convert the data to a worksheet
+                    const worksheet = XLSX.utils.aoa_to_sheet(sheetData);
+
+                    // Apply styles to the header row
+                    const headerRange = XLSX.utils.decode_range(worksheet['!ref']); // Get the range of the worksheet
+                    for (let col = headerRange.s.c; col <= headerRange.e.c; col++) {
+                        const cellAddress = XLSX.utils.encode_cell({
+                            r: 0,
+                            c: col
+                        }); // Get the address of each header cell
+                        if (worksheet[cellAddress]) {
+                            worksheet[cellAddress].s = {
+                                font: {
+                                    bold: true,
+                                    color: {
+                                        rgb: "FFFFFF"
+                                    }
+                                }, // Bold white text
+                                fill: {
+                                    fgColor: {
+                                        rgb: "4CAF50"
+                                    }
+                                } // Green background color
+                            };
+                        }
+                    }
+
+                    // Append the worksheet to the workbook with the subject name as the sheet title
+                    XLSX.utils.book_append_sheet(workbook, worksheet, gradebookData.subject_section.subject_name);
+
+                    // Generate the Excel file and trigger download
+                    XLSX.writeFile(workbook, `${gradebookData.subject_section.subject_name}_Gradebook.xlsx`);
+                }
+
+                // Attach the export function to the button with ID 'exportBtn'
+                document.getElementById('exportBtn').addEventListener('click', exportGradebook);
+            </script>
         </div>
     </div>
     <section id="gradebook-container" class="container-fluid row m-0 p-0 border">
@@ -102,15 +177,15 @@ $_SESSION['exportGradebookData'] = [
             <?php foreach ($students as $student): ?>
                 <div class="p-2 border border-black-subtle border-bottom-0 d-flex justify-content-start align-items-center gap-2" style="height: <?php echo $NameGradeColumnHeight ?>;">
                     <img src="<?php echo convertImageBlobToSrc($student['profile_pic']) ?>" alt="student_profile" width="29" height="30" class="rounded-circle fit-content-cover">
-                    <a href="#" class="text-truncate"><?php echo sanitizeInput($student['student_name']) ?></a>
+                    <a href="<?php echo VIEWS . 'users/viewprofile.php?viewProfile=' . $student['user_id'] ?>" class="text-truncate" title="<?php echo sanitizeInput($student['student_name']) ?>"><?php echo sanitizeInput($student['student_name']) ?></a>
                 </div>
             <?php endforeach; ?>
         </div>
         <div id="contents_panel" class="col row m-0 p-0 overflow-x-auto flex-nowrap">
             <?php foreach ($contents as $content): ?>
-                <div id="content_col" class="col-2 p-0">
+                <div id="content_col" class="col-sm-4 col-md-3 col-lg-2 p-0">
                     <div id="content_name" class="p-2 fw-semibold text-center border border-black-subtle border-bottom-0 d-flex justify-content-center align-items-center" style="height: <?php echo $AssignmentColumnHeight ?>;">
-                        <a href="#" class="text-success">
+                        <a href="<?php echo VIEWS . 'users/' . lcfirst($_SESSION['role']) . '/subject_view.php?subject_section_id=' . $content['subject_section_id'] . '&module_id=' . $content['module_id'] . '&content_id=' . $content['content_id'] ?>" class="text-success">
                             <?php echo sanitizeInput($content['content_title']) ?>
                         </a>
                     </div>
@@ -199,3 +274,5 @@ $_SESSION['exportGradebookData'] = [
         });
     });
 </script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/xlsx-style/dist/xlsx-style.min.js"></script>

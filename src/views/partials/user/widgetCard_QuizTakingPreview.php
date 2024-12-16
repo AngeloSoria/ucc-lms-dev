@@ -23,29 +23,26 @@ if (($quiz['max_attempts'] !== null && $attempt_count >= $quiz['max_attempts']) 
 ?>
 <div class="mt-sm-2 mt-md-0 widget-card p-3 shadow-sm rounded border" id="quiz-nav">
     <div class="question-navigation">
-        <div class="mb-3">
+        <h6>Questions</h6>
+        <div class="d-flex flex-column">
+            <?php foreach ($questions as $index => $question): ?>
+                <a href="#" class="question-link" data-question-index="<?= $index ?>">Question <?= $index + 1 ?>
+                    <span id="sidebar-answer-<?= $question['quiz_question_id'] ?>" class="text-muted">(Not Answered)</span>
+                </a>
+            <?php endforeach; ?>
+        </div>
+        <div class="d-flex justify-content-end align-items-center gap-2 mt-3">
+            <a href="#" id="previewButton" class="btn btn-sm btn-success">Preview Answers</a>
             <a
+                class="btn btn-sm btn-danger"
                 href="<?php echo updateUrlParams(['subject_section_id' => $_GET['subject_section_id'], 'module_id' => $_GET['module_id'], 'content_id' => $_GET['content_id']]) ?>">
-                <button class="btn btn-sm btn-primary me-2">
-                    Cancel
-                </button>
+                Cancel Quiz
             </a>
         </div>
-        <h6>Questions</h6>
-        <?php foreach ($questions as $index => $question): ?>
-            <a href="#" class="question-link" data-question-index="<?= $index ?>">Question <?= $index + 1 ?>
-                <span id="sidebar-answer-<?= $question['quiz_question_id'] ?>" class="text-muted">(Not Answered)</span>
-            </a>
-        <?php endforeach; ?>
-        <a href="#" id="previewButton" class="btn btn-info mt-3">Preview</a>
     </div>
 </div>
 
 <script>
-    document.getElementById('quizForm').addEventListener('submit', function() {
-
-    });
-
     // JavaScript for question navigation
     const questions = document.querySelectorAll('.question');
     const prevButton = document.getElementById('prevButton');

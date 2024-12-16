@@ -17,7 +17,15 @@
             </div>
         </div>
         <hr>
-        <?php if (isset($_GET['subject_section_id'], $_GET['assignments'])): ?>
+        <?php if (isset($_GET['subject_section_id'], $_GET['students'])): ?>
+            <section id="modules_container" class="d-flex flex-column gap-3 mb-3">
+                <?php require_once PARTIALS . 'user/partial_subject-overview_students.php' ?>
+            </section>
+        <?php elseif (isset($_GET['subject_section_id'], $_GET['teachers'])): ?>
+            <section id="modules_container" class="d-flex flex-column gap-3 mb-3">
+                <?php require_once PARTIALS . 'user/partial_subject-overview_teachers.php' ?>
+            </section>
+        <?php elseif (isset($_GET['subject_section_id'], $_GET['assignments'])): ?>
             <section id="modules_container" class="d-flex flex-column gap-3 mb-3">
                 <?php require_once PARTIALS . 'user/partial_subject-overview_assignments.php' ?>
             </section>

@@ -9,6 +9,9 @@ require_once(FILE_PATHS['Controllers']['SubjectSection']);
 require_once(FILE_PATHS['Controllers']['Subject']);
 require_once(FILE_PATHS['Controllers']['Section']);
 require_once(FILE_PATHS['Functions']['SessionChecker']);
+
+require_once CONTROLLERS . 'AnnouncementsController.php';
+
 checkUserAccess(['Teacher', 'Student']);
 
 // Create a new instance of the Database class
@@ -20,6 +23,7 @@ $userController = new UserController();
 $subjectSectionController = new SubjectSectionController($db);
 $subjectController = new SubjectController();
 $sectionController = new SectionController();
+$announcementController = new AnnouncementController();
 
 $myEnrolledSubjects = $subjectSectionController->getAllEnrolledSubjectsFromSectionByTeacherId($_SESSION['user_id']);
 

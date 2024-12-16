@@ -29,13 +29,14 @@ require_once PARTIALS . 'user/partial_head_SubjectView.php';
                     if (!in_array($getContentInfo['data'][0]['content_type'], ['handout', 'information'])):
                     ?>
                         <div class="col-lg-3 mt-md-2 mt-lg-0 px-sm-0 px-md-1 d-flex flex-column gap-1">
-                            <?php require_once PARTIALS . 'user/widgetCard_ContentInfo_ContentAttr.php' ?>
-                            <?php require_once PARTIALS . 'user/widgetCard_ContentInfo_Score.php' ?>
-                            <?php require_once PARTIALS . 'user/widgetCard_ContentInfo_Submission.php' ?>
-
                             <?php if (in_array($getContentInfo['data'][0]['content_type'], ['quiz']) && isset($_GET['take_quiz'])): ?>
                                 <?php require_once PARTIALS . 'user/widgetCard_QuizTakingPreview.php' ?>
+                            <?php else: ?>
+                                <?php require_once PARTIALS . 'user/widgetCard_ContentInfo_ContentAttr.php' ?>
+                                <?php require_once PARTIALS . 'user/widgetCard_ContentInfo_Score.php' ?>
+                                <?php require_once PARTIALS . 'user/widgetCard_ContentInfo_Submission.php' ?>
                             <?php endif; ?>
+
                         </div>
                     <?php endif; ?>
                 <?php else: ?>

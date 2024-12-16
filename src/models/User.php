@@ -43,9 +43,9 @@ class User
             $this->conn->beginTransaction(); // Begin transaction
 
             $query = "INSERT INTO {$this->table_name} 
-                (user_id, role, first_name, middle_name, last_name, gender, dob, username, password, profile_pic) 
+                (user_id, first_name, middle_name, last_name, gender, role, dob, username, password, profile_pic) 
                 VALUES 
-                (:user_id, :role, :first_name, :middle_name, :last_name, :gender, :dob, :username, :password, :profile_pic)";
+                (:user_id, :first_name, :middle_name, :last_name, :gender, :role, :dob, :username, :password, :profile_pic)";
 
             $stmt = $this->conn->prepare($query);
 
@@ -147,14 +147,16 @@ class User
         }
     }
     // Check if user exists by email or username
-    public function checkUserExists($username)
+    public function checkUserExists($first_name, $last_name, $dob)
     {
         // Check if the user already exists in the database
-        $query = "SELECT COUNT(*) FROM users WHERE username = :username";
+        $query = "SELECT * FROM users WHERE first_name = :first_name AND last_name = :last_name AND dob = :dob";
         $stmt = $this->conn->prepare($query);
-        $stmt->bindParam(':username', $username);
+        $stmt->bindParam(':first_name', $first_name);
+        $stmt->bindParam(':last_name', $last_name);
+        $stmt->bindParam(':dob', $dob);
         $stmt->execute();
-        return $stmt->fetchColumn() > 0;
+        return count($stmt->fetchAll(PDO::FETCH_ASSOC)) > 0;
     }
 
     public function userRequiresPasswordReset($user_id)

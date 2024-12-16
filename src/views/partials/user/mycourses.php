@@ -84,7 +84,7 @@ $moduleContentController = new ModuleContentController();
                 $sectionInfo = $sectionController->getSectionById($subject['section_id']);
             ?>
                 <div class="col-md-6 col-lg-4 p-1" style="height: 250px;">
-                    <a href="#">
+                    <a href="<?= "subject_view.php?subject_section_id=" . $subject['subject_section_id'] ?>">
                         <div id="item_card"
                             class="h-100 w-100 bg-success bg-opacity-80 shadow-sm border rounded overflow-hidden d-flex flex-column">
                             <div>

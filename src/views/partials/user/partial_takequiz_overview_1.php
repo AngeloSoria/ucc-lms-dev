@@ -168,7 +168,7 @@ if (($quiz['max_attempts'] !== null && $attempt_count >= $quiz['max_attempts']) 
 </div>
 
 <script>
-    document.getElementById('quizForm').addEventListener('submit', function () {
+    document.getElementById('quizForm').addEventListener('submit', function() {
 
     });
 

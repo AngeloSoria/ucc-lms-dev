@@ -18,25 +18,27 @@ if ($module_contentInfo['data'][0]['visibility'] == 'hidden' && userHasPerms(['S
         <p class="fs-5 text-center"><?php echo sanitizeInput($module_contentInfo['data'][0]["content_title"]) ?></p>
     </div>
     <ul class="nav nav-underline" id="contentTabs" role="tablist">
-        <li class="nav-item" role="presentation">
-            <button class="nav-link active" id="instructions-tab" data-bs-toggle="tab" data-bs-target="#instructions"
-                type="button" role="tab" aria-controls="instructions" aria-selected="true">
-                Instructions
-            </button>
-        </li>
-        <?php
-        if (userHasPerms(['Student', 'Teacher'])) {
-            $getSubmissionInfo = $moduleContentController->getSubmissionsByContent($_GET['content_id'], $_SESSION['user_id']);
-            $totalSubmissionAttemps = count($getSubmissionInfo['data']);
-        }
-        ?>
-        <?php if ($totalSubmissionAttemps > 0 && userHasPerms(['Student'])): ?>
+        <?php if (!isset($_GET['take_quiz'])): ?>
             <li class="nav-item" role="presentation">
-                <button class="nav-link" id="submission-tab" data-bs-toggle="tab" data-bs-target="#submission" type="button"
-                    role="tab" aria-controls="submission" aria-selected="false">
-                    Submission
+                <button class="nav-link active" id="instructions-tab" data-bs-toggle="tab" data-bs-target="#instructions"
+                    type="button" role="tab" aria-controls="instructions" aria-selected="true">
+                    Instructions
                 </button>
             </li>
+            <?php
+            if (userHasPerms(['Student', 'Teacher'])) {
+                $getSubmissionInfo = $moduleContentController->getSubmissionsByContent($_GET['content_id'], $_SESSION['user_id']);
+                $totalSubmissionAttemps = count($getSubmissionInfo['data']);
+            }
+            ?>
+            <?php if ($totalSubmissionAttemps > 0 && userHasPerms(['Student'])): ?>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="submission-tab" data-bs-toggle="tab" data-bs-target="#submission" type="button"
+                        role="tab" aria-controls="submission" aria-selected="false">
+                        Submission
+                    </button>
+                </li>
+            <?php endif; ?>
         <?php endif; ?>
     </ul>
     <div class="tab-content" id="contentTabsContent">
@@ -44,10 +46,12 @@ if ($module_contentInfo['data'][0]['visibility'] == 'hidden' && userHasPerms(['S
             <div class="p-1">
 
                 <div class="mt-3 mb-3">
-                    <section id="content_description">
-                        <?php echo $module_contentInfo['data'][0]['description'] ?>
-                    </section>
-                    <hr>
+                    <?php if (!isset($_GET['take_quiz'])): ?>
+                        <section id="content_description">
+                            <?php echo $module_contentInfo['data'][0]['description'] ?>
+                        </section>
+                        <hr>
+                    <?php endif; ?>
                     <?php if (!in_array($module_contentInfo['data'][0]['content_type'], ['information', 'handout'])): ?>
 
                         <?php if (!in_array($module_contentInfo['data'][0]['content_type'], ['quiz'])): ?>
@@ -128,11 +132,11 @@ if ($module_contentInfo['data'][0]['visibility'] == 'hidden' && userHasPerms(['S
                                                             class="badge bg-secondary me-3"><?= htmlspecialchars($question['question_type']) ?></span>
 
                                                         <!-- Edit Button -->
-                                                        <button class="btn btn-sm btn-primary me-2" data-bs-toggle="modal"
+                                                        <!--<button class="btn btn-sm btn-primary me-2" data-bs-toggle="modal"
                                                             data-bs-target="#editQuestionModal"
                                                             data-question-id="<?= htmlspecialchars($question['quiz_question_id']) ?>">
                                                             <i class="bi bi-pencil-square"></i> Edit
-                                                        </button>
+                                                        </button>-->
 
                                                         <!-- Delete Form -->
                                                         <form method="post"

@@ -1,24 +1,26 @@
 <?php
 require_once MODELS . 'SessionManager.php';
 
-// Ensure that the user is logged in
-if (isset($_SESSION['user_id'])) {
-    // Assuming the user ID is stored in session and session_id() is the PHP session ID
-    $userId = $_SESSION['user_id'];
-    $sessionId = session_id();
+if (isset($_ENV['SESSION_LOCK_ENABLED']) && $_ENV['SESSION_LOCK_ENABLED'] == 'true') {
+    // Ensure that the user is logged in
+    if (isset($_SESSION['user_id'])) {
+        // Assuming the user ID is stored in session and session_id() is the PHP session ID
+        $userId = $_SESSION['user_id'];
+        $sessionId = session_id();
 
-    // Create an instance of SessionManager (make sure the DB connection is passed)
-    $sessionManager = new SessionManager();
+        // Create an instance of SessionManager (make sure the DB connection is passed)
+        $sessionManager = new SessionManager();
 
-    // Check if the session has expired
-    if (!$sessionManager->checkSessionExpiry() || !$sessionManager->userHasSession($userId)) {
-        // Session has expired, log out the user or no session found.
-        $_SESSION['SessionExpired'] = true;
-        require_once CONTROLLERS . 'LogoutController.php';
-        $logoutController = new LogoutController();
+        // Check if the session has expired
+        if (!$sessionManager->checkSessionExpiry() || !$sessionManager->userHasSession($userId)) {
+            // Session has expired, log out the user or no session found.
+            $_SESSION['SessionExpired'] = true;
+            require_once CONTROLLERS . 'LogoutController.php';
+            $logoutController = new LogoutController();
+        }
+
+        $sessionManager->updateLastActivity($userId, $sessionId);
     }
-
-    $sessionManager->updateLastActivity($userId, $sessionId);
 }
 
 ?>

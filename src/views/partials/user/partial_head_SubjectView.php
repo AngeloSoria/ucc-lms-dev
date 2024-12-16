@@ -289,6 +289,13 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 exit();
 
             case "submitQuiz":
+                //Prevent other role except Student from submitting.
+                if (!userHasPerms(['Student'])) {
+                    $_SESSION['_ResultMessage'] = ['success' => false, 'message' => 'You don\'t have perms to do this action.'];
+                    // Redirect to the same page to prevent resubmission
+                    header("Location: " . updateUrlParams(['subject_section_id' => $_GET['subject_section_id'], 'module_id' => $_GET['module_id'], 'content_id' => $_GET['content_id']]));
+                    exit();
+                }
                 $content_id = isset($_GET['content_id']) ? $_GET['content_id'] : null;
                 $user_id = $_SESSION['user_id'];
 

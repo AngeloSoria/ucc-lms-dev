@@ -49,6 +49,8 @@ class UserController
             $sheet = $spreadsheet->getActiveSheet();
             $rows = $sheet->toArray();
 
+            msgLog("SHEET", json_encode($rows));
+
             $users = [];
             foreach ($rows as $index => $row) {
                 if ($index == 0)
@@ -92,10 +94,10 @@ class UserController
             $userData['username'] = $this->generateUsername($userData['first_name'], $userData['last_name'], $userData['user_id']);
 
             // Check if user already exists
-            if ($this->userModel->checkUserExists($userData['username'])) {
+            if ($this->userModel->checkUserExists($userData['first_name'], $userData['last_name'], $userData['dob'])) {
                 $results = [
                     "success" => false,
-                    "message" => "User with username (" . $userData['username'] . ") already exists.",
+                    "message" => "User with similar (" . $userData['first_name'] . $userData['last_name'] . $userData['dob'] . ") already exists.",
                     "data" => $userData
                 ];
                 continue;
@@ -153,7 +155,7 @@ class UserController
     public function addUser($userData)
     {
         // Check if the user already exists
-        if ($this->userModel->checkUserExists($userData['username'])) {
+        if ($this->userModel->checkUserExists($userData['first_name'], $userData['last_name'], $userData['dob'])) {
             return ["success" => false, "message" => "User with this username (" . $userData['username'] . ") already exists."];
         }
 

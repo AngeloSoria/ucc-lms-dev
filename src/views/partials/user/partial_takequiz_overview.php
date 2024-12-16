@@ -30,53 +30,6 @@ if (($quiz['max_attempts'] !== null && $attempt_count >= $quiz['max_attempts']) 
 
 ?>
 
-<style>
-    /* .question-navigation {
-        position: fixed;
-        right: 20px;
-        top: 100px;
-        width: 200px;
-        background-color: #f8f9fa;
-        border: 1px solid #ddd;
-        padding: 15px;
-        border-radius: 5px;
-    } */
-
-    .question-navigation a {
-        display: block;
-        margin-bottom: 10px;
-        text-decoration: none;
-        padding: 5px;
-        color: #007bff;
-        text-align: center;
-        border: 1px solid #ddd;
-        border-radius: 3px;
-    }
-
-    .question-navigation a.active {
-        background-color: #007bff;
-        color: white;
-    }
-
-    .navigation-buttons {
-        display: flex;
-        justify-content: space-between;
-        margin-top: 20px;
-    }
-
-    .navigation-buttons button {
-        width: 48%;
-    }
-
-    #submitButton {
-        width: 100%;
-    }
-
-    #preview-section {
-        display: none;
-    }
-</style>
-
 <div class="container mt-5">
     <h2>Take Quiz: <?= htmlspecialchars($quiz['content_title']) ?></h2>
     <div id="question-container">
@@ -130,130 +83,19 @@ if (($quiz['max_attempts'] !== null && $attempt_count >= $quiz['max_attempts']) 
             </div>
 
 
+            <div class="mt-3 d-flex gap-2 justify-content-start align-items-center ">
+                <div class="navigation-buttons" id="questions-navigation" class="d-flex gap-2 justify-content-start align-items-center mt-2">
+                    <button type="button" id="prevButton" class="btn btn-sm btn-secondary">Previous</button>
+                    <button type="button" id="nextButton" class="btn btn-sm btn-primary">Next</button>
+                </div>
 
-            <div class="navigation-buttons" id="questions-navigation">
-                <button type="button" id="prevButton" class="btn btn-secondary">Previous</button>
-                <button type="button" id="nextButton" class="btn btn-primary">Next</button>
+                <form method="POST">
+                    <button type="submit" class="btn btn-sm btn-success" id="submitButton">Submit Quiz</button>
+                    <input type="hidden" name="action" value="submitQuiz">
+                    <input type="hidden" name="attemptCount" value="<?php echo $attempt_count ?>">
+                </form>
             </div>
-            <form method="POST">
-                <button type="submit" class="btn btn-success mt-3" id="submitButton">Submit Quiz</button>
-                <input type="hidden" name="action" value="submitQuiz">
-                <input type="hidden" name="attemptCount" value="<?php echo $attempt_count ?>">
-            </form>
-
 
         </form>
     </div>
-
-
-    <!-- <div class="question-navigation" style="z-index: 9999999">
-        <div class="mb-3">
-            <a
-                href="<?php echo updateUrlParams(['subject_section_id' => $_GET['subject_section_id'], 'module_id' => $_GET['module_id'], 'content_id' => $_GET['content_id']]) ?>">
-                <button class="btn btn-sm btn-primary me-2">
-                    Cancel
-                </button>
-
-            </a>
-        </div>
-        <h6>Questions</h6>
-        <?php foreach ($questions as $index => $question): ?>
-            <a href="#" class="question-link" data-question-index="<?= $index ?>">Question <?= $index + 1 ?>
-                <span id="sidebar-answer-<?= $question['quiz_question_id'] ?>" class="text-muted">(Not Answered)</span>
-            </a>
-        <?php endforeach; ?>
-        <a href="#" id="previewButton" class="btn btn-info mt-3">Preview</a>
-    </div> -->
-
 </div>
-<!-- 
-<script>
-    document.getElementById('quizForm').addEventListener('submit', function() {
-
-    });
-
-    // JavaScript for question navigation
-    const questions = document.querySelectorAll('.question');
-    const prevButton = document.getElementById('prevButton');
-    const nextButton = document.getElementById('nextButton');
-    const submitButton = document.getElementById('submitButton');
-    const questionLinks = document.querySelectorAll('.question-link');
-    const previewSection = document.getElementById('preview-section');
-    const questionsSection = document.getElementById('questions-section');
-    const previewButton = document.getElementById('previewButton');
-    let currentQuestionIndex = 0;
-
-    function updatePreview() {
-        document.querySelectorAll('.question-response').forEach(input => {
-            const questionId = input.getAttribute('data-question-id');
-            const answerPreview = document.getElementById(`preview-answer-${questionId}`);
-            const sidebarPreview = document.getElementById(`sidebar-answer-${questionId}`);
-
-            if (input.type === 'radio' && input.checked) {
-                answerPreview.innerText = input.parentNode.textContent.trim();
-                sidebarPreview.innerText = input.parentNode.textContent.trim();
-            } else if (input.type === 'text') {
-                answerPreview.innerText = input.value || 'Not Answered';
-                sidebarPreview.innerText = input.value || 'Not Answered';
-            }
-        });
-    }
-
-    function showQuestion(index) {
-        questionsSection.style.display = 'block';
-        previewSection.style.display = 'none';
-        questions[currentQuestionIndex].style.display = 'none';
-        questions[index].style.display = 'block';
-        currentQuestionIndex = index;
-        prevButton.style.display = index === 0 ? 'none' : 'inline-block';
-        nextButton.style.display = index === questions.length - 1 ? 'none' : 'inline-block';
-        submitButton.style.display = 'none';
-        previewButton.style.display = index === questions.length - 1 ? 'inline-block' : 'none';
-        questionLinks.forEach(link => link.classList.remove('active'));
-        questionLinks[index]?.classList.add('active');
-    }
-
-    prevButton.addEventListener('click', () => {
-        if (currentQuestionIndex > 0) {
-            showQuestion(currentQuestionIndex - 1);
-        } else {
-            previewSection.style.display = 'none';
-            questionsSection.style.display = 'block';
-            currentQuestionIndex = questions.length - 1;
-            showQuestion(currentQuestionIndex);
-        }
-    });
-    nextButton.addEventListener('click', () => {
-        if (currentQuestionIndex < questions.length - 1) {
-            showQuestion(currentQuestionIndex + 1);
-        } else {
-            nextButton.style.display = 'none';
-            previewButton.click();
-        }
-    });
-
-    previewButton.addEventListener('click', () => {
-        updatePreview();
-        questionsSection.style.display = 'none';
-        previewSection.style.display = 'block';
-        nextButton.style.display = 'none';
-        prevButton.style.display = 'inline-block';
-        submitButton.style.display = 'inline-block';
-    });
-
-    questionLinks.forEach(link => {
-        link.addEventListener('click', (e) => {
-            e.preventDefault();
-            const index = parseInt(link.getAttribute('data-question-index'));
-            showQuestion(index);
-        });
-    });
-
-    // Update preview answers dynamically
-    document.querySelectorAll('.question-response').forEach(input => {
-        input.addEventListener('change', updatePreview);
-    });
-
-    // Initialize first question as active
-    showQuestion(0);
-</script> -->

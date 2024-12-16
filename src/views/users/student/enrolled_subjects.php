@@ -10,6 +10,9 @@ require_once(FILE_PATHS['Controllers']['Subject']);
 require_once(FILE_PATHS['Controllers']['Section']);
 require_once(FILE_PATHS['Controllers']['StudentEnrollment']);
 require_once(FILE_PATHS['Functions']['SessionChecker']);
+
+require_once CONTROLLERS . 'AnnouncementsController.php';
+
 checkUserAccess(['Teacher', 'Student']);
 
 // Create a new instance of the Database class
@@ -22,6 +25,7 @@ $subjectSectionController = new SubjectSectionController($db);
 $subjectController = new SubjectController();
 $sectionController = new SectionController();
 $studentEnrollmentController = new StudentEnrollmentController($db);
+$announcementController = new AnnouncementController();
 
 $myEnrolledSubjects = $studentEnrollmentController->getAllSubjectsEnrolledByStudentId($_SESSION['user_id']);
 
@@ -74,7 +78,7 @@ $myEnrolledSubjects = $studentEnrollmentController->getAllSubjectsEnrolledByStud
                                                         <?php if (!empty($subject['subject_section_image'])): ?>
                                                             <img src="<?php echo "data:image/jpeg;base64," . base64_encode($subject['subject_section_image']) ?>" class="w-100 object-fit-cover" style="height: 120px;">
                                                         <?php else: ?>
-                                                            <img src="<?php echo asset('img/placeholder-1.jpg') ?>" class="w-100 object-fit-cover" style="height: 120px;">
+                                                            <img src="<?php echo asset('img/client-images/BSITT.jpg') ?>" class="w-100 object-fit-cover" style="height: 120px;">
                                                         <?php endif; ?>
                                                     </div>
                                                     <div class="px-2 flex-grow-1 position-relative">

@@ -68,7 +68,7 @@
         </li>
 
         <li class="border border-top-0">
-            <a href="#" class="sidebar-item">
+            <a href="<?php echo updateUrlParams(['subject_section_id' => $_GET['subject_section_id'], 'teachers' => '1']) ?>" class="sidebar-item <?php echo isset($_GET['subject_section_id'], $_GET['teachers']) ? 'active' : '' ?>">
                 <div class="sidebar-item-icon">
                     <i class="bi bi-people" aria-hidden="true"></i>
                 </div>
@@ -78,7 +78,7 @@
             </a>
         </li>
         <li class="border border-top-0">
-            <a href="#" class="sidebar-item">
+            <a href="<?php echo updateUrlParams(['subject_section_id' => $_GET['subject_section_id'], 'students' => '1']) ?>" class="sidebar-item <?php echo isset($_GET['subject_section_id'], $_GET['students']) ? 'active' : '' ?>">
                 <div class="sidebar-item-icon">
                     <i class="bi bi-people" aria-hidden="true"></i>
                 </div>

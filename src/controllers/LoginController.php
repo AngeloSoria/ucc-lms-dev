@@ -24,7 +24,6 @@ class LoginController
 
             // Instantiate the controllers and models
             $generalLogsController = new GeneralLogsController();
-            $sessionManagerModel = new SessionManager();
 
             // Fetch user by username
             $stmt = $pdo->prepare("SELECT * FROM users WHERE username = :username AND status = 'active'");
@@ -43,21 +42,25 @@ class LoginController
                 $_SESSION['first_name'] = $user['first_name'];
                 $_SESSION['last_name'] = $user['last_name'];
 
-                // Check session lock before logging in
-                if (!$sessionManagerModel->setUserSessionLock()) {
-                    session_unset();  // Unset session if lock fails
-                    $_SESSION['SESSION_LOCK_ERR'] = true;
-                    header('Location: ' . BASE_PATH_LINK . 'login.php');  // Redirect to login page
-                    exit;
-                }
 
-                // Check if session has expired
-                if (!$sessionManagerModel->checkSessionExpiry()) {
-                    // Session expired, force logout and redirect to login
-                    session_unset();
-                    $_SESSION['SESSION_EXPIRED_ERR'] = true;
-                    header('Location: ' . BASE_PATH_LINK);
-                    exit;
+                if (isset($_ENV['SESSION_LOCK_ENABLED']) && $_ENV['SESSION_LOCK_ENABLED'] == 'true') {
+                    $sessionManagerModel = new SessionManager();
+                    // Check session lock before logging in
+                    if (!$sessionManagerModel->setUserSessionLock()) {
+                        session_unset();  // Unset session if lock fails
+                        $_SESSION['SESSION_LOCK_ERR'] = true;
+                        header('Location: ' . BASE_PATH_LINK);  // Redirect to login page
+                        exit;
+                    }
+
+                    // Check if session has expired
+                    if (!$sessionManagerModel->checkSessionExpiry()) {
+                        // Session expired, force logout and redirect to login
+                        session_unset();
+                        $_SESSION['SESSION_EXPIRED_ERR'] = true;
+                        header('Location: ' . BASE_PATH_LINK);
+                        exit;
+                    }
                 }
 
                 // Add login logs to db
