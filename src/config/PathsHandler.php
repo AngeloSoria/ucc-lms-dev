@@ -12,7 +12,6 @@ define('VENDOR_AUTO_LOAD', BASE_PATH . 'vendor/autoload.php');
 
 define('ERROR_PATH', BASE_PATH_LINK . 'src/views/partials/special/error.php');
 
-
 define('UPLOAD_PATH', [
     'System' => BASE_PATH_LINK . 'src/uploads/system/',
     'User' => BASE_PATH_LINK . 'src/uploads/users/',
@@ -23,6 +22,7 @@ define('PARTIALS', __DIR__ . '../../views/partials/');
 define('CONTROLLERS', __DIR__ . '../../controllers/');
 define('MODELS', __DIR__ . '../../models/');
 define('FUNCTIONS', __DIR__ . '../../functions/');
+define('VIEWS', BASE_PATH_LINK . 'src/views/');
 
 define('FILE_PATHS', [
     'DATABASE' => __DIR__ . '/connection.php',

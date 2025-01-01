@@ -4,6 +4,8 @@ require_once(FILE_PATHS['Models']['User']);
 require_once(FILE_PATHS['Controllers']['GeneralLogs']);
 require_once(FILE_PATHS['Functions']['PHPLogger']);
 
+use PhpOffice\PhpSpreadsheet\IOFactory;
+
 class UserController
 {
     private $userModel;
@@ -32,11 +34,128 @@ class UserController
         }
     }
 
+
+
+    public function uploadUsersFromExcel()
+    {
+        if (!isset($_FILES['userFile']['tmp_name'])) {
+            return ["success" => false, "message" => "No file uploaded."];
+        }
+
+        $filePath = $_FILES['userFile']['tmp_name'];
+
+        try {
+            $spreadsheet = IOFactory::load($filePath);
+            $sheet = $spreadsheet->getActiveSheet();
+            $rows = $sheet->toArray();
+
+            msgLog("SHEET", json_encode($rows));
+
+            $users = [];
+            foreach ($rows as $index => $row) {
+                if ($index == 0)
+                    continue; // Skip header row
+
+                // Auto-generate username and user_id
+                $userId = uniqid(); // Or implement a custom ID generation logic
+                $username = strtoupper(substr($row[0], 0, 1)) . $row[2] . "." . $userId; // JDoe.1004
+
+                $users[] = [
+                    'user_id' => $userId,
+                    'username' => $username,
+                    'first_name' => $row[0],
+                    'middle_name' => $row[1],
+                    'last_name' => $row[2],
+                    'gender' => $row[3],
+                    'dob' => $row[4],
+                    'password' => password_hash($row[5], PASSWORD_DEFAULT), // Password from Excel file
+                    'role' => $row[6],
+                    'educational_level' => $row[7]
+                ];
+            }
+            $result = $this->addMultipleUsers($users);
+            // msgLog('sadada', json_encode($result));
+            return $result; // Call the model to handle batch user creation
+        } catch (Exception $e) {
+            return ["success" => false, "message" => $e->getMessage()];
+        }
+    }
+
+
+    public function addMultipleUsers($usersData)
+    {
+        $results = []; // Store the result for each user
+
+        foreach ($usersData as $userData) {
+            // Generate user ID (auto-increment logic, e.g., get the last ID from DB and increment it)
+            $userData['user_id'] = $this->userModel->generateUserId();
+
+            // Generate username based on the user's name and user ID
+            $userData['username'] = $this->generateUsername($userData['first_name'], $userData['last_name'], $userData['user_id']);
+
+            // Check if user already exists
+            if ($this->userModel->checkUserExists($userData['first_name'], $userData['last_name'], $userData['dob'])) {
+                $results = [
+                    "success" => false,
+                    "message" => "User with similar (" . $userData['first_name'] . $userData['last_name'] . $userData['dob'] . ") already exists.",
+                    "data" => $userData
+                ];
+                continue;
+            }
+
+            // Add the user
+            $MODEL_RESULT = $this->userModel->addUser($userData);
+
+            if ($MODEL_RESULT['success']) {
+                // Add role-specific details
+                if ($userData['role'] == 'Teacher') {
+                    $roleResult = $this->userModel->addTeacher($userData['user_id'], $userData['educational_level']);
+                } elseif ($userData['role'] == 'Student') {
+                    $roleResult = $this->userModel->addStudent($userData['user_id'], $userData['educational_level']);
+                } else {
+                    $roleResult = ['success' => true]; // Admin or other roles may not need additional tables
+                }
+
+                if ($roleResult['success']) {
+                    $results = [
+                        "success" => true,
+                        "message" => "User added successfully.",
+                        "data" => $userData
+                    ];
+                } else {
+                    $results = [
+                        "success" => false,
+                        "message" => "Failed to add role-specific data for user (" . $userData['username'] . ").",
+                        "data" => $userData
+                    ];
+                }
+            } else {
+                $results = [
+                    "success" => false,
+                    "message" => "Failed to add user. (" . $MODEL_RESULT['message'] . ")",
+                    "data" => $userData
+                ];
+            }
+        }
+
+        // msgLog('sadada', json_encode($results));
+        return $results;
+    }
+
+    // Helper function to generate username
+    private function generateUsername($firstName, $lastName, $userId)
+    {
+        $formattedName = strtoupper(substr($firstName, 0, 1)) . ucfirst(strtolower($lastName));
+
+        return $formattedName . '.' . $userId;
+    }
+
+
     // ADD DATA
     public function addUser($userData)
     {
         // Check if the user already exists
-        if ($this->userModel->checkUserExists($userData['username'])) {
+        if ($this->userModel->checkUserExists($userData['first_name'], $userData['last_name'], $userData['dob'])) {
             return ["success" => false, "message" => "User with this username (" . $userData['username'] . ") already exists."];
         }
 
@@ -85,6 +204,31 @@ class UserController
             return ['success' => false, "message" => $e->getMessage()];
         }
     }
+
+    public function deleteUsers($userIds)
+    {
+        try {
+
+            foreach ($userIds as $userId) {
+                $result = $this->userModel->deleteUser($userId);
+
+                // If a user deletion fails, throw an exception
+                if (!$result['success']) {
+                    throw new Exception("Failed to delete user with ID: $userId");
+                }
+
+                // Log the action after each deletion
+                $this->generalLogsController->addLog_DELETE($_SESSION['user_id'], $_SESSION['role'], "Deleted a user with user_id: $userId");
+            }
+
+            return ['success' => true, 'message' => 'Successfully deleted selected users'];
+        } catch (Exception $e) {
+
+
+            return ['success' => false, 'message' => $e->getMessage()];
+        }
+    }
+
 
     public function getUserById($userId)
     {

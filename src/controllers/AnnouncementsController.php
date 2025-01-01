@@ -2,11 +2,13 @@
 require_once(__DIR__ . '../../../src/config/PathsHandler.php');
 require_once(FILE_PATHS['DATABASE']);
 require_once(FILE_PATHS['Models']['Announcements']);
+require_once CONTROLLERS . 'GeneralLogsController.php';
 
 class AnnouncementController
 {
     private $db;
     private $announcementModel;
+    private $generalLogsController;
 
     public function __construct()
     {
@@ -16,6 +18,7 @@ class AnnouncementController
 
         // Initialize the Announcements model
         $this->announcementModel = new Announcements($this->db);
+        $this->generalLogsController = new GeneralLogsController();
     }
 
     /**
@@ -25,12 +28,21 @@ class AnnouncementController
     {
         try {
             // Check if the announcement is global
-            $announcementData['is_global'] = isset($announcementData['is_global']) ? $announcementData['is_global'] : false;
+            $announcementData['is_global'] = isset($announcementData['is_global']) ? $announcementData['is_global'] : 0;
 
             // Add the announcement to the database
             $addResult = $this->announcementModel->addAnnouncement($announcementData);
 
-            return $addResult['success'] == true ? $addResult : ['success' => false, 'message' => 'Something went wrong while adding the announcement.'];
+            $logMessage = "Posted an announcement";
+            if ($announcementData['is_global'] == 1) {
+                $logMessage .= " to global";
+            } else {
+                $logMessage .= " to subject section (" . $announcementData['subject_section_id'] . ")";
+            }
+            $this->generalLogsController->addLog_CREATE($_SESSION['user_id'], $_SESSION['role'], $logMessage);
+
+            $addResult['message'] = "Announcement has been posted.";
+            return $addResult;
         } catch (Exception $e) {
             return ['success' => false, 'message' => $e->getMessage()];
         }
@@ -69,6 +81,8 @@ class AnnouncementController
         try {
             $updateResult = $this->announcementModel->updateAnnouncement($announcementData);
             if ($updateResult['success']) {
+                $logMessage = "Updated an announcement";
+                $this->generalLogsController->addLog_UPDATE($_SESSION['user_id'], $_SESSION['role'], $logMessage);
                 return ['success' => true, 'message' => "Announcement has been updated."];
             } else {
                 return ['success' => false, 'message' => 'Failed to update announcement.'];
@@ -85,7 +99,11 @@ class AnnouncementController
     {
         try {
             $deleteResult = $this->announcementModel->deleteAnnouncement($id);
-            return $deleteResult['success'] == true ? $deleteResult : ['success' => false, 'message' => 'Failed to delete announcement.'];
+
+            $logMessage = "Removed an announcement";
+            $this->generalLogsController->addLog_DELETE($_SESSION['user_id'], $_SESSION['role'], $logMessage);
+
+            return $deleteResult['success'] == true ? ['success' => true, 'message' => "Successfully removed an announcement."] : ['success' => false, 'message' => 'Failed to delete announcement.'];
         } catch (Exception $e) {
             return ['success' => false, 'message' => $e->getMessage()];
         }
@@ -109,4 +127,3 @@ class AnnouncementController
         }
     }
 }
-?>

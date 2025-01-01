@@ -1,5 +1,8 @@
 <?php
+require_once __DIR__ . '../../../src/config/PathsHandler.php';
 require_once(FILE_PATHS['Functions']['PHPLogger']);
+
+require_once FUNCTIONS . 'UnixTimeStampManager.php';
 
 function sanitizeInput($input)
 {
@@ -64,6 +67,7 @@ function getBootstrapIcon($icon_name)
         "application/pdf" => "bi-filetype-pdf text-danger",
         "application/msword" => "bi-file-earmark-word-fill text-primary",
         "application/vnd.openxmlformats-officedocument.word" => "bi-file-earmark-word-fill text-primary",
+        "application/vnd.openxmlformats-officedocument.wordprocessingml.document" => "bi-file-earmark-word-fill text-primary",
         "application/vnd.ms-excel" => "bi-table text-success",
         "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" => "bi-table text-success",
         "application/vnd.ms-powerpoint" => "bi-file-earmark-ppt-fill text-danger",
@@ -75,6 +79,7 @@ function getBootstrapIcon($icon_name)
         "audio/mpeg" => "bi-file-earmark-music",
         "audio/wav" => "bi-file-earmark-music",
         "video/mp4" => "bi-file-earmark-play",
+        "video/x-ms-wmv" => "bi-file-earmark-play",
         "application/zip" => "bi-file-earmark-zip",
         "application/x-zip-compressed" => "bi-file-earmark-zip text-critical",
         "application/x-rar-compressed" => "bi-file-earmark-zip text-critical",
@@ -90,5 +95,49 @@ function userHasPerms($perms = [])
         return in_array($_SESSION['role'], $perms);
     } else {
         return false;
+    }
+}
+
+
+function convertImageBlobToSrc($image_blob_data)
+{
+    return 'data:image/jpeg;base64,' . base64_encode($image_blob_data);
+}
+
+function convertProperDate($date, $date_filter)
+{
+    // Create a DateTime object
+    $datetime = new DateTime($date);
+
+    // Format the date to match the desired format
+    $formatted_date = $datetime->format($date_filter);
+
+    return $formatted_date;
+}
+
+function redirectViaJS($link)
+{
+    return "<script>window.location.href = '$link';</script>";
+}
+
+function timeElapsed($datetime)
+{
+    $timezone = new DateTimeZone('Asia/Manila'); // Set the timezone to Asia/Manila
+    $now = new DateTime('now', $timezone); // Current time in Asia/Manila
+    $givenTime = new DateTime($datetime, $timezone); // Given time in Asia/Manila
+    $interval = $now->diff($givenTime); // Difference between the two times
+
+    if ($interval->y > 0) {
+        return $interval->y . ' year' . ($interval->y > 1 ? 's' : '') . ' ago';
+    } elseif ($interval->m > 0) {
+        return $interval->m . ' month' . ($interval->m > 1 ? 's' : '') . ' ago';
+    } elseif ($interval->d > 0) {
+        return $interval->d . ' day' . ($interval->d > 1 ? 's' : '') . ' ago';
+    } elseif ($interval->h > 0) {
+        return $interval->h . ' hour' . ($interval->h > 1 ? 's' : '') . ' ago';
+    } elseif ($interval->i > 0) {
+        return $interval->i . ' minute' . ($interval->i > 1 ? 's' : '') . ' ago';
+    } else {
+        return $interval->s . ' second' . ($interval->s > 1 ? 's' : '') . ' ago';
     }
 }

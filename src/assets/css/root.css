@@ -98,10 +98,11 @@
 /* General thin scrollbar style for WebKit browsers (Chrome, Safari, Edge) */
 ::-webkit-scrollbar {
     width: 6px; /* Thin scrollbar */
+    height: 6px;
 }
 
 ::-webkit-scrollbar-track {
-    background: transparent; /* Default track */
+    background: white; /* Default track */
 }
 
 ::-webkit-scrollbar-thumb {
@@ -359,4 +360,27 @@ a {
 
 .select2-selection__choice {
     background-color: var(--c-brand-secondary-a20) !important;
+}
+
+/* Make sure TinyMCE popup is above the modal */
+.tox {
+    z-index: 1060 !important; /* Must be higher than Bootstrap modal's z-index */
+}
+
+.tox-dialog {
+    z-index: 1070 !important; /* Make sure dialog popups like link editor are above modal */
+}
+
+/* Ensure the TinyMCE container is responsive */
+.tox-tinymce {
+    width: 100% !important; /* Allow resizing */
+}
+
+.tox-edit-area {
+    width: 100% !important; /* Ensure the area inside TinyMCE resizes */
+}
+
+[contenteditable]:focus {
+    outline: 2px solid var(--c-brand-primary-a0);
+    outline-offset: -4px;
 }

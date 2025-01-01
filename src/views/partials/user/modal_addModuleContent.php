@@ -43,12 +43,11 @@
 
                     <!-- File Input for Handout, Information, Assignment -->
                     <div class="mb-3" id="fileInputContainer">
-                        <!-- <div class="form-check form-switch">
+                        <div class="form-check form-switch" id="toggleFileInputContent">
                             <label class="form-check-label" for="toggleFileInput">Upload Files</label>
                             <input class="form-check-input" type="checkbox" role="switch" id="toggleFileInput">
-                        </div> -->
-                        <label for="fileInput">Upload Files</label>
-                        <input disabled type="file" class="mt-2 form-control" id="fileInput" name="input_contentFiles[]" multiple>
+                        </div>
+                        <input disabled type="file" class="mt-2 form-control d-none" id="fileInput" name="input_contentFiles[]" multiple>
                     </div>
 
                     <!-- Assignment, Quiz -->
@@ -56,8 +55,7 @@
                         <div class="col-md-4">
                             <!-- Max Attempts -->
                             <div class="mb-3" id="maxAttemptsContainer">
-                                <label for="maxAttempts" class="form-label">Max
-                                    Attempts</label>
+                                <label for="maxAttempts" class="form-label">Max Attempts</label>
                                 <input type="number" class="form-control"
                                     id="maxAttempts" name="input_contentMaxAttempts"
                                     min="1" placeholder="Enter max attempts"

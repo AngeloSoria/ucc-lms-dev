@@ -20,6 +20,21 @@ class User
         $this->uploadsController = new UploadsController();
         $this->generalLogsController = new GeneralLogsController();
     }
+    // Generate User ID
+    public function generateUserId()
+    {
+        try {
+            $query = "SELECT MAX(user_id) AS last_id FROM {$this->table_name}";
+            $stmt = $this->conn->prepare($query);
+            $stmt->execute();
+            $result = $stmt->fetch(PDO::FETCH_ASSOC);
+
+            $lastId = $result['last_id'] ?? 1000; // Start from 1001 if no users exist
+            return $lastId + 1;
+        } catch (PDOException $e) {
+            throw new Exception("Failed to generate User ID: " . $e->getMessage());
+        }
+    }
 
     // ADD user to DATABASE
     public function addUser($userData)
@@ -28,9 +43,9 @@ class User
             $this->conn->beginTransaction(); // Begin transaction
 
             $query = "INSERT INTO {$this->table_name} 
-                (user_id, role, first_name, middle_name, last_name, gender, dob, username, password, profile_pic) 
+                (user_id, first_name, middle_name, last_name, gender, role, dob, username, password, profile_pic) 
                 VALUES 
-                (:user_id, :role, :first_name, :middle_name, :last_name, :gender, :dob, :username, :password, :profile_pic)";
+                (:user_id, :first_name, :middle_name, :last_name, :gender, :role, :dob, :username, :password, :profile_pic)";
 
             $stmt = $this->conn->prepare($query);
 
@@ -116,7 +131,7 @@ class User
     public function getAllUsersByRole($role)
     {
         try {
-            $query = "SELECT * FROM users WHERE role = :role";
+            $query = "SELECT * FROM users WHERE role = :role ORDER BY user_id DESC";
             $stmt = $this->conn->prepare($query);
             $stmt->bindParam(':role', $role, PDO::PARAM_STR);
             $stmt->execute();
@@ -132,14 +147,16 @@ class User
         }
     }
     // Check if user exists by email or username
-    public function checkUserExists($username)
+    public function checkUserExists($first_name, $last_name, $dob)
     {
         // Check if the user already exists in the database
-        $query = "SELECT COUNT(*) FROM users WHERE username = :username";
+        $query = "SELECT * FROM users WHERE first_name = :first_name AND last_name = :last_name AND dob = :dob";
         $stmt = $this->conn->prepare($query);
-        $stmt->bindParam(':username', $username);
+        $stmt->bindParam(':first_name', $first_name);
+        $stmt->bindParam(':last_name', $last_name);
+        $stmt->bindParam(':dob', $dob);
         $stmt->execute();
-        return $stmt->fetchColumn() > 0;
+        return count($stmt->fetchAll(PDO::FETCH_ASSOC)) > 0;
     }
 
     public function userRequiresPasswordReset($user_id)
@@ -189,7 +206,7 @@ class User
     {
         try {
             // Use a placeholder :limit for the limit value
-            $query = "SELECT * FROM users LIMIT :limit OFFSET 0";
+            $query = "SELECT * FROM users ORDER BY user_id DESC LIMIT :limit OFFSET 0";
             $stmt = $this->conn->prepare($query);
 
             // Bind the $limit parameter to the :limit placeholder

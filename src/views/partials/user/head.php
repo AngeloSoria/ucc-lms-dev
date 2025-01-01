@@ -1,24 +1,26 @@
 <?php
 require_once MODELS . 'SessionManager.php';
 
-// Ensure that the user is logged in
-if (isset($_SESSION['user_id'])) {
-    // Assuming the user ID is stored in session and session_id() is the PHP session ID
-    $userId = $_SESSION['user_id'];
-    $sessionId = session_id();
+if (isset($_ENV['SESSION_LOCK_ENABLED']) && $_ENV['SESSION_LOCK_ENABLED'] == 'true') {
+    // Ensure that the user is logged in
+    if (isset($_SESSION['user_id'])) {
+        // Assuming the user ID is stored in session and session_id() is the PHP session ID
+        $userId = $_SESSION['user_id'];
+        $sessionId = session_id();
 
-    // Create an instance of SessionManager (make sure the DB connection is passed)
-    $sessionManager = new SessionManager();
+        // Create an instance of SessionManager (make sure the DB connection is passed)
+        $sessionManager = new SessionManager();
 
-    // Check if the session has expired
-    if (!$sessionManager->checkSessionExpiry() || !$sessionManager->userHasSession($userId)) {
-        // Session has expired, log out the user or no session found.
-        $_SESSION['SessionExpired'] = true;
-        require_once CONTROLLERS . 'LogoutController.php';
-        $logoutController = new LogoutController();
+        // Check if the session has expired
+        if (!$sessionManager->checkSessionExpiry() || !$sessionManager->userHasSession($userId)) {
+            // Session has expired, log out the user or no session found.
+            $_SESSION['SessionExpired'] = true;
+            require_once CONTROLLERS . 'LogoutController.php';
+            $logoutController = new LogoutController();
+        }
+
+        $sessionManager->updateLastActivity($userId, $sessionId);
     }
-
-    $sessionManager->updateLastActivity($userId, $sessionId);
 }
 
 ?>
@@ -39,6 +41,9 @@ if (isset($_SESSION['user_id'])) {
     <script defer src="<?php echo asset('js/DynamicFormEditData.js') ?>"></script>
     <script defer src="<?php echo asset('js/image-previewer.js') ?>"></script>
 
+    <!-- PopperJS -->
+    <script defer src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.3/dist/umd/popper.min.js"></script>
+
     <!-- Data Table JS -->
     <script defer src="https://cdn.datatables.net/1.13.5/js/jquery.dataTables.min.js"></script>
     <script defer src="https://cdn.datatables.net/responsive/2.1.0/js/dataTables.responsive.min.js"></script>
@@ -48,10 +53,11 @@ if (isset($_SESSION['user_id'])) {
     <script defer src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 
     <!-- TinyMCE -->
-    <script src="https://cdn.tiny.cloud/1/tftwj8ejo21qbbt7jzz53ityv0j42ooyr713pf6xrqsshstg/tinymce/6/tinymce.min.js" referrerpolicy="origin"></script>
-
+    <script src="https://cdn.tiny.cloud/1/tftwj8ejo21qbbt7jzz53ityv0j42ooyr713pf6xrqsshstg/tinymce/7/tinymce.min.js" referrerpolicy="origin"></script>
     <script defer src="<?php echo asset("js/tinymce.js") ?>"></script>
 
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="<?php echo asset('js/toast.js') ?>"></script>
 
     <title>LMS | Unida Christian College - Cavite</title>
 </head>

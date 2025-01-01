@@ -3,6 +3,7 @@ require_once(__DIR__ . '../../../src/config/PathsHandler.php');
 require_once(FILE_PATHS['DATABASE']);
 require_once(FILE_PATHS['Functions']['PHPLogger']);
 require_once(FILE_PATHS['Controllers']['GeneralLogs']);
+require_once CONTROLLERS . 'SubjectSectionController.php';
 
 use Dotenv\Dotenv;
 
@@ -10,6 +11,7 @@ class ModuleContent
 {
     private $conn;
     private $generalLogsController;
+    private $subjectSectionController;
 
     public function __construct()
     {
@@ -19,6 +21,7 @@ class ModuleContent
         $db = new Database();
         $this->conn = $db->getConnection();
         $this->generalLogsController = new GeneralLogsController();
+        $this->subjectSectionController = new SubjectSectionController($db);
     }
 
 
@@ -178,7 +181,7 @@ class ModuleContent
             $stmt->execute();
 
             // Get the last inserted ID
-            if (!in_array($contentData['content_type'], ['assignment', 'quiz'])) {
+            if (!in_array($contentData['content_type'], ['quiz'])) {
                 $contentId = $this->conn->lastInsertId();
                 $query_contentFiles = "
                 INSERT INTO content_files
@@ -204,8 +207,26 @@ class ModuleContent
 
                     // Check for any file upload errors
                     if ($fileError === UPLOAD_ERR_OK) {
-                        // Read file content as binary data
-                        $fileData = file_get_contents($tmpName);
+                        // Read file content as binary data using streaming
+                        $handle = fopen($tmpName, 'rb'); // Open the temporary file
+                        if ($handle === false) {
+                            throw new Exception("Failed to open the uploaded file.");
+                        }
+
+                        $fileData = '';
+                        while (!feof($handle)) {
+                            $chunk = fread($handle, 8192); // Read the file in 8KB chunks
+                            if ($chunk === false) {
+                                throw new Exception("Error reading the uploaded file.");
+                            }
+                            $fileData .= $chunk; // Append each chunk to the file data
+                        }
+                        fclose($handle); // Close the file handle
+
+                        // Verify the data size matches the uploaded file size
+                        if (strlen($fileData) !== $fileSize) {
+                            throw new Exception("File data size mismatch: expected $fileSize bytes, got " . strlen($fileData) . " bytes.");
+                        }
 
                         // Execute the database insert query
                         $stmt->execute([
@@ -261,6 +282,38 @@ class ModuleContent
         }
     }
 
+    public function getAllContentsFromSubjectSection($subject_section_id)
+    {
+        try {
+            $query = "
+                SELECT 
+                    c.*,
+                    m.module_id,
+                    m.title AS module_title
+                FROM 
+                    contents c
+                JOIN 
+                    modules m
+                ON
+                    c.module_id = m.module_id
+                JOIN
+                    subject_section ss
+                ON
+                    m.subject_section_id = :subject_section_id
+                WHERE
+                    c.content_type = 'assignment' OR c.content_type = 'quiz';
+            ";
+            $stmt = $this->conn->prepare($query);
+            $stmt->bindParam(":subject_section_id", $subject_section_id);
+            $stmt->execute();
+
+            $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+            return $result;
+        } catch (Exception $e) {
+            throw new Exception($e->getMessage());
+        }
+    }
     // Update content
     public function updateContent($contentData)
     {
@@ -397,6 +450,22 @@ class ModuleContent
         }
     }
 
+    // Get files for a content
+    public function getFileByContentFileId($content_id, $content_file_id)
+    {
+        try {
+            $query = "SELECT * FROM content_files WHERE content_id = :content_id AND content_file_id = :content_file_id LIMIT 1";
+            $stmt = $this->conn->prepare($query);
+            $stmt->bindParam(':content_id', $content_id);
+            $stmt->bindParam(':content_file_id', $content_file_id);
+            $stmt->execute();
+            $result = $stmt->fetch(PDO::FETCH_ASSOC);
+            return $result ? $result : [];
+        } catch (PDOException $e) {
+            throw new PDOException("Failed to get file: " . $e->getMessage());
+        }
+    }
+
     // Delete a content file by ID
     public function deleteContentFile($file_id)
     {
@@ -417,51 +486,175 @@ class ModuleContent
     // ===============================================
 
     // Add a new student submission
-    public function addSubmission($submissionData)
+    public function addSubmission(array $submissionData, array $fileInputs)
     {
         try {
-            $this->conn->beginTransaction(); // Start transaction
+            // Start the transaction
+            $this->conn->beginTransaction();
 
-            $query = "INSERT INTO student_submissions (content_id, student_id, attempt_number, submission_text, submission_date, status) 
-                  VALUES (:content_id, :student_id, :attempt_number, :submission_text, :submission_date, :status)";
+            // Insert the submission record
+            $query_submission = "
+        INSERT INTO student_submissions (content_id, student_id, attempt_number, submission_text, submission_date, status)
+        VALUES (:content_id, :student_id, :attempt_number, :submission_text, NOW(), 'submitted')";
+            $stmt = $this->conn->prepare($query_submission);
 
-            $stmt = $this->conn->prepare($query);
-            $stmt->bindParam(':content_id', $submissionData['content_id']);
-            $stmt->bindParam(':student_id', $submissionData['student_id']);
-            $stmt->bindParam(':attempt_number', $submissionData['attempt_number']);
-            $stmt->bindParam(':submission_text', $submissionData['submission_text']);
-            $stmt->bindParam(':submission_date', $submissionData['submission_date']);
-            $stmt->bindParam(':status', $submissionData['status']);
+            // Get latest attempt
+            $lastSubmitted = $this->getLatestSubmission($submissionData['content_id'], $submissionData['student_id']);
+            if ($lastSubmitted) {
+                $submissionData["attempt_number"] = (int) $lastSubmitted['attempt_number'] + 1;
+            } else {
+                $submissionData["attempt_number"] = 1;
+            }
 
-            $stmt->execute();
-            $submissionId = $this->conn->lastInsertId(); // Get the ID of the new submission
+            // Check if submit count exceeded the max attempts.
+            $contentInfo = $this->getContentById($submissionData['content_id']);
+            if ($contentInfo) {
+                if ($submissionData["attempt_number"] > $contentInfo[0]['max_attempts']) {
+                    throw new Exception("Submission exceeded the max attempt." . json_encode($contentInfo[0]['max_attempts']));
+                }
+            } else {
+                throw new Exception("Error retrieving content data.");
+            }
 
-            $this->conn->commit(); // Commit transaction
-            return ['success' => true, 'submission_id' => $submissionId];
-        } catch (PDOException $e) {
-            $this->conn->rollBack(); // Rollback transaction on error
-            return ['success' => false, 'message' => $e->getMessage()];
+            $stmt->execute([
+                ':content_id' => $submissionData['content_id'],
+                ':student_id' => $submissionData['student_id'],
+                ':attempt_number' => $submissionData['attempt_number'],
+                ':submission_text' => $submissionData['submission_text'],
+            ]);
+
+            // Get the last inserted submission ID
+            $submissionId = $this->conn->lastInsertId();
+
+            // Process and add submission files
+            if (!empty($fileInputs)) {
+                $this->addSubmissionFiles($submissionId, $fileInputs);
+            }
+
+            // Commit the transaction
+            $this->conn->commit();
+        } catch (Exception $e) {
+            // Rollback on error
+            $this->conn->rollBack();
+            throw new Exception("Error adding submission: " . $e->getMessage());
         }
     }
+
 
     // Add a file to a submission
-    public function addSubmissionFile($fileData)
+    private function addSubmissionFiles(int $submissionId, array $fileInputs)
     {
-        try {
-            $query = "INSERT INTO submission_files (submission_id, file_name, file_data) 
-                  VALUES (:submission_id, :file_name, :file_data)";
+        // Prepare the SQL query for file insertion
+        $query_submissionFiles = "
+    INSERT INTO submission_files (submission_id, file_name, file_data, mime_type)
+    VALUES (:submission_id, :file_name, :file_data, :mime_type)";
+        $stmt = $this->conn->prepare($query_submissionFiles);
 
-            $stmt = $this->conn->prepare($query);
-            $stmt->bindParam(':submission_id', $fileData['submission_id']);
-            $stmt->bindParam(':file_name', $fileData['file_name']);
-            $stmt->bindParam(':file_data', $fileData['file_data'], PDO::PARAM_LOB); // Handle binary data
+        // Max file size in bytes (from environment configuration)
+        $maxFileSize = $_ENV['MAX_UPLOAD_FILE_SIZE'] * 1024 * 1024;
 
-            $stmt->execute();
-            return ['success' => true];
-        } catch (PDOException $e) {
-            return ['success' => false, 'message' => $e->getMessage()];
+        foreach ($fileInputs['error'] as $key => $fileError) {
+            if ($fileError === UPLOAD_ERR_OK) {
+                // Retrieve file details
+                $fileName = $fileInputs['name'][$key];
+                $tmpName = $fileInputs['tmp_name'][$key];
+                $fileType = $fileInputs['type'][$key];
+                $fileSize = $fileInputs['size'][$key];
+
+                // Validate file size
+                if ($fileSize > $maxFileSize) {
+                    throw new Exception("File too large: $fileSize bytes (Max: $maxFileSize bytes)");
+                }
+
+                // Read the file content as binary data
+                $fileData = file_get_contents($tmpName);
+                if ($fileData === false) {
+                    throw new Exception("Error reading file: $fileName");
+                }
+
+                // Execute the database insert query
+                $stmt->execute([
+                    ':submission_id' => $submissionId,
+                    ':file_name' => $fileName,
+                    ':file_data' => $fileData,
+                    ':mime_type' => $fileType,
+                ]);
+            } else {
+                // Handle file upload error
+                $errorMessage = match ($fileError) {
+                    UPLOAD_ERR_INI_SIZE => 'The uploaded file exceeds the upload_max_filesize directive in php.ini.',
+                    UPLOAD_ERR_FORM_SIZE => 'The uploaded file exceeds the MAX_FILE_SIZE directive that was specified in the HTML form.',
+                    UPLOAD_ERR_PARTIAL => 'The uploaded file was only partially uploaded.',
+                    UPLOAD_ERR_NO_FILE => 'No file was uploaded.',
+                    UPLOAD_ERR_NO_TMP_DIR => 'Missing a temporary folder.',
+                    UPLOAD_ERR_CANT_WRITE => 'Failed to write file to disk.',
+                    UPLOAD_ERR_EXTENSION => 'A PHP extension stopped the file upload.',
+                    default => 'Unknown error occurred.',
+                };
+                throw new Exception("File upload error: $errorMessage");
+            }
         }
     }
+
+    public function updateSubmissionGrade($submissionData)
+    {
+        try {
+            // Validate required fields
+            $requiredFields = ['score', 'status', 'content_id', 'student_id', 'submission_id'];
+            foreach ($requiredFields as $field) {
+                if (!isset($submissionData[$field])) {
+                    throw new Exception("Missing required field: $field");
+                }
+            }
+
+            $getCurrentSubmissionRow = $this->getLatestSubmission($submissionData['content_id'], $submissionData['student_id']);
+            if ($getCurrentSubmissionRow) {
+                $query = "UPDATE
+                                student_submissions
+                            SET
+                                score = :score,
+                                status = :status,
+                                graded_date = CURRENT_TIMESTAMP
+                            WHERE
+                                content_id = :content_id
+                            AND
+                                submission_id = :submission_id
+                            AND
+                                student_id = :student_id";
+            } else {
+                $query = "INSERT INTO 
+                                student_submissions (score, status, content_id, submission_id, student_id, graded_date) 
+                            VALUES 
+                                (:score, :status, :content_id, :submission_id, :student_id, CURRENT_TIMESTAMP)";
+            }
+
+            // Begin the transaction
+            $this->conn->beginTransaction();
+            // Prepare the SQL query
+            $stmt = $this->conn->prepare($query);
+
+            // Bind parameters
+            $stmt->bindParam(":score", $submissionData['score'], PDO::PARAM_INT);
+            $stmt->bindParam(":status", $submissionData['status'], PDO::PARAM_STR);
+            $stmt->bindParam(":content_id", $submissionData['content_id'], PDO::PARAM_INT);
+            $stmt->bindParam(":submission_id", $submissionData['submission_id'], PDO::PARAM_INT);
+            $stmt->bindParam(":student_id", $submissionData['student_id'], PDO::PARAM_INT);
+
+            // Execute the statement
+            $stmt->execute();
+
+            // Commit the transaction
+            $this->conn->commit();
+
+            // Return success with affected rows count
+            return ['success' => true];
+        } catch (Exception $e) {
+            // Rollback on failure
+            $this->conn->rollBack();
+            throw new Exception("Error updating submission grade: " . $e->getMessage());
+        }
+    }
+
 
     // Get all submissions by content id for all, and for specific student id so 2nd argument can be null
     public function getSubmissionsByContent($content_id, $student_id = null)
@@ -491,20 +684,102 @@ class ModuleContent
         }
     }
 
-
     // Get files for a specific submission
     public function getFilesBySubmission($submission_id)
     {
         try {
             $query = "SELECT * FROM submission_files WHERE submission_id = :submission_id";
             $stmt = $this->conn->prepare($query);
-            $stmt->bindParam(':submission_id', $submission_id, PDO::PARAM_INT);
+            $stmt->bindParam(':submission_id', $submission_id);
             $stmt->execute();
 
             $result = $stmt->fetchAll(PDO::FETCH_ASSOC); // Fetch all files as an associative array
+
             return $result ? $result : [];
         } catch (PDOException $e) {
             throw new PDOException("Failed to get files: " . $e->getMessage());
+        }
+    }
+
+    public function getSubmittedFilesByContentIdStudentId($content_id, $student_id, $submission_id = null)
+    {
+        try {
+            // Base query
+            $query = "
+            SELECT 
+                sf.*, 
+                ss.*
+            FROM 
+                submission_files AS sf
+            INNER JOIN
+                student_submissions AS ss
+            ON
+                sf.submission_id = ss.submission_id
+            WHERE 
+                ss.content_id = :content_id
+                AND ss.student_id = :student_id";
+
+            // Add submission_id condition if provided
+            if ($submission_id !== null) {
+                $query .= " AND sf.submission_id = :submission_id";
+            }
+
+            // Prepare the statement
+            $stmt = $this->conn->prepare($query);
+
+            // Bind parameters
+            $stmt->bindParam(':content_id', $content_id);
+            $stmt->bindParam(':student_id', $student_id);
+
+            if ($submission_id !== null) {
+                $stmt->bindParam(':submission_id', $submission_id);
+            }
+
+            // Execute the statement
+            $stmt->execute();
+
+            // Fetch results
+            $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+            // Return result
+            return $result ? $result : [];
+        } catch (PDOException $e) {
+            throw new PDOException("Failed to get files: " . $e->getMessage());
+        }
+    }
+
+    public function getFileBySubmissionFilesId($submission_files_id)
+    {
+        try {
+            $query = "SELECT * FROM submission_files WHERE submission_files_id = :submission_files_id LIMIT 1";
+            $stmt = $this->conn->prepare($query);
+            $stmt->bindParam(':submission_files_id', $submission_files_id);
+            $stmt->execute();
+
+            $result = $stmt->fetch(PDO::FETCH_ASSOC); // Fetch all files as an associative array
+
+            return $result ? $result : [];
+        } catch (PDOException $e) {
+            throw new PDOException("Failed to get file: " . $e->getMessage());
+        }
+    }
+
+    public function getLatestSubmission($content_id, $student_id)
+    {
+        try {
+            $query = "SELECT * 
+                        FROM 
+                            student_submissions 
+                        WHERE 
+                            content_id = :content_id AND student_id = :student_id 
+                        ORDER BY submission_date DESC LIMIT 1";
+            $stmt = $this->conn->prepare($query);
+            $stmt->bindParam(":content_id", $content_id);
+            $stmt->bindParam(":student_id", $student_id);
+            $stmt->execute();
+            return $stmt->fetch(PDO::FETCH_ASSOC);
+        } catch (Exception $e) {
+            throw new Exception("Failed to get the latest submission: " . $e->getMessage());
         }
     }
 
@@ -551,6 +826,120 @@ class ModuleContent
             return ['success' => true];
         } catch (PDOException $e) {
             return ['success' => false, 'message' => $e->getMessage()];
+        }
+    }
+
+    public function getStudentsSubmission($content_id)
+    {
+        try {
+            $query = "WITH LatestAttempts AS (
+                        SELECT
+                            student_id,
+                            content_id,
+                            MAX(attempt_number) AS latest_attempt_number
+                        FROM
+                            student_submissions
+                        GROUP BY
+                            student_id, content_id
+                    )
+                    SELECT
+                        u.user_id,
+                        u.profile_pic,
+                        u.first_name,
+                        u.last_name,
+                        ss.submission_date,
+                        ss.attempt_number,
+                        ss.content_id,
+                        ss.submission_id,
+                        ss.status,
+                        ss.score,
+                        c.*
+                    FROM
+                        student_subject_section AS sss
+                    JOIN
+                        users AS u
+                    ON
+                        sss.user_id = u.user_id
+                    JOIN
+                        modules AS m
+                    ON
+                        sss.subject_section_id = m.subject_section_id
+                    JOIN
+                        contents AS c
+                    ON
+                        m.module_id = c.module_id
+                    LEFT JOIN
+                        student_submissions AS ss
+                    ON
+                        ss.student_id = u.user_id
+                        AND ss.content_id = c.content_id
+                        AND ss.attempt_number = (
+                            SELECT
+                                latest_attempt_number
+                            FROM
+                                LatestAttempts
+                            WHERE
+                                LatestAttempts.student_id = ss.student_id
+                                AND LatestAttempts.content_id = ss.content_id
+                        )
+                    WHERE
+                        c.content_id = :content_id";
+
+
+            $stmt = $this->conn->prepare($query);
+            $stmt->bindParam(":content_id", $content_id);
+            $stmt->execute();
+            $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
+            return $result;
+        } catch (Exception $e) {
+            throw new Exception($e->getMessage());
+        }
+    }
+
+    public function getStudentSubmission($content_id, $student_id, $isLatestOnly)
+    {
+        try {
+            // Base query to select submissions by content_id and student_id
+            $query = "SELECT 
+                            ss.*, 
+                            u.*, 
+                            sf.*
+                        FROM 
+                            student_submissions ss
+                        INNER JOIN 
+                            users u ON ss.student_id = u.user_id
+                        LEFT JOIN 
+                            submission_files sf ON sf.submission_id = ss.submission_id
+                        WHERE 
+                            ss.content_id = :content_id 
+                        AND 
+                            ss.student_id = :student_id
+
+                    ";
+
+
+            // If we need only the latest submission, add an ORDER BY clause to sort by submission date
+            if ($isLatestOnly) {
+                $query .= " ORDER BY ss.attempt_number DESC LIMIT 1";
+            }
+
+            // Prepare and execute the query
+            $stmt = $this->conn->prepare($query);
+            $stmt->bindParam(':content_id', $content_id, PDO::PARAM_INT);
+            $stmt->bindParam(':student_id', $student_id, PDO::PARAM_INT);
+            $stmt->execute();
+
+            // Fetch the result
+            $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+            // Return the result (either the latest submission or all submissions)
+            return $result ? $result : [];
+        } catch (PDOException $e) {
+            // Catch any database-related exceptions
+            throw new PDOException("Database error: " . $e->getMessage());
+        } catch (Exception $e) {
+            // Catch any other exceptions
+            throw new Exception("Error: " . $e->getMessage());
         }
     }
 }

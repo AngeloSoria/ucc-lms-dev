@@ -12,7 +12,7 @@ $available_widgets = [
 $user_widgets = [
     // Role => [Keys, ...]
     'Admin' => ["Calendar", "Announcements"],
-    'Teacher' => ["Calendar", "Tasks", "Announcements", "Upcoming"],
-    'Student' => ["Calendar", "Tasks", "Announcements", "Upcoming"],
+    'Teacher' => ["Calendar", "Tasks", "Announcements"],
+    'Student' => ["Calendar", "Tasks", "Announcements"],
     'Level Coordinator' => ["Calendar", "Tasks", "Announcements"]
 ];

@@ -186,6 +186,15 @@ class SubjectSectionController
         }
     }
 
+    public function getAllEnrolledStudentsBySubjectSectionId($subject_section_id)
+    {
+        try {
+            return $this->subjectSectionModel->getAllEnrolledStudentsBySubjectSectionId($subject_section_id);
+        } catch (Exception $e) {
+            return ['success' => false, 'message' => $e->getMessage()];
+        }
+    }
+
     public function getAllEnrolledSubjectsFromSectionByTeacherId($teacher_id)
     {
         try {
@@ -216,6 +225,20 @@ class SubjectSectionController
         try {
             $result = $this->subjectSectionModel->getEnrolledStudentsFromSubject($subject_section_id);
             return ['success' => true, 'message' => 'Success in retrieving enrolled students.', 'data' => $result];
+        } catch (Exception $e) {
+            return ['success' => false, 'message' => $e->getMessage()];
+        }
+    }
+
+    public function isStudentEnrolledFromSubjectSection($student_id, $subject_section_id)
+    {
+        try {
+            $result = $this->subjectSectionModel->isStudentEnrolledFromSubjectSection($student_id, $subject_section_id);
+            return [
+                'success' => true,
+                'message' => 'Success in retrieving students enrolled to student_subject_section.',
+                'data' => $result
+            ];
         } catch (Exception $e) {
             return ['success' => false, 'message' => $e->getMessage()];
         }

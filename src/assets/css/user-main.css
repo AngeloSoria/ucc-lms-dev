@@ -3,7 +3,7 @@
 @import url('widgetpanel.css');
 
 body {
-    background: var(--bs-blue-200);
+    background: white;
     margin: 0;
     padding: 0;
     display: flex;
@@ -241,7 +241,7 @@ p {
 
 /* Content styles */
 #contentSection {
-    min-height: 100vh;
+    min-height: 100vh !important;
     margin: 0;
     padding: 0.5rem;
     width: 100%;

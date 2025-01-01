@@ -98,7 +98,6 @@ if (isset($_SESSION['user_id']) && isset($_SESSION['role'])) {
 
 <?php
 if (isset($_SESSION['LOGIN_INVALID']) || isset($_SESSION['SESSION_LOCK_ERR']) || isset($_SESSION['SESSION_EXPIRED_ERR'])) {
-    msgLog("FOUND");
     unset($_SESSION['SESSION_EXPIRED_ERR']);
     unset($_SESSION['SESSION_LOCK_ERR']);
     unset($_SESSION['LOGIN_INVALID']);

@@ -33,24 +33,32 @@ class LogoutController
         // Get user ID and session token
         $userId = $_SESSION['user_id'];
 
-        // Remove the session lock when logging out
-        $db = new Database();
-        $conn = $db->getConnection();
-        $deleteQuery = "DELETE FROM user_session_locks WHERE user_id = :user_id";
-        $deleteStmt = $conn->prepare($deleteQuery);
-        $deleteStmt->bindParam(":user_id", $userId);
-        $deleteStmt->execute();
+        if (isset($_ENV['SESSION_LOCK_ENABLED']) && $_ENV['SESSION_LOCK_ENABLED'] == 'true') {
+            // Remove the session lock when logging out
+            $db = new Database();
+            $conn = $db->getConnection();
+            $deleteQuery = "DELETE FROM user_session_locks WHERE user_id = :user_id";
+            $deleteStmt = $conn->prepare($deleteQuery);
+            $deleteStmt->bindParam(":user_id", $userId);
+            $deleteStmt->execute();
+        }
 
-        $_sessionExpired = $_SESSION['SessionExpired'];
+
+        if (isset($_ENV['SESSION_LOCK_ENABLED']) && $_ENV['SESSION_LOCK_ENABLED'] == 'true') {
+            $_sessionExpired = $_SESSION['SessionExpired'];
+        }
 
         // Destroy session to log the user out
         session_unset();
         session_destroy();
 
-        if ($_sessionExpired) {
-            session_start();
-            $_SESSION['SESSION_EXPIRED_ERR'] = true;
+        if (isset($_ENV['SESSION_LOCK_ENABLED']) && $_ENV['SESSION_LOCK_ENABLED'] == 'true') {
+            if ($_sessionExpired) {
+                session_start();
+                $_SESSION['SESSION_EXPIRED_ERR'] = true;
+            }
         }
+
 
         // Redirect to the login page after logging out
         header("Location: " . BASE_PATH_LINK);

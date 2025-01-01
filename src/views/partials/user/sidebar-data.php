@@ -77,6 +77,11 @@ $sidebar_content = [
                     'icon' => 'bi-clipboard-data',
                     'link' => 'general_logs_admin.php',
                 ],
+                'announcements' => [
+                    'title' => 'Announcements',
+                    'icon' => 'bi-megaphone',
+                    'link' => 'announcement_view.php',
+                ],
             ],
         ],
     ],
@@ -117,18 +122,23 @@ $sidebar_content = [
                 ],
             ],
         ],
-        'misc' => [
-            'title' => 'Miscellaneous',
-            'icon' => 'bi-bar-chart-steps',
-            'isGroup' => true,
-            'sublinks' => [
-                'content' => [
-                    'title' => 'My Uploads',
-                    'icon' => 'bi-images',
-                    'link' => 'content_admin.php',
-                ],
-            ],
+        'announcements' => [
+            'title' => 'Announcements',
+            'icon' => 'bi-megaphone',
+            'link' => 'announcement_view.php',
         ],
+        // 'misc' => [
+        //     'title' => 'Miscellaneous',
+        //     'icon' => 'bi-bar-chart-steps',
+        //     'isGroup' => true,
+        //     'sublinks' => [
+        //         'content' => [
+        //             'title' => 'My Uploads',
+        //             'icon' => 'bi-images',
+        //             'link' => 'content_admin.php',
+        //         ],
+        //     ],
+        // ],
     ],
     'Teacher' => [
         'dashboard' => [
@@ -153,17 +163,22 @@ $sidebar_content = [
                 ],
             ],
         ],
-        'misc' => [
-            'title' => 'Miscellaneous',
-            'icon' => 'bi-bar-chart-steps',
-            'isGroup' => true,
-            'sublinks' => [
-                'content' => [
-                    'title' => 'My Uploads',
-                    'icon' => 'bi-images',
-                    'link' => 'content_admin.php',
-                ],
-            ],
+        'announcements' => [
+            'title' => 'Announcements',
+            'icon' => 'bi-megaphone',
+            'link' => 'announcement_view.php',
         ],
+        // 'misc' => [
+        //     'title' => 'Miscellaneous',
+        //     'icon' => 'bi-bar-chart-steps',
+        //     'isGroup' => true,
+        //     'sublinks' => [
+        //         'content' => [
+        //             'title' => 'My Uploads',
+        //             'icon' => 'bi-images',
+        //             'link' => 'content_admin.php',
+        //         ],
+        //     ],
+        // ],
     ],
 ];

@@ -97,7 +97,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST'  && isset($_POST['action'])) {
             <?php require_once(FILE_PATHS['Partials']['User']['Sidebar']) ?>
 
             <!-- content here -->
-            <section id="contentSection">
+            <section id="contentSection" class="">
                 <div class="col box-sizing-border-box flex-grow-1">
                     <?php if (!isset($_GET['viewProgram'])): ?>
                         <div class="bg-white rounded p-3 shadow-sm border">
@@ -109,7 +109,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST'  && isset($_POST['action'])) {
                                 <div class="col-8 d-flex justify-content-end gap-2">
                                     <!-- Tools -->
                                     <button
-                                        class="btn btn-primary btn-lg rounded fs-6 px-3 c-primary d-flex gap-3 align-items-center"
+                                        class="btn btn-sm btn-primary btn-lg rounded fs-6 px-3 c-primary d-flex gap-3 align-items-center"
                                         data-bs-toggle="modal" data-bs-target="#programFormModal">
                                         <i class="bi bi-plus-circle"></i> Add Program
                                     </button>

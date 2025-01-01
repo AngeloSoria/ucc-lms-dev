@@ -1,8 +1,8 @@
 <div class="widget-card p-3 shadow-sm rounded border overflow-hidden" id="myTasks" style="max-height: 230px;">
     <div class="d-flex justify-content-between align-items-center">
         <p class="fs-6 fw-semibold text-success m-0">Announcements</p>
-        <?php if (isset($_SESSION['role']) && $_SESSION['role'] == 'Admin'): ?>
-            <a href="javascript:void(0);" class="fs-6 d-flex justify-content-center align-items-center" title="Make Announcement">
+        <?php if (userHasPerms(['Admin'])): ?>
+            <a href="javascript:void(0);" class="fs-6 d-flex justify-content-center align-items-center" title="Make Announcement" role="button" data-bs-toggle="modal" data-bs-target="#announcementFormModal">
                 <i class="bi bi-plus-circle fs-6"></i>
             </a>
         <?php endif; ?>
@@ -11,20 +11,61 @@
     <div>
         <ul class="list-group list-group-flush bg-transparent gap-2 overflow-y-auto" style="max-height: 160px;">
             <?php
-            $testAnnouncementCount = 1;
+            $announcements = [];
+            if (isset($_GET['subject_section_id'])) {
+                $announcements = $announcementController->getAnnouncements($_GET['subject_section_id']);
+                $link_base = updateUrlParams(['subject_section_id' => $_GET['subject_section_id'], 'announcements' => 1]);
+            } else {
+                $announcements = $announcementController->getAnnouncements();
+                $link_base = BASE_PATH_LINK . 'src/views/users/' . lcfirst($_SESSION['role']) . '/announcement_view.php';
+            }
             ?>
-            <?php if ($testAnnouncementCount > 0): ?>
-                <?php for ($i = 0; $i < 8; $i++): ?>
-                    <li class="list-group-item d-flex justify-content-start align-items-center gap-2 fw-semibold p-0">
-                        <i class="bi bi-megaphone-fill ctxt-secondary"></i>
-                        <p class="title bg-transparent text-truncate fs-7">
-                            Lorem ipsum dolor sit amet consectetur, adipisicing elit. Distinctio.
-                        </p>
+            <?php if ($announcements['success']): ?>
+                <?php foreach ($announcements['data'] as $announcement):
+                    $link = $link_base . '#announcement_' . $announcement['id'];
+                ?>
+                    <li class="list-group-item p-0">
+                        <a href="<?php echo $link ?>" class="d-flex justify-content-start align-items-center gap-2 fw-semibold p-0" title="<?php echo sanitizeInput($announcement['title']) ?>">
+                            <i class="bi bi-megaphone-fill ctxt-secondary"></i>
+                            <p class="title bg-transparent text-truncate fs-7">
+                                <?php echo sanitizeInput($announcement['title']) ?>
+                            </p>
+                        </a>
                     </li>
-                <?php endfor; ?>
+                <?php endforeach; ?>
             <?php else: ?>
-                <p class="fs-7 opacity-50 text-center p-2">No Announcements yet</p>
+                <p class="fs-7 opacity-50 text-center p-2"><?php echo sanitizeInput($announcements['message']); ?></p>
             <?php endif; ?>
         </ul>
     </div>
 </div>
+
+<?php if (userHasPerms(['Admin'])): ?>
+    <div class="modal fade" id="announcementFormModal" tabindex="-1" aria-labelledby="announcementFormModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h1 class="modal-title fs-5" id="announcementFormModalLabel">Announcement Form (Global)</h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <form method="POST">
+                    <input type="hidden" name="action" value="addAnnouncement_global">
+                    <div class="modal-body">
+                        <div class="mb-3">
+                            <label for="#input_announcementTitle">Title</label>
+                            <input required type="text" name="input_announcementTitle" id="input_announcementTitle" placeholder="Enter announcement title" class="form-control">
+                        </div>
+                        <div class="mb-3">
+                            <label for="#input_announcementMessage">Description</label>
+                            <textarea name="input_announcementMessage" id="input_announcementMessage" class="tinyMCE" placeholder="Enter announcement description."></textarea>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                        <button type="submit" class="btn btn-success">Submit</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+<?php endif; ?>
