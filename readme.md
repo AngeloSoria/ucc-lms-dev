@@ -11,10 +11,9 @@ This project is an E-Learning Management System built using vanilla PHP and MySQ
 
 ## Technologies Used
 
-- PHP (78.9%)
-- JavaScript (8.8%)
-- Hack (8.7%)
-- CSS (3.6%)
+- PHP
+- JavaScript
+- CSS
 - MySQL
 
 ## Project Structure (MVC)
@@ -23,4 +22,3 @@ This project is an E-Learning Management System built using vanilla PHP and MySQ
 - **Views:** Responsible for the presentation layer (e.g., HTML, CSS, JavaScript files).
 - **Controllers:** Manages the communication between models and views (e.g., UserController, ProgramController).
 
-Feel free to contribute to the project by forking the repository and creating pull requests.
